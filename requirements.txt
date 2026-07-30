@@ -1,0 +1,25 @@
+pandas==2.2.0
+numpy==1.26.4
+scikit-learn==1.4.2
+colorama==0.4.6
+tabulate==0.9.0
+flask==3.0.3
+
+# Semantic schema mapping (optional — falls back to rule engine if not installed)
+sentence-transformers==2.7.0
+torch==2.2.0
+
+# Auto Forecasting Engine — Phase 2 (optional — Holt-Winters/SARIMA are
+# skipped with a warning if statsmodels is not installed; Moving Average,
+# Naive, Simple Exponential Smoothing, and Holt Linear are pure numpy/pandas
+# and always work regardless)
+statsmodels==0.14.2
+
+# Optional — Prophet is skipped with a warning if not installed (heavy
+# compiled Stan backend; not required for the rest of the engine to work)
+prophet==1.1.5
+
+# Optional — XGBoost is skipped with a warning if not installed (used for
+# "Highly Volatile" series where a gradient-boosted model can capture
+# non-linear structure a classical linear/statistical method cannot)
+xgboost==2.1.1

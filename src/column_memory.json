@@ -1,0 +1,254 @@
+{
+  "inv_no": {
+    "original_column": "inv_no",
+    "business_name": "Invoice Number",
+    "category": "identifier",
+    "description": "Mapped from ERP column 'inv_no'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "inv_dt": {
+    "original_column": "inv_dt",
+    "business_name": "Invoice Date",
+    "category": "date",
+    "description": "Mapped from ERP column 'inv_dt'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "cust_cd": {
+    "original_column": "cust_cd",
+    "business_name": "Customer Code",
+    "category": "identifier",
+    "description": "Mapped from ERP column 'cust_cd'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "cust_nm": {
+    "original_column": "cust_nm",
+    "business_name": "Customer Name",
+    "category": "customer",
+    "description": "Mapped from ERP column 'cust_nm'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "reg_cd": {
+    "original_column": "reg_cd",
+    "business_name": "Region",
+    "category": "geography",
+    "description": "Mapped from ERP column 'reg_cd'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "prod_id": {
+    "original_column": "prod_id",
+    "business_name": "Product Id",
+    "category": "identifier",
+    "description": "Mapped from ERP column 'prod_id'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "prod_grp": {
+    "original_column": "prod_grp",
+    "business_name": "Product Category",
+    "category": "product",
+    "description": "Mapped from ERP column 'prod_grp'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "slsp": {
+    "original_column": "slsp",
+    "business_name": "Salesperson Code",
+    "category": "identifier",
+    "description": "Mapped from ERP column 'slsp'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "qty_sold": {
+    "original_column": "qty_sold",
+    "business_name": "Quantity Sold",
+    "category": "quantity",
+    "description": "Mapped from ERP column 'qty_sold'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "unit_pr": {
+    "original_column": "unit_pr",
+    "business_name": "Unit Price",
+    "category": "amount",
+    "description": "Mapped from ERP column 'unit_pr'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "gross_amt": {
+    "original_column": "gross_amt",
+    "business_name": "Gross Amount",
+    "category": "amount",
+    "description": "Mapped from ERP column 'gross_amt'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "disc_pct": {
+    "original_column": "disc_pct",
+    "business_name": "Discount Percentage",
+    "category": "percentage",
+    "description": "Mapped from ERP column 'disc_pct'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "disc_val": {
+    "original_column": "disc_val",
+    "business_name": "Discount Amount",
+    "category": "amount",
+    "description": "Mapped from ERP column 'disc_val'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "nsv": {
+    "original_column": "nsv",
+    "business_name": "Net Sales Value",
+    "category": "amount",
+    "description": "Mapped from ERP column 'nsv'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "gst_amt": {
+    "original_column": "gst_amt",
+    "business_name": "Gst Amount",
+    "category": "amount",
+    "description": "Mapped from ERP column 'gst_amt'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "trx_v": {
+    "original_column": "trx_v",
+    "business_name": "Total Invoice Value",
+    "category": "amount",
+    "description": "Mapped from ERP column 'trx_v'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "pmt_stat": {
+    "original_column": "pmt_stat",
+    "business_name": "Payment Status",
+    "category": "status",
+    "description": "Mapped from ERP column 'pmt_stat'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "cust_seg": {
+    "original_column": "cust_seg",
+    "business_name": "Customer Type",
+    "category": "customer",
+    "description": "Mapped from ERP column 'cust_seg'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "mrgn_pct": {
+    "original_column": "mrgn_pct",
+    "business_name": "Margin Percentage",
+    "category": "percentage",
+    "description": "Mapped from ERP column 'mrgn_pct'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "dlv_st": {
+    "original_column": "dlv_st",
+    "business_name": "Delivery City",
+    "category": "geography",
+    "description": "Mapped from ERP column 'dlv_st'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  },
+  "rev": {
+    "original_column": "rev",
+    "business_name": "Net Sales Value",
+    "category": "amount",
+    "description": "Mapped from ERP column 'rev'",
+    "confidence": 0.97,
+    "human_corrected": false,
+    "source": "rule engine (embedding unavailable)",
+    "reasons": [
+      "Embedding failed; used rule match"
+    ]
+  }
+}

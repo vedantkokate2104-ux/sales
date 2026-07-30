@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sales Analysis Agent</title>
+<link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">SA</div>
+    <div>
+      <div class="logo-title">Sales Agent</div>
+      <div class="logo-sub">Proof of Concept</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="nav-item active" data-page="overview"   onclick="showPage('overview')">
+      <span class="nav-icon">◈</span> Data Overview
+    </a>
+    <a class="nav-item" data-page="schema"    onclick="showPage('schema')">
+      <span class="nav-icon">⊞</span> Schema AI
+    </a>
+    <a class="nav-item" data-page="kpis"      onclick="showPage('kpis')">
+      <span class="nav-icon">◉</span> KPIs
+    </a>
+    <a class="nav-item" data-page="anomalies" onclick="showPage('anomalies')">
+      <span class="nav-icon">⚠</span> Anomalies
+    </a>
+    <a class="nav-item" data-page="forecast"  onclick="showPage('forecast')">
+      <span class="nav-icon">▲</span> Forecast
+    </a>
+    <a class="nav-item" data-page="chat"      onclick="showPage('chat')">
+      <span class="nav-icon">◎</span> Chat
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div id="status-dot" class="status-dot idle"></div>
+    <span id="status-text">Not loaded</span>
+  </div>
+</aside>
+
+<main class="main">
+
+  <header class="topbar">
+    <div>
+      <div class="topbar-title" id="page-title">Overview</div>
+      <div class="topbar-sub" id="page-sub">Load the ERP data to begin</div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      
+      <span id="upload-filename" style="font-size: 12px; color: var(--text-2);"></span>
+
+      <input
+        type="file"
+        id="csv-upload"
+        accept=".csv"
+        style="display:none"
+        onchange="uploadCSV()"
+      >
+
+      <button
+        class="btn-secondary"
+        id="upload-btn"
+        onclick="document.getElementById('csv-upload').click()"
+      >
+        Upload CSV
+      </button>
+
+      <button
+        class="btn-primary"
+        id="load-btn"
+        onclick="loadData()"
+      >
+        ▶ Load ERP Data
+      </button>
+
+    </div>
+  </header>
+
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Running pipeline…</div>
+  </div>
+
+  <section class="page active" id="page-overview">
+    <div class="empty-state" id="overview-empty">
+      <div class="empty-icon">◈</div>
+      <div class="empty-title">Ready to analyse</div>
+      <div class="empty-body">Click "Load ERP Data" to run the full pipeline —<br/>schema mapping, cleaning, KPIs, anomaly detection and forecasting.</div>
+      <button class="btn-primary" onclick="loadData()">▶ Load ERP Data</button>
+    </div>
+
+    <div id="overview-content" style="display:none">
+
+      <div class="overview-summary-grid" id="overview-summary-grid"></div>
+
+      <div class="card" id="dupes-card">
+        <div class="card-title">
+          Duplicate Records
+          <span class="badge" id="dupes-badge">0</span>
+          <button class="btn-sm-outline" id="dupes-toggle-btn" onclick="toggleDuplicates()" style="margin-left:auto">
+            View duplicates
+          </button>
+        </div>
+        <div id="dupes-summary" class="dupes-summary-text"></div>
+
+        <div id="dupes-panel" style="display:none">
+          <div class="dupes-toolbar">
+            <input id="dupes-search" class="inp"
+              placeholder="Filter by invoice number…"
+              oninput="filterDupes(this.value)"
+              style="width:240px"/>
+            <span class="dupes-hint">Each block shows one duplicate group. Use Manage to resolve it.</span>
+          </div>
+          <div id="dupes-groups"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="page" id="page-schema">
+    <div class="card">
+      <div class="card-title">Column Mapping Results
+        <span class="badge" id="schema-badge">—</span>
+      </div>
+      <div id="schema-empty" class="empty-state small">
+        <div class="empty-body">Load data first to see schema mappings.</div>
+      </div>
+      <table class="data-table" id="schema-table" style="display:none">
+        <thead>
+          <tr>
+            <th>ERP Column</th>
+            <th>Business Meaning</th>
+            <th>Category</th>
+            <th>Confidence</th>
+            <th>Source & Reasoning</th>
+            <th>Correct</th>
+          </tr>
+        </thead>
+        <tbody id="schema-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="card" id="correct-panel" style="display:none">
+      <div class="card-title">Teach a Correction</div>
+      <div class="correct-form">
+        <select id="correct-col" class="inp">
+          <option value="">Select column…</option>
+        </select>
+        <input id="correct-name" class="inp" placeholder="Enter correct business name…"/>
+        <button class="btn-primary" onclick="submitCorrection()">Save Correction</button>
+      </div>
+      <div id="correct-msg" class="correct-msg"></div>
+    </div>
+  </section>
+
+  <section class="page" id="page-kpis">
+    <div id="kpi-empty" class="empty-state">
+      <div class="empty-body">Load data first to see KPIs.</div>
+    </div>
+    <div id="kpi-content" style="display:none">
+      <div class="stat-grid" id="kpi-stat-grid"></div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Top 5 Customers</div>
+          <div id="top-customers"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Payment Status</div>
+          <div id="payment-status"></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Revenue by Salesperson</div>
+          <div id="sp-bars"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Data Cleaning Summary</div>
+          <div id="clean-summary"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-anomalies">
+    <div id="anomaly-empty" class="empty-state">
+      <div class="empty-body">Load data first to see anomalies.</div>
+    </div>
+    <div id="anomaly-list" style="display:none"></div>
+  </section>
+
+  <section class="page" id="page-forecast">
+    <div id="forecast-empty" class="empty-state">
+      <div class="empty-body">Load data first to see forecast.</div>
+    </div>
+
+    <div id="forecast-content" style="display:none">
+
+      <!-- SECTION 1 — Forecast Summary -->
+      <div class="fc-hero">
+        <div class="fc-hero-top">
+          <div class="fc-hero-heading">
+            <div class="fc-hero-title">Forecast Summary</div>
+            <div class="fc-hero-sub">AI-powered revenue projection for your business</div>
+          </div>
+          <div class="fc-hero-controls">
+            <select id="forecast-horizon" class="inp" onchange="updateForecast()" style="width: 130px;">
+              <option value="1">1 month</option>
+              <option value="3" selected>3 months</option>
+              <option value="6">6 months</option>
+              <option value="12">12 months</option>
+              <option value="24">24 months</option>
+            </select>
+            <button class="btn-primary" id="af-run-btn" onclick="runAutoForecast()">
+              ▶ Run Auto Forecast
+            </button>
+          </div>
+        </div>
+
+        <div class="fc-hero-grid">
+          <div class="fc-hero-card">
+            <div class="fc-hero-label">Selected Model</div>
+            <div class="fc-hero-value" id="fc-hero-model">Not yet run</div>
+            <div class="fc-hero-sub-text" id="fc-hero-model-tag">Click "Run Auto Forecast"</div>
+          </div>
+          <div class="fc-hero-card">
+            <div class="fc-hero-label">Forecast Horizon</div>
+            <div class="fc-hero-value" id="fc-hero-horizon">3 Months</div>
+            <div class="fc-hero-sub-text">projection window</div>
+          </div>
+          <div class="fc-hero-card">
+            <div class="fc-hero-label">Forecast Confidence</div>
+            <div class="fc-hero-value"><span class="conf-pill-lg conf-neutral" id="fc-hero-confidence">—</span></div>
+            <div class="fc-hero-sub-text" id="fc-hero-confidence-sub">not yet calculated</div>
+          </div>
+          <div class="fc-hero-card">
+            <div class="fc-hero-label">Expected Revenue</div>
+            <div class="fc-hero-value" id="fc-hero-revenue">—</div>
+            <div class="fc-hero-sub-text" id="fc-hero-revenue-sub">total across horizon</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2 — Historical vs Forecast Chart -->
+      <div class="card fc-chart-card">
+        <div class="card-title">
+          <span id="forecast-title-text">Historical vs Forecast</span>
+          <span class="fc-legend">
+            <span class="fc-legend-item"><i class="fc-dot fc-dot-hist"></i>Historical</span>
+            <span class="fc-legend-item"><i class="fc-dot fc-dot-fc"></i>Forecast</span>
+            <span class="fc-legend-item"><i class="fc-dot fc-dot-band"></i>Confidence Range</span>
+          </span>
+        </div>
+        <div class="fc-chart-outer">
+          <div class="chart-wrap fc-chart-wrap" id="forecast-chart"></div>
+          <div class="fc-chart-tooltip" id="fc-chart-tooltip"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 3 — Forecast Results -->
+      <div class="card">
+        <div class="card-title">
+          Forecast Results
+          <button class="btn-sm-outline" id="fc-table-toggle" onclick="toggleForecastTable()" style="margin-left:auto">
+            View Detailed Forecast Table
+          </button>
+        </div>
+        <div class="fc-month-grid" id="fc-month-grid"></div>
+        <div id="fc-table-wrap" style="display:none; margin-top: 16px;">
+          <table class="data-table" id="fc-detail-table">
+            <thead><tr><th>Period</th><th>Forecasted Revenue</th></tr></thead>
+            <tbody id="fc-detail-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION 4 — Selected Model -->
+      <div class="card" id="fc-model-card">
+        <div class="card-title">Selected Model</div>
+        <div id="fc-model-empty" class="fc-inline-empty">
+          Run Auto Forecast to see which model was selected and why.
+        </div>
+        <div id="fc-model-content" style="display:none">
+          <div class="fc-model-header">
+            <div class="fc-model-name" id="fc-model-name">—</div>
+            <div class="fc-model-metrics" id="fc-model-metrics"></div>
+          </div>
+          <ul class="fa-reasons-list" id="fc-model-reasons"></ul>
+          <div class="fc-alt-models">
+            <span class="fc-alt-label">Alternative models considered:</span>
+            <span id="fc-alt-list"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 5 — Dataset Analysis (accordion, collapsed by default) -->
+      <div class="fc-accordion" id="fc-accordion-dataset">
+        <button class="fc-accordion-header" onclick="toggleAccordion('fc-accordion-dataset')">
+          <span>Dataset Analysis</span>
+          <span class="fc-accordion-icon">⌄</span>
+        </button>
+        <div class="fc-accordion-body">
+          <div id="forecast-analysis-empty" class="empty-state small">
+            <div class="empty-body">Dataset analysis will appear here once the ERP data loads.</div>
+          </div>
+          <div id="forecast-analysis-content" style="display:none">
+            <div class="fc-series-badge-row">
+              <span>Series Type: <span class="badge" id="fa-series-badge">—</span></span>
+              <span>Classification Confidence: <span class="conf-pill" id="fa-confidence-pill">—</span></span>
+            </div>
+            <div class="stat-grid" id="fa-stats-grid"></div>
+            <div class="two-col">
+              <div>
+                <div class="fc-subheading">Series Classification Reasons</div>
+                <ul id="fa-reasons" class="fa-reasons-list"></ul>
+              </div>
+              <div>
+                <div class="fc-subheading">Candidate Models (Pre-Training)</div>
+                <div id="fa-models"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 6 — Model Comparison (accordion, collapsed by default) -->
+      <div class="fc-accordion" id="fc-accordion-comparison">
+        <button class="fc-accordion-header" onclick="toggleAccordion('fc-accordion-comparison')">
+          <span>Model Comparison</span>
+          <span class="fc-accordion-icon">⌄</span>
+        </button>
+        <div class="fc-accordion-body">
+          <div class="fc-inline-empty" id="fc-comparison-empty">
+            Run Auto Forecast to compare all evaluated models.
+          </div>
+          <table class="data-table" id="af-comparison-table" style="display:none">
+            <thead>
+              <tr>
+                <th>Rank</th><th>Model</th><th>Status</th>
+                <th>MAE</th><th>RMSE</th><th>MAPE</th><th>SMAPE</th>
+              </tr>
+            </thead>
+            <tbody id="af-comparison-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION 7 — Warnings -->
+      <div class="fc-warnings" id="fc-warnings" style="display:none"></div>
+
+    </div>
+  </section>
+
+  <section class="page" id="page-chat">
+    <div class="chat-wrap">
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-msg agent">
+          <div class="msg-bubble">
+            Hi! I'm your Sales Agent. Ask me anything about your sales data.<br/><br/>
+            Try: <em>"What is the total revenue?"</em> or <em>"Which region has the highest sales?"</em>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input id="chat-input" class="chat-input" placeholder="Ask a business question…" onkeydown="if(event.key==='Enter')sendQuestion()"/>
+        <button class="btn-primary" onclick="sendQuestion()">Send</button>
+      </div>
+      <div class="chat-hints">
+        <span onclick="prefill('What is the total revenue?')">Total revenue</span>
+        <span onclick="prefill('Which region has the highest sales?')">Best region</span>
+        <span onclick="prefill('Show top customers')">Top customers</span>
+        <span onclick="prefill('Revenue by product')">By product</span>
+        <span onclick="prefill('What are the overdue invoices?')">Overdue</span>
+        <span onclick="prefill('Show monthly trend')">Monthly trend</span>
+        <span onclick="prefill('Total discount given')">Discounts</span>
+        <span onclick="prefill('How many unique customers?')">Customers</span>
+      </div>
+    </div>
+  </section>
+
+<div id="dupe-modal-overlay" class="modal-overlay" style="display:none" onclick="closeDupeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">Manage Duplicate</div>
+    <div class="modal-body">
+      Invoice <strong id="modal-inv-no"></strong> appears <strong id="modal-count"></strong> times in the dataset.
+    </div>
+    <div class="modal-sub">What would you like to do?</div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="handleDupe('keep_first')">
+        Keep first, remove duplicates
+      </button>
+      <button class="btn-danger" onclick="handleDupe('delete_all')">
+        Delete all occurrences
+      </button>
+      <button class="btn-ghost" onclick="closeDupeModal()">Cancel</button>
+    </div>
+    <div id="modal-msg" class="modal-msg"></div>
+  </div>
+</div>
+
+</main>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
