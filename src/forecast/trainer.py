@@ -37,7 +37,7 @@ validation_folds / training_observations / a short machine-readable
 `status` string. This is what lets selector.py rank models on more than
 MAPE and compute a confidence score from more than one signal.
 
-Production-quality pass #2 (this pass — preprocessing + auto-tuning):
+Production-quality pass #2 (preprocessing + auto-tuning):
   - Raw (date, revenue) rows now go through forecast.preprocessing
     .clean_transactions() (Task 2) before aggregation, and the
     aggregated series goes through .cap_outliers() +
@@ -68,27 +68,74 @@ level (each builds its own model instances; `series`/`tuning_prefix` are
 read-only inputs). Results are merged back into the original candidate
 order afterward, so output is unchanged in content and order.
 
-Runtime stability audit (this pass): a live segmentation fault was
-reported with worker threads inside `concurrent.futures.thread._worker`
-on the stack, plus `resource_tracker: leaked semaphore objects` warnings
-at shutdown, on macOS (Apple Silicon). A project-wide search confirmed
-this file's ThreadPoolExecutor above is the ONLY thread/process pool in
-the entire codebase — every SARIMA/Holt-Winters (statsmodels -> scipy ->
-LAPACK/BLAS) and XGBoost (its own internal OpenMP pool, never given an
-explicit thread-count limit) fit can therefore run CONCURRENTLY across
-several threads, entering native, C-level thread-pool/BLAS code from
-multiple Python threads at once — a documented crash-prone pattern on
-macOS (see CHANGELOG for the full library-by-library reasoning). Rather
-than removing parallel execution, candidate training now runs behind a
-module-level `ENABLE_PARALLEL_FORECASTING` flag: sequential
-(`_train_sequential()`, calling the exact same `_train_one_candidate()`
-one candidate at a time — identical logic and output, just no concurrent
-native-library invocation) is now the default while stability is
-confirmed in the field; the ThreadPoolExecutor path is fully preserved,
-selectable by setting the flag to `True`. Separately, `process_isolation
-.py` (used by Prophet) now explicitly closes every `multiprocessing.Queue`
-/`Process` it creates instead of leaving them for garbage collection —
-the direct fix for the observed leaked-semaphore warning.
+Runtime stability audit: a live segmentation fault was reported with
+worker threads inside `concurrent.futures.thread._worker` on the stack,
+plus `resource_tracker: leaked semaphore objects` warnings at shutdown, on
+macOS (Apple Silicon). A project-wide search confirmed this file's
+ThreadPoolExecutor above is the ONLY thread/process pool in the entire
+codebase — every SARIMA/Holt-Winters (statsmodels -> scipy -> LAPACK/BLAS)
+and XGBoost (its own internal OpenMP pool, never given an explicit
+thread-count limit) fit can therefore run CONCURRENTLY across several
+threads, entering native, C-level thread-pool/BLAS code from multiple
+Python threads at once — a documented crash-prone pattern on macOS (see
+CHANGELOG for the full library-by-library reasoning). Rather than removing
+parallel execution, candidate training now runs behind a module-level
+`ENABLE_PARALLEL_FORECASTING` flag: sequential (`_train_sequential()`,
+calling the exact same `_train_one_candidate()` one candidate at a time —
+identical logic and output, just no concurrent native-library invocation)
+is now the default while stability is confirmed in the field; the
+ThreadPoolExecutor path is fully preserved, selectable by setting the flag
+to `True`. Separately, `process_isolation.py` (used by Prophet) now
+explicitly closes every `multiprocessing.Queue`/`Process` it creates
+instead of leaving them for garbage collection — the direct fix for the
+observed leaked-semaphore warning.
+
+Forecasting-quality pass (this pass — multi-step-aware validation):
+  - walk_forward_validate() previously ALWAYS evaluated exactly one step
+    ahead per fold (`probe.predict(1)`), regardless of how the resulting
+    model would actually be used later. But forecast_engine.py's
+    run_auto_forecast() defaults to, and is frequently called with, a
+    multi-step horizon (horizon=3 by default, and callers can request
+    more) — a model's 1-step-ahead accuracy and its 3-step-ahead accuracy
+    are NOT the same thing: a recursive multi-step forecaster (this
+    project's XGBoost) accumulates error across steps in a way a 1-step
+    evaluation never exercises, and even a model with a native multi-step
+    API (SARIMA/Holt-Winters/Prophet/Holt/SES) can have its trend or
+    seasonal-phase estimate drift further from actuals the further out it
+    forecasts. Selecting the "best" model using only 1-step error was
+    therefore evaluating something subtly different from what deployment
+    actually asks the model to do.
+  - Each walk-forward fold now evaluates `_resolve_eval_horizon(...)`
+    steps ahead (a small, fixed cap of 3 — the same default horizon
+    run_auto_forecast() itself uses — capped further so at least a
+    couple of folds remain possible) instead of always exactly 1,
+    calling `probe.predict(eval_horizon)` once per fold and comparing
+    against that many real future points, still never touching anything
+    at or after the fold's own training cutoff (no leakage — see that
+    function's docstring). For short series where the data cannot
+    support this without starving the fold count, `_resolve_eval_horizon`
+    degrades to exactly 1 — IDENTICAL to this function's prior behaviour
+    — so short/thin datasets are not penalised with fewer, noisier folds
+    just to exercise a longer horizon they cannot support.
+  - Every existing guarantee is unchanged: still expanding-window
+    (`train = series.iloc[:train_end]` grows by one point per fold), still
+    leakage-free (each fold's prediction never sees series.iloc[train_end]
+    or anything after it, regardless of how many steps ahead it predicts),
+    still pools every fold's (actual, predicted) pairs before computing
+    metrics once (now across `eval_horizon` points per fold instead of
+    one), and `stability` still means the same thing — fold-to-fold
+    consistency of a SINGLE per-fold error number, now that per-fold
+    number is the fold's own mean absolute error across its evaluation
+    window rather than a single point's absolute error, so it still
+    answers "does this model perform consistently across different
+    forecast origins" rather than conflating that with within-fold,
+    horizon-step-to-horizon-step degradation (a different question).
+    walk_forward_validate()'s signature and return type
+    (Tuple[Optional[dict], int, Optional[float]]) are completely
+    unchanged, as is train_candidates()'s signature and every other
+    function in this file — every existing caller keeps working exactly
+    as before, just against a validation signal that better reflects how
+    the resulting model is actually used.
 """
 
 import logging
@@ -130,6 +177,37 @@ MIN_WALKFORWARD_FOLDS = 1
 MIN_FOLDS_FOR_STABILITY = 2
 
 _STABILITY_EPS = 1e-6
+
+# Forecasting-quality pass — how many steps ahead each walk-forward fold
+# evaluates, at most. Matches run_auto_forecast()'s own default `horizon`
+# (see forecast_engine.py) so validation is scored against the SAME depth
+# of forecast the engine typically actually produces, rather than only
+# ever the easiest possible case (one step ahead). Deliberately a small,
+# fixed internal constant rather than the caller's actual requested
+# horizon: train_candidates()/walk_forward_validate() are called before
+# forecast_engine.py knows (or needs to know) what horizon the eventual
+# forecast() call will use, and this file's public functions keep their
+# exact existing signatures either way.
+_MULTISTEP_EVAL_HORIZON = 3
+
+
+def _resolve_eval_horizon(n: int, min_train_size: int) -> int:
+    """
+    How many steps ahead each walk-forward fold evaluates this run.
+    Defaults toward _MULTISTEP_EVAL_HORIZON when there is enough trailing
+    data (beyond min_train_size) to still get a reasonable number of
+    folds at that depth; degrades toward 1-step — this function's
+    original, exact behaviour — as available data shrinks, so a short
+    series is never left with fewer, noisier folds just to exercise a
+    longer horizon it cannot meaningfully support. Requires room for at
+    least 2 folds at whatever horizon it picks.
+    """
+    available = n - min_train_size
+    if available < 2:
+        return 1
+    max_supportable = max(1, available // 2)
+    return max(1, min(_MULTISTEP_EVAL_HORIZON, max_supportable))
+
 
 # Task 16 — how many candidate models' tuning+validation+fit run
 # concurrently. Each candidate is independent (its own model instance, its
@@ -234,41 +312,67 @@ def walk_forward_validate(
     hyperparams: Optional[dict] = None,
 ) -> Tuple[Optional[dict], int, Optional[float]]:
     """
-    Expanding-window, one-step-ahead walk-forward validation for a single
-    candidate model class — simulates how the model is actually used in
-    production, unlike a single fixed hold-out split:
+    Expanding-window walk-forward validation for a single candidate model
+    class — simulates how the model is actually used in production,
+    unlike a single fixed hold-out split:
 
-        Train on series[:i]  ->  predict series[i]  ->  compare
-        ->  expand i by 1     ->  repeat until the series is exhausted.
+        Train on series[:i]  ->  predict the next `eval_horizon` steps
+        ->  compare against series[i:i+eval_horizon]  ->  expand i by 1
+        ->  repeat until the series is exhausted.
 
     Order is never shuffled; each fold's training window is a strict
     chronological prefix of the one before it, and every prediction comes
     from a FRESH model instance fit only on that fold's own prefix (a
     fold's fit never reuses another fold's fitted state, and never sees
-    series.iloc[train_end] or anything after it) — this is what makes the
-    walk-forward loop leakage-free by construction.
+    series.iloc[train_end] or anything after it, no matter how many steps
+    ahead it is asked to predict) — this is what makes the walk-forward
+    loop leakage-free by construction.
 
-    All folds' (actual, predicted) pairs are pooled and every metric
-    (MAE/RMSE/MAPE/SMAPE/WAPE) is computed ONCE over the pooled arrays,
-    rather than computing a metric per fold and then averaging the
-    per-fold metrics. For a single-step fold, a per-fold RMSE degenerates
-    to the same value as a per-fold MAE (sqrt of one squared term is just
-    the absolute value), so averaging per-fold RMSEs would silently
-    produce MAE's number under RMSE's name. Pooling first and computing
-    once preserves the actual meaning of each metric while still
-    reflecting performance averaged across every validation fold.
+    `eval_horizon` (see _resolve_eval_horizon()) is usually more than one
+    step: forecast_engine.py's actual deployment forecasts are multi-step
+    (run_auto_forecast() defaults to horizon=3), and a model's one-step
+    accuracy is not necessarily representative of its multi-step accuracy
+    — a recursive forecaster (this project's XGBoost) compounds error
+    across steps in a way a single-step evaluation never exercises, and
+    even models with a native multi-step API can drift further from
+    actuals the further out they forecast. Evaluating multiple steps per
+    fold, when the series has enough data to support it, scores models on
+    something much closer to what they are actually asked to do in
+    production. Short series automatically fall back to exactly one step
+    per fold (see _resolve_eval_horizon()) — identical to this function's
+    original behaviour — so this never costs a thin dataset any folds it
+    would otherwise have had.
 
-    A fold whose model fails to fit on that (early, shorter) training
-    window — e.g. SARIMA cannot fit until 2 full seasonal cycles exist —
-    is simply skipped rather than aborting the whole validation; the
-    caller decides whether too few folds succeeded to trust the result.
+    All folds' (actual, predicted) pairs — now up to `eval_horizon` pairs
+    per fold — are pooled and every metric (MAE/RMSE/MAPE/SMAPE/WAPE) is
+    computed ONCE over the pooled arrays, rather than computing a metric
+    per fold and then averaging the per-fold metrics. For a single-step
+    fold, a per-fold RMSE degenerates to the same value as a per-fold MAE
+    (sqrt of one squared term is just the absolute value), so averaging
+    per-fold RMSEs would silently produce MAE's number under RMSE's name.
+    Pooling first and computing once preserves the actual meaning of each
+    metric while still reflecting performance averaged across every
+    validation fold (and, now, every step within every fold).
+
+    A fold whose model fails to fit, or fails to produce `eval_horizon`
+    predictions, on that (early, shorter) training window — e.g. SARIMA
+    cannot fit until 2 full seasonal cycles exist — is simply skipped
+    rather than aborting the whole validation; the caller decides whether
+    too few folds succeeded to trust the result.
 
     A third return value, `stability`, is a 0-1 score describing how
-    consistent this model's per-fold absolute error was across folds:
-    1 - min(1, coefficient_of_variation_of_fold_errors). A model whose
-    error swings wildly fold to fold scores low even if its pooled
-    average looks fine; a model that errs by a similar amount every fold
-    scores high. None if fewer than MIN_FOLDS_FOR_STABILITY folds
+    consistent this model's per-fold error was across folds: 1 -
+    min(1, coefficient_of_variation_of_fold_errors). Each fold's own error
+    is now the MEAN absolute error across that fold's evaluation window
+    (rather than a single point's absolute error) — this keeps `stability`
+    answering the same question it always did, "does this model perform
+    consistently across different training-window/forecast-origin
+    choices," rather than conflating that with a different question
+    (whether error grows within a single fold's own multi-step horizon,
+    which is instead reflected in the pooled accuracy metrics themselves).
+    A model whose error swings wildly fold to fold scores low even if its
+    pooled average looks fine; a model that errs by a similar amount every
+    fold scores high. None if fewer than MIN_FOLDS_FOR_STABILITY folds
     succeeded (too little data to say anything about variability).
 
     `hyperparams`, if given, is forwarded into every fold's fit() call
@@ -276,6 +380,8 @@ def walk_forward_validate(
     and why it is computed once per model rather than once per fold.
 
     Returns (metrics_dict_or_None, n_successful_folds, stability_or_None).
+    Signature and return type are unchanged from this function's original
+    version — every existing caller keeps working exactly as before.
     """
     n = len(series)
     if min_train_size is None:
@@ -285,28 +391,39 @@ def walk_forward_validate(
     if n - min_train_size < 1:
         return None, 0, None
 
+    eval_horizon = _resolve_eval_horizon(n, min_train_size)
+
     actuals: List[float] = []
     preds: List[float] = []
     fold_abs_errors: List[float] = []
 
-    for train_end in range(min_train_size, n):
+    for train_end in range(min_train_size, n - eval_horizon + 1):
         train = series.iloc[:train_end]
-        actual = series.iloc[train_end]
+        actual_window = series.iloc[train_end:train_end + eval_horizon]
         try:
             probe = model_cls()
             probe.fit(train, frequency=frequency, **hyperparams)
-            pred = probe.predict(1)[0]
+            pred_window = probe.predict(eval_horizon)
+            if len(pred_window) < eval_horizon:
+                raise ValueError(
+                    f"predict({eval_horizon}) returned only {len(pred_window)} value(s)"
+                )
         except Exception as exc:
             logger.debug(
-                "%s skipped walk-forward fold ending at %d (%d obs): %s",
-                getattr(model_cls, "name", model_cls.__name__), train_end, len(train), exc,
+                "%s skipped walk-forward fold ending at %d (%d obs, horizon %d): %s",
+                getattr(model_cls, "name", model_cls.__name__), train_end, len(train), eval_horizon, exc,
             )
             continue
-        actuals.append(float(actual))
-        preds.append(float(pred))
-        fold_abs_errors.append(abs(float(actual) - float(pred)))
 
-    n_folds = len(actuals)
+        fold_actuals = [float(v) for v in actual_window.tolist()]
+        fold_preds = [float(v) for v in list(pred_window)[:eval_horizon]]
+        actuals.extend(fold_actuals)
+        preds.extend(fold_preds)
+        fold_abs_errors.append(
+            float(np.mean([abs(a - p) for a, p in zip(fold_actuals, fold_preds)]))
+        )
+
+    n_folds = len(fold_abs_errors)
     if n_folds < MIN_WALKFORWARD_FOLDS:
         return None, n_folds, None
 
