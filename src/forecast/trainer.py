@@ -147,6 +147,7 @@ import pandas as pd
 
 from analytics import _clean_numeric
 from .evaluator import compute_metrics
+from .grain import build_forecast_series
 from .models import MODEL_REGISTRY
 from .preprocessing import cap_outliers, clean_transactions, interpolate_short_gaps, parse_dates_deterministic
 from .utils import effective_training_frequency, infer_frequency, period_freq_code
@@ -247,40 +248,34 @@ ENABLE_PARALLEL_FORECASTING = False
 def build_series(dates: pd.Series, values: pd.Series, frequency: Optional[str] = None) -> pd.Series:
     """
     Aggregate (date, revenue) observations into a total-per-period series
-    indexed by a gapless PeriodIndex (missing periods filled with 0), at
-    whatever frequency the data was actually detected to have — daily,
-    weekly, monthly, quarterly, or yearly. Irregular/unknown cadences fall
-    back to a monthly grain purely so training remains possible; that
-    fallback is reported to the user as a dataset-validation warning (see
-    validation.py), not silently applied as if it were the "real" cadence.
+    indexed by a gapless PeriodIndex, at the given forecast grain.
 
-    This replaces the previous behaviour of always aggregating to monthly
-    regardless of the data's actual cadence.
+    Phase 1, Step 5 — this now delegates to
+    forecast.grain.build_forecast_series() rather than doing its own
+    `reindex(full_range, fill_value=0.0)`. That old one-liner asserted
+    that a period with no invoice had zero demand, which conflates three
+    distinguishable things (an observed zero total, an unobserved period,
+    and a recording gap). grain.build_forecast_series() keeps them apart,
+    tracks which periods were actually observed, and chooses how to fill
+    the rest from the series' own density instead of assuming zero
+    everywhere — see that module's docstring for the full rationale.
 
-    Date parsing (Task 10) uses parse_dates_deterministic() rather than a
-    bare pd.to_datetime(): see preprocessing.py's module docstring for why
-    pandas' own per-row format inference (triggered whenever a column's
-    format can't be inferred from the first few rows — as with this
-    project's own sample dataset's day-first, 2-digit-year dates) is a
-    genuine silent-corruption risk on ambiguous dates, not just a noisy
-    warning.
+    This function keeps its exact original signature and return type (a
+    plain per-period pd.Series), so every existing caller is unaffected.
+    Callers that need the observed/missing breakdown should call
+    grain.build_forecast_series() directly and read the SeriesConstruction.
+
+    `frequency` should be the grain chosen by grain.select_forecast_grain()
+    (forecast_engine.py passes it in). When omitted it falls back to
+    utils.infer_frequency() — transaction arrival cadence — purely so this
+    function remains usable standalone; that is explicitly NOT how the
+    engine picks a grain any more.
     """
-    dates = parse_dates_deterministic(dates)
-    valid = dates.notna()
-    dates, values = dates[valid], _clean_numeric(values[valid])
-
-    if len(dates) == 0:
-        return pd.Series(dtype=float)
-
     if frequency is None:
-        frequency = infer_frequency(dates)
+        parsed = parse_dates_deterministic(dates)
+        frequency = infer_frequency(parsed[parsed.notna()])
 
-    code = period_freq_code(frequency)  # falls back to "M" for irregular/unknown
-    periods = dates.dt.to_period(code)
-    series = values.groupby(periods).sum().sort_index()
-
-    full_range = pd.period_range(series.index.min(), series.index.max(), freq=code)
-    return series.reindex(full_range, fill_value=0.0)
+    return build_forecast_series(dates, values, frequency).series
 
 
 def build_monthly_series(dates: pd.Series, values: pd.Series) -> pd.Series:

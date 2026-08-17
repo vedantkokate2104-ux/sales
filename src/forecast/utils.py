@@ -50,11 +50,76 @@ TIMESTAMP_FREQ_CODE = {
 }
 
 
+# Every seasonal cycle worth testing at a given frequency, shortest
+# first. SEASONAL_PERIOD above holds the ONE cycle the models size their
+# seasonal component to; this table is what seasonality DETECTION scans,
+# and the two are deliberately different: daily data can carry both a
+# weekly (7) and an annual (365) cycle, and which one is actually present
+# is an empirical question, not something to assume. Phase 1, Step 8 —
+# analyzer.py previously always aggregated to monthly and tested period=12
+# no matter what frequency the series was modelled at, so a weekly series'
+# real 52-period cycle was never measured at all.
+SEASONAL_CYCLE_CANDIDATES = {
+    "daily":     [7, 365],
+    "weekly":    [52],
+    "monthly":   [12],
+    "quarterly": [4],
+    "yearly":    [],
+    "irregular": [],
+    "unknown":   [],
+}
+
+# A cycle is only tested when the series covers at least this many full
+# repetitions of it. Below two, "the seasonal pattern" and "the series
+# itself" are the same thing and the strength statistic is meaningless —
+# it would be fabricated, not measured.
+MIN_CYCLES_FOR_SEASONALITY = 2
+
+
 def seasonal_period_for_freq(frequency: str):
     """Seasonal cycle length (in periods) for a detected frequency name, or
     None if that frequency has no meaningful sub-cycle (yearly data) or is
     not a clean, regular cadence (irregular/unknown)."""
     return SEASONAL_PERIOD.get(frequency)
+
+
+def seasonal_cycle_candidates(frequency: str, n_observations: int) -> list:
+    """
+    Which seasonal cycles are worth testing for a series of
+    `n_observations` points at `frequency` — i.e. those the series has
+    enough history to actually cover MIN_CYCLES_FOR_SEASONALITY times.
+    Returns [] when the frequency has no sub-cycle (yearly) or the series
+    is too short for any of its cycles, which is the honest answer for a
+    short series rather than a fabricated score.
+    """
+    return [
+        p for p in SEASONAL_CYCLE_CANDIDATES.get(frequency, [])
+        if p >= 2 and n_observations >= p * MIN_CYCLES_FOR_SEASONALITY
+    ]
+
+
+def detect_seasonality(values, frequency: str):
+    """
+    Frequency-aware seasonality detection (Phase 1, Step 8). Scans every
+    cycle length appropriate to `frequency` that the series is long enough
+    to support, and returns the strongest one as
+
+        (strength, period_used)
+
+    Returns (0.0, None) when no cycle can be tested — a short series, or a
+    frequency with no sub-annual cycle. That is deliberately distinct from
+    "tested and found no seasonality" (which returns a real, low strength
+    with the period it was measured at), so a caller can tell "we looked
+    and there is nothing there" apart from "we could not look".
+    """
+    values = np.asarray(values, dtype=float)
+    n = len(values)
+    best_strength, best_period = 0.0, None
+    for period in seasonal_cycle_candidates(frequency, n):
+        strength = seasonality_strength(values, period=period)
+        if best_period is None or strength > best_strength:
+            best_strength, best_period = strength, period
+    return (round(float(best_strength), 4), best_period) if best_period else (0.0, None)
 
 
 def period_freq_code(frequency: str, default: str = "M") -> str:

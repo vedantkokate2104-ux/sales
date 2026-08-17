@@ -6,11 +6,25 @@ Automatically cleans the ERP data:
 - removes duplicates
 - detects and flags outliers
 - standardises date formats
+
+Duplicate handling (Phase 1, Step 1) is delegated to transaction_key.py.
+It used to be a single `drop_duplicates(subset=[id_cols[0]])` call on
+whichever column the schema mapper listed as the first "identifier",
+which on the bundled dataset is the invoice number — a column that
+dataset RECYCLES across genuinely different transactions. That removed
+212 of 392 rows (54% of the data, 57% of revenue) purely because an
+identifier string repeated, which is not evidence of duplication. See
+transaction_key.py for the three-way distinction (exact duplicate rows /
+duplicate business transactions / legitimate repeated identifiers) that
+replaced it.
 """
 
 import pandas as pd
 import numpy as np
 from colorama import Fore, Style
+
+from transaction_key import deduplicate_transactions
+from forecast.preprocessing import parse_dates_deterministic
 
 
 def clean(df: pd.DataFrame, mappings: list[dict]) -> tuple[pd.DataFrame, dict]:
@@ -36,15 +50,19 @@ def clean(df: pd.DataFrame, mappings: list[dict]) -> tuple[pd.DataFrame, dict]:
                 df[col] = converted
 
     # ── 1. remove duplicates ──────────────────────────────────────────────────
-    id_cols = [c for c, cat in col_category.items() if cat == "identifier"]
-    if id_cols:
-        before = len(df)
-        df = df.drop_duplicates(subset=[id_cols[0]], keep="first")
-        dupes_removed = before - len(df)
-    else:
-        df = df.drop_duplicates()
-        dupes_removed = original_rows - len(df)
+    # A repeated identifier is NOT a duplicate transaction — see
+    # transaction_key.py. Rows are only removed when they are identical on
+    # a composite business key (invoice + date + product + customer +
+    # quantity + revenue), or, when no such key can be built from the
+    # available columns, when the entire row is identical.
+    df, dup_report = deduplicate_transactions(df, mappings)
+    dupes_removed = dup_report["rows_removed"]
+    # Existing scalar field, unchanged in name and meaning, so
+    # ui/app.py and print_cleaning_report() keep working as-is.
     report["duplicates_removed"] = dupes_removed
+    # Additive: the full breakdown behind that number, so no row is ever
+    # dropped without a visible count and a stated reason.
+    report["duplicate_detail"] = dup_report
 
     # ── 2. fix missing values ─────────────────────────────────────────────────
     nulls_fixed = {}
@@ -80,9 +98,23 @@ def clean(df: pd.DataFrame, mappings: list[dict]) -> tuple[pd.DataFrame, dict]:
     report["nulls_fixed"] = nulls_fixed
 
     # ── 3. standardise dates ──────────────────────────────────────────────────
+    # Deterministic parsing: ONE explicit format, chosen by testing
+    # candidates against the whole column, applied to every row.
+    #
+    # This previously called a bare pd.to_datetime(df[col], errors="coerce").
+    # With no format and no dayfirst hint, pandas parses ambiguous values
+    # row by row via dateutil, which resolves each row on its own: in this
+    # project's own dataset "03/01/21" became 1 March while "21/01/21"
+    # (day > 12, so month-first is impossible) became 21 January — two
+    # different conventions inside a single column, silently. That
+    # mis-dated 142 of 392 rows (36%), moving transactions between months
+    # and corrupting every downstream aggregation, seasonality estimate
+    # and forecast period. See forecast/preprocessing.py for the full
+    # rationale; that module already used this parser, so the cleaner and
+    # the forecasting pipeline now agree on what a date means.
     date_cols = [c for c, cat in col_category.items() if cat == "date" and c in df.columns]
     for col in date_cols:
-        df[col] = pd.to_datetime(df[col], errors="coerce")
+        df[col] = parse_dates_deterministic(df[col])
     report["date_cols_standardised"] = date_cols
 
     # ── 4. detect outliers in amount columns (numeric only) ───────────────────
@@ -116,6 +148,27 @@ def print_cleaning_report(report: dict):
     print(f"  Rows before  : {report['rows_before']}")
     print(f"  Rows after   : {report['rows_after']}")
     print(f"  Duplicates   : {Fore.YELLOW}{report['duplicates_removed']} removed{Style.RESET_ALL}")
+
+    # Full duplicate breakdown (Phase 1, Step 1) — total rows, exact
+    # duplicates, business-key duplicates, retained/removed rows and the
+    # reason, so nothing is ever removed silently.
+    dup = report.get("duplicate_detail")
+    if dup:
+        print(f"  Duplicate analysis:")
+        print(f"    total rows              : {dup['total_rows']}")
+        print(f"    exact duplicate rows    : {dup['exact_duplicate_rows']}")
+        print(f"    business-key duplicates : {dup['business_key_duplicate_rows']}")
+        if dup.get("identifier_column"):
+            print(f"    repeated '{dup['identifier_column']}' values : "
+                  f"{dup['repeated_identifier_values']} "
+                  f"({dup['repeated_identifier_rows']} rows)")
+            print(f"    {Fore.GREEN}preserved as legitimate : "
+                  f"{dup['preserved_repeated_identifier_rows']} rows{Style.RESET_ALL}")
+        print(f"    strategy                : {dup['strategy']} ({dup['business_key_basis']})")
+        print(f"    retained / removed      : {dup['rows_retained']} / {dup['rows_removed']}")
+        print(f"    reason                  : {dup['removal_reason']}")
+        if dup.get("limitation"):
+            print(f"    {Fore.YELLOW}limitation            : {dup['limitation']}{Style.RESET_ALL}")
 
     if report["nulls_fixed"]:
         print(f"  Nulls fixed  :")

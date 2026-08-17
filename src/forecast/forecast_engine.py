@@ -41,9 +41,9 @@ from typing import Optional
 import pandas as pd
 
 from analytics import get_col
-from .analyzer import analyze_dataset      # Phase 1, unmodified
-from .classifier import classify_series    # Phase 1, unmodified
-from .model_selector import recommend_models  # Phase 1, unmodified
+from .analyzer import prepare_forecast_series
+from .classifier import classify_series
+from .model_selector import recommend_models
 from .trainer import train_candidates
 from .selector import select_best_model
 from .preprocessing import compute_data_quality_score
@@ -76,12 +76,6 @@ def run_auto_forecast(
     if group_col and group_value is not None and group_col in df.columns:
         working_df = df[df[group_col].astype(str) == str(group_value)]
 
-    # ── Phase 1 (reused, unmodified) ──────────────────────────────────────
-    stats = analyze_dataset(working_df, mappings, group_col=None)["ALL"]
-    classification = classify_series(stats)
-    candidates = recommend_models(classification, stats)
-    candidate_names = [c.model for c in candidates]
-
     date_col = get_col(working_df, mappings, "invoice date")
     rev_col = get_col(working_df, mappings, "net sales")
     if not date_col or not rev_col:
@@ -90,17 +84,34 @@ def run_auto_forecast(
             "column to be resolved by the schema mapper."
         )
 
+    # ── Phase 1 grain selection + series statistics ────────────────────────
+    # The forecast grain is now CHOSEN by evaluating every candidate
+    # (daily/weekly/monthly/quarterly) on density, history, dispersion and
+    # seasonal support — see forecast/grain.py. It is no longer derived
+    # from transaction inter-arrival time, which measures how often the
+    # business invoices rather than at what period its demand is
+    # forecastable. Every statistic in `stats` describes the resulting
+    # MODELLED PERIOD SERIES, not raw transaction rows.
+    construction, grain_selection, stats = prepare_forecast_series(
+        working_df[date_col], working_df[rev_col], horizon=horizon, group="ALL",
+    )
+    classification = classify_series(stats)
+    candidates = recommend_models(classification, stats)
+    candidate_names = [c.model for c in candidates]
+
     # ── Task 2: dataset-quality validation, run once before training ────────
     validation_warnings = validate_dataset(working_df[date_col], working_df[rev_col], stats)
 
     # ── Phase 2 ────────────────────────────────────────────────────────────
-    # stats.frequency was already computed by Phase 1's analyzer — reused
-    # here (rather than re-detected) so the trainer always aggregates at
-    # the same cadence the Dataset Analysis panel already reports.
+    # The trainer aggregates at the SELECTED grain, so the Dataset Analysis
+    # panel, the validation window and the models all describe the same
+    # series at the same cadence.
     eval_results, trained_models, training_warnings, series, preprocessing_info = train_candidates(
         working_df[date_col], working_df[rev_col], candidate_names, frequency=stats.frequency
     )
-    warnings = validation_warnings + training_warnings
+    warnings = validation_warnings + training_warnings + list(construction.notes)
+    if grain_selection.fallback:
+        warnings.append(grain_selection.reason)
 
     # Task 8 — a single 0-1 summary of how much correction the raw data
     # needed, fed into selector.py's confidence calculation as one signal
@@ -111,6 +122,8 @@ def run_auto_forecast(
         n_series_points=preprocessing_info.get("n_series_points", 0),
         missing_timestamp_ratio=preprocessing_info.get("missing_timestamp_ratio", 0.0),
     )
+
+    grain_fields = _grain_fields(stats, grain_selection)
 
     if not trained_models:
         return AutoForecastResult(
@@ -127,6 +140,7 @@ def run_auto_forecast(
             frequency=stats.frequency,
             forecast_confidence_pct=0,
             data_quality_score=data_quality,
+            **grain_fields,
         )
 
     selection = select_best_model(eval_results, stats=stats, classification=classification, data_quality=data_quality)
@@ -187,6 +201,7 @@ def run_auto_forecast(
             frequency=stats.frequency,
             forecast_confidence_pct=0,
             data_quality_score=data_quality,
+            **grain_fields,
         )
 
     forecast_points = [ForecastPoint(period=p, value=round(v, 2)) for p, v in forecast_pairs]
@@ -205,7 +220,32 @@ def run_auto_forecast(
         frequency=stats.frequency,
         forecast_confidence_pct=selection.confidence_pct,
         data_quality_score=data_quality,
+        **grain_fields,
     )
+
+
+def _grain_fields(stats, grain_selection) -> dict:
+    """
+    The additive grain-related fields every AutoForecastResult carries
+    (Phase 1, Step 9). Built in one place so all three return paths in
+    run_auto_forecast() report the grain identically.
+
+    Every one of these is ADDITIVE — no pre-existing response field is
+    renamed or removed, and `frequency` is still populated exactly as
+    before (and always equals `selected_frequency`), so existing API
+    consumers are unaffected.
+    """
+    return {
+        "selected_frequency":    grain_selection.selected_frequency,
+        "frequency_reason":      grain_selection.reason,
+        "series_density":        stats.series_density,
+        "zero_period_ratio":     stats.zero_period_ratio,
+        "candidate_frequencies": {
+            k: v.to_dict() for k, v in grain_selection.candidate_frequencies.items()
+        },
+        "n_modelled_periods":    stats.n_observations,
+        "n_transactions":        stats.n_transactions,
+    }
 
 
 def _forecast_with_fallback(preferred_model: str, trained_models: dict, eval_results: list, horizon: int):
@@ -333,5 +373,17 @@ def _explainability(stats, classification) -> dict:
         "trend_strength":            stats.trend_strength,
         "seasonality_strength":      stats.seasonality_strength,
         "history_length_days":       stats.history_length_days,
+        # n_observations now counts MODELLED PERIODS at the selected grain
+        # rather than raw invoices (Phase 1, Step 7). The raw transaction
+        # count is reported alongside it rather than being lost.
         "n_observations":            stats.n_observations,
+        # Additive keys — existing consumers reading only the six above are
+        # unaffected.
+        "n_transactions":            stats.n_transactions,
+        "observed_periods":          stats.observed_periods,
+        "empty_periods":             stats.empty_periods,
+        "series_density":            stats.series_density,
+        "zero_period_ratio":         stats.zero_period_ratio,
+        "seasonal_period":           stats.seasonal_period,
+        "fill_strategy":             stats.fill_strategy,
     }

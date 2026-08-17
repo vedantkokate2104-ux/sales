@@ -117,6 +117,17 @@ class AutoForecastResult:
     # Additive (Task 2/11 redesign): 0-1 summary of how much correction the
     # raw input data needed before training (see forecast.preprocessing).
     data_quality_score: Optional[float] = None
+    # ── Additive (Phase 1: forecast grain selection). Every field above is
+    # unchanged in name, type and meaning, so the existing frontend and any
+    # other API consumer keep working untouched. `frequency` in particular
+    # is retained and always equals `selected_frequency`. ──
+    selected_frequency: Optional[str] = None      # grain the series was modelled at
+    frequency_reason: Optional[str] = None        # why that grain won over the alternatives
+    series_density: Optional[float] = None        # 0-1: share of modelled periods containing real transactions
+    zero_period_ratio: Optional[float] = None     # 0-1: share of modelled periods totalling zero
+    candidate_frequencies: Optional[Dict[str, dict]] = None  # per-grain diagnostics (see forecast.grain)
+    n_modelled_periods: Optional[int] = None      # length of the series actually trained on
+    n_transactions: Optional[int] = None          # raw ERP rows behind that series
 
     def to_dict(self) -> dict:
         return {
@@ -133,4 +144,11 @@ class AutoForecastResult:
             "frequency":                self.frequency,
             "forecast_confidence_pct":  self.forecast_confidence_pct,
             "data_quality_score":       self.data_quality_score,
+            "selected_frequency":       self.selected_frequency,
+            "frequency_reason":         self.frequency_reason,
+            "series_density":           self.series_density,
+            "zero_period_ratio":        self.zero_period_ratio,
+            "candidate_frequencies":    self.candidate_frequencies,
+            "n_modelled_periods":       self.n_modelled_periods,
+            "n_transactions":           self.n_transactions,
         }

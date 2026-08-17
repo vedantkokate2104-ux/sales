@@ -23,7 +23,7 @@ from schema_mapper import map_all_columns, correct_mapping
 from data_cleaner  import clean
 from analytics     import calculate_kpis, detect_anomalies, run_forecast
 from query_engine  import answer
-from forecast.analyzer       import analyze_primary
+from forecast.analyzer       import analyze_primary, analyze_primary_with_grain
 from forecast.classifier     import classify_series
 from forecast.model_selector import recommend_models
 from forecast.forecast_engine import run_auto_forecast
@@ -161,7 +161,13 @@ def api_forecast_analysis():
     if not STATE["loaded"]:
         return jsonify({"ok": False, "error": "Load data first"}), 400
     try:
-        stats = analyze_primary(STATE["df_clean"], STATE["mappings"])
+        # analyze_primary_with_grain() returns the same SeriesStats
+        # analyze_primary() does, plus the grain-selection record — so the
+        # existing "stats"/"classification"/"recommendations" keys are
+        # unchanged and "grain" is purely additive (Phase 1, Step 9).
+        _construction, grain_selection, stats = analyze_primary_with_grain(
+            STATE["df_clean"], STATE["mappings"]
+        )
         classification = classify_series(stats)
         recommendations = recommend_models(classification, stats)
         return jsonify({
@@ -169,6 +175,7 @@ def api_forecast_analysis():
             "stats": stats.to_dict(),
             "classification": classification.to_dict(),
             "recommendations": [r.to_dict() for r in recommendations],
+            "grain": grain_selection.to_dict(),
         })
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)}), 500
