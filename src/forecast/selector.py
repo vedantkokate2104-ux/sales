@@ -50,8 +50,37 @@ undo it):
 import math
 from typing import Dict, List, Optional, Tuple
 
+from .backtest import BacktestResult, EnsembleBacktest, evaluate_ensemble
 from .results import ModelEvalResult, SelectionResult
 from .types import SeriesStats, SeriesClassification
+
+# Phase 2, Step 9 — complexity ordering, simplest first. Used ONLY to
+# break an empirical tie: when two models are statistically
+# indistinguishable on validation error, the simpler one is preferred,
+# because it has fewer ways to be wrong on data it has not seen and its
+# behaviour is easier to explain. A more complex model has to actually
+# demonstrate better generalisation (a lower error outside the tie band)
+# to be chosen over a simpler one.
+_COMPLEXITY_RANK = {
+    "Naive": 0,
+    "Seasonal Naive": 1,
+    "Moving Average": 1,
+    "Simple Exponential Smoothing": 2,
+    "Holt Linear": 3,
+    "Holt-Winters": 4,
+    "SARIMA": 5,
+    "Croston": 3,
+    "Prophet": 6,
+    "XGBoost": 7,
+}
+_MAX_COMPLEXITY = max(_COMPLEXITY_RANK.values())
+
+# Phase 2, Step 10 — an ensemble must beat the best single model's pooled
+# validation error by at least this relative margin to be selected. A
+# blend is harder to explain and to reason about than one model, so an
+# indistinguishable improvement is not worth it. There is no longer any
+# unconditional bonus for being an ensemble.
+_ENSEMBLE_MIN_IMPROVEMENT = 0.01
 
 # Task 7 (fallback path) — priority when no model has validation metrics at
 # all. Most statistically sophisticated / typically most accurate first, so
@@ -172,19 +201,38 @@ def _business_fit_score(
     return max(0.0, min(1.0, score))
 
 
+def _simplicity_component(result: ModelEvalResult) -> float:
+    """1.0 for the simplest model in the library, 0.0 for the most
+    complex. Phase 2, Step 9 — see _COMPLEXITY_RANK."""
+    rank = _COMPLEXITY_RANK.get(result.model)
+    if rank is None:
+        return 0.5  # unknown model — neutral, neither rewarded nor penalised
+    return 1.0 - (rank / _MAX_COMPLEXITY)
+
+
 def _tie_break_score(
     result: ModelEvalResult,
     stats: Optional[SeriesStats],
     classification: Optional[SeriesClassification],
 ) -> float:
-    """Composite score used ONLY to order models that are already an
-    empirical accuracy tie (see _TIE_BREAK_RELATIVE_BAND): weighted blend
-    of business/series fit, fold-to-fold stability, and how many
-    walk-forward folds actually validated the model."""
+    """
+    Composite score used ONLY to order models that are already an
+    empirical accuracy tie (see _TIE_BREAK_RELATIVE_BAND). Weighted blend
+    of fold-to-fold stability, simplicity, how many folds actually
+    validated the model, and how well its capabilities match the series.
+
+    Phase 2 reweighting: stability now carries the most weight and
+    simplicity is a first-class term. Both express the same underlying
+    preference — when the evidence cannot distinguish two models, take the
+    one whose behaviour is most predictable and whose failure modes are
+    easiest to understand, rather than the one that merely looks more
+    sophisticated.
+    """
     fit = _business_fit_score(result, stats, classification)
     stability = _stability_component(result)
+    simplicity = _simplicity_component(result)
     folds_norm = min(1.0, (result.validation_folds or 0) / 8.0)
-    return 0.40 * fit + 0.35 * stability + 0.25 * folds_norm
+    return 0.30 * stability + 0.30 * simplicity + 0.20 * fit + 0.20 * folds_norm
 
 
 def _apply_business_aware_tie_break(
@@ -319,41 +367,89 @@ def _compute_confidence(
     return round(pct / 100.0, 2), int(pct)
 
 
-def _build_adaptive_ensemble(scored: List[ModelEvalResult]) -> Optional[List[dict]]:
+def _ensemble_candidates(scored: List[ModelEvalResult]) -> List[str]:
     """
-    Task 10 — adaptive N-way ensemble: every model within
-    _ENSEMBLE_RELATIVE_BAND of the leader's own error is included (up to
-    _ENSEMBLE_MAX_MODELS), weighted by inverse validation error
-    (Bates-Granger forecast combination — a model with half the error of
-    another gets roughly twice the weight). `scored` is assumed sorted
-    ascending by _rank_key (post tie-break), so the scan below can stop at
-    the first model that no longer qualifies rather than checking every
-    remaining candidate.
+    Which models are close enough to the leader to be worth blending. This
+    only proposes a membership set — whether the resulting blend is
+    actually used is decided by measuring it (see
+    `_select_evaluated_ensemble`), never assumed.
     """
     if len(scored) < 2:
-        return None
+        return []
     best_v = _primary_metric_value(scored[0].metrics)
     if best_v is None or best_v <= 0:
-        return None
+        return []
 
-    members = [scored[0]]
+    members = [scored[0].model]
     for r in scored[1:]:
         if len(members) >= _ENSEMBLE_MAX_MODELS:
             break
         v = _primary_metric_value(r.metrics)
         if v is None or (v - best_v) / best_v > _ENSEMBLE_RELATIVE_BAND:
             break  # sorted ascending -- nothing further out can qualify either
-        members.append(r)
+        members.append(r.model)
+    return members if len(members) >= 2 else []
 
-    if len(members) < 2:
-        return None
 
-    inv_weights = [1.0 / max(_primary_metric_value(r.metrics), 1e-6) for r in members]
-    total = sum(inv_weights)
-    return [
-        {"model": r.model, "weight": round(w / total, 4)}
-        for r, w in zip(members, inv_weights)
-    ]
+def _select_evaluated_ensemble(
+    scored: List[ModelEvalResult],
+    backtests: Optional[Dict[str, BacktestResult]],
+) -> Tuple[Optional[EnsembleBacktest], Optional[str]]:
+    """
+    Phase 2, Step 10 — build the ensemble's ACTUAL predictions on every
+    validation fold, measure its real error, and only adopt it if it beats
+    the best single model.
+
+    Previously an ensemble was assembled from the ranking whenever two
+    models fell inside a band, its forecast was blended, and the metrics
+    REPORTED were the best component's — so the number on screen described
+    something other than the thing producing the forecast, and the blend
+    additionally received an unconditional +3 confidence bonus for
+    existing. Both are gone.
+
+    Returns (ensemble_or_None, decision_note). The note explains the
+    outcome either way, including when a measured ensemble was rejected
+    for not being better, so the decision is visible rather than silent.
+    """
+    if not backtests:
+        return None, None
+
+    names = _ensemble_candidates(scored)
+    if len(names) < 2:
+        return None, None
+
+    components = [backtests[n] for n in names if n in backtests and backtests[n].folds]
+    if len(components) < 2:
+        return None, None
+
+    ensemble = evaluate_ensemble(components)
+    if ensemble is None or not ensemble.pooled_metrics:
+        return None, None
+
+    ensemble_v = _primary_metric_value(ensemble.pooled_metrics)
+    best_v = _primary_metric_value(scored[0].metrics)
+    if ensemble_v is None or best_v is None:
+        return None, None
+
+    improvement = (best_v - ensemble_v) / best_v if best_v > 0 else 0.0
+    if improvement >= _ENSEMBLE_MIN_IMPROVEMENT:
+        note = (
+            f"A weighted ensemble of {' + '.join(ensemble.components)} was built and scored on the "
+            f"same {len(ensemble.folds)} validation folds as its components. It achieved "
+            f"{round(ensemble_v, 2)}% WAPE against {scored[0].model}'s {round(best_v, 2)}% — an "
+            f"improvement of {round(improvement * 100, 1)}%, so the ensemble was selected. The "
+            f"metrics reported for it are the ensemble's own measured performance, not any "
+            f"component's."
+        )
+        return ensemble, note
+
+    note = (
+        f"A weighted ensemble of {' + '.join(ensemble.components)} was built and scored on the same "
+        f"{len(ensemble.folds)} validation folds, but achieved {round(ensemble_v, 2)}% WAPE against "
+        f"{scored[0].model}'s {round(best_v, 2)}% — not the {round(_ENSEMBLE_MIN_IMPROVEMENT * 100)}% "
+        f"improvement required to justify the added complexity, so the single model was kept."
+    )
+    return None, note
 
 
 def _explain_selection(
@@ -432,6 +528,7 @@ def select_best_model(
     stats: Optional[SeriesStats] = None,
     classification: Optional[SeriesClassification] = None,
     data_quality: Optional[float] = None,
+    backtests: Optional[Dict[str, BacktestResult]] = None,
 ) -> SelectionResult:
     """
     Rank all trained models and select the best (Tasks 7, 10, 12). If no
@@ -497,39 +594,47 @@ def select_best_model(
         best, runner_up, n_obs, stats=stats, classification=classification, data_quality=data_quality,
     )
 
-    # Task 10: adaptive N-way ensemble if several models are close on accuracy.
-    ensemble_components = _build_adaptive_ensemble(scored)
+    # Step 10: build the ensemble's real predictions across every fold,
+    # measure them, and adopt it ONLY if it actually beats the best single
+    # model. No unconditional bonus of any kind.
+    ensemble, ensemble_note = _select_evaluated_ensemble(scored, backtests)
 
-    if ensemble_components:
-        names = " + ".join(c["model"] for c in ensemble_components)
+    if ensemble is not None:
         reasons = _explain_selection(
             best, runner_up, stats, classification,
             is_ensemble=True, tie_break_changed_pick=tie_break_changed_pick, data_quality=data_quality,
         )
+        if ensemble_note:
+            reasons.insert(0, ensemble_note)
         reasons.append(
             "Blend weights: "
-            + ", ".join(f"{c['model']} {round(c['weight'] * 100)}%" for c in ensemble_components)
-            + " — proportional to each model's inverse validation error."
+            + ", ".join(f"{m} {round(w * 100)}%" for m, w in ensemble.weights.items())
+            + f" — {ensemble.weight_basis}."
         )
-        # Blending several similarly-good models is itself a small,
-        # bounded confidence boost (less exposure to any single model's
-        # idiosyncratic error), never enough to push a genuinely
-        # low-confidence pick into "high confidence".
-        boosted_pct = min(97, confidence_pct + 3)
         return SelectionResult(
-            selected_model=f"Weighted Ensemble ({names})",
+            selected_model=ensemble.name,
             reason=reasons,
-            metrics=best.metrics,
-            confidence=round(boosted_pct / 100.0, 2),
+            # The ensemble's OWN measured metrics, never a component's.
+            metrics=ensemble.pooled_metrics,
+            # Confidence is computed from the same eight signals as any
+            # other selection, with no ensemble-specific adjustment.
+            confidence=confidence,
             ranking=full_ranking,
-            ensemble_components=ensemble_components,
-            confidence_pct=boosted_pct,
+            ensemble_components=[
+                {"model": m, "weight": w} for m, w in ensemble.weights.items()
+            ],
+            confidence_pct=confidence_pct,
+            ensemble_evaluation=ensemble.to_dict(),
         )
 
     reasons = _explain_selection(
         best, runner_up, stats, classification,
         is_ensemble=False, tie_break_changed_pick=tie_break_changed_pick, data_quality=data_quality,
     )
+    if ensemble_note:
+        # An ensemble was measured and rejected — say so, rather than
+        # leaving the decision invisible.
+        reasons.append(ensemble_note)
     return SelectionResult(
         selected_model=best.model,
         reason=reasons,

@@ -4,11 +4,13 @@
     "business_name": "Invoice Number",
     "category": "identifier",
     "description": "Mapped from ERP column 'inv_no'",
-    "confidence": 0.97,
+    "confidence": 0.98,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.85",
+      "Exact/Expanded name match (+0.15)"
     ]
   },
   "inv_dt": {
@@ -16,11 +18,13 @@
     "business_name": "Invoice Date",
     "category": "date",
     "description": "Mapped from ERP column 'inv_dt'",
-    "confidence": 0.97,
+    "confidence": 0.98,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.85",
+      "Exact/Expanded name match (+0.15)"
     ]
   },
   "cust_cd": {
@@ -28,11 +32,12 @@
     "business_name": "Customer Code",
     "category": "identifier",
     "description": "Mapped from ERP column 'cust_cd'",
-    "confidence": 0.97,
+    "confidence": 0.91,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.82"
     ]
   },
   "cust_nm": {
@@ -40,11 +45,11 @@
     "business_name": "Customer Name",
     "category": "customer",
     "description": "Mapped from ERP column 'cust_nm'",
-    "confidence": 0.97,
+    "confidence": 0.92,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "rule engine (embedding suggested 'customer code')",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine override (Embedding mapped this to 'customer code')"
     ]
   },
   "reg_cd": {
@@ -52,11 +57,12 @@
     "business_name": "Region",
     "category": "geography",
     "description": "Mapped from ERP column 'reg_cd'",
-    "confidence": 0.97,
+    "confidence": 0.91,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.82"
     ]
   },
   "prod_id": {
@@ -64,11 +70,12 @@
     "business_name": "Product Id",
     "category": "identifier",
     "description": "Mapped from ERP column 'prod_id'",
-    "confidence": 0.97,
+    "confidence": 0.92,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.84"
     ]
   },
   "prod_desc": {
@@ -94,11 +101,13 @@
     "business_name": "Quantity Sold",
     "category": "quantity",
     "description": "Mapped from ERP column 'qty_sold'",
-    "confidence": 0.97,
+    "confidence": 0.98,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.85",
+      "Exact/Expanded name match (+0.15)"
     ]
   },
   "unit_pr": {
@@ -106,11 +115,14 @@
     "business_name": "Unit Price",
     "category": "amount",
     "description": "Mapped from ERP column 'unit_pr'",
-    "confidence": 0.97,
+    "confidence": 0.98,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.85",
+      "Exact/Expanded name match (+0.15)",
+      "Currency pattern match (+0.10)"
     ]
   },
   "gross_amt": {
@@ -118,11 +130,14 @@
     "business_name": "Gross Amount",
     "category": "amount",
     "description": "Mapped from ERP column 'gross_amt'",
-    "confidence": 0.97,
+    "confidence": 0.98,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.84",
+      "Exact/Expanded name match (+0.15)",
+      "Currency pattern match (+0.10)"
     ]
   },
   "disc_pct": {
@@ -130,11 +145,11 @@
     "business_name": "Discount Percentage",
     "category": "percentage",
     "description": "Mapped from ERP column 'disc_pct'",
-    "confidence": 0.97,
+    "confidence": 0.91,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "rule engine (embedding suggested 'discount amount')",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine override (Embedding mapped this to 'discount amount')"
     ]
   },
   "disc_val": {
@@ -142,11 +157,13 @@
     "business_name": "Discount Amount",
     "category": "amount",
     "description": "Mapped from ERP column 'disc_val'",
-    "confidence": 0.97,
+    "confidence": 0.96,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.84",
+      "Currency pattern match (+0.10)"
     ]
   },
   "net_val": {
@@ -163,11 +180,14 @@
     "business_name": "Gst Amount",
     "category": "amount",
     "description": "Mapped from ERP column 'gst_amt'",
-    "confidence": 0.97,
+    "confidence": 0.98,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.85",
+      "Exact/Expanded name match (+0.15)",
+      "Currency pattern match (+0.10)"
     ]
   },
   "tot_inv_val": {
@@ -184,11 +204,12 @@
     "business_name": "Payment Status",
     "category": "status",
     "description": "Mapped from ERP column 'pmt_stat'",
-    "confidence": 0.97,
+    "confidence": 0.92,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.83"
     ]
   },
   "nsv": {
@@ -196,11 +217,14 @@
     "business_name": "Net Sales Value",
     "category": "amount",
     "description": "Mapped from ERP column 'nsv'",
-    "confidence": 0.97,
+    "confidence": 0.98,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.84",
+      "Exact/Expanded name match (+0.15)",
+      "Currency pattern match (+0.10)"
     ]
   },
   "inv_n": {
@@ -217,11 +241,11 @@
     "business_name": "Net Sales Value",
     "category": "amount",
     "description": "Mapped from ERP column 'rev'",
-    "confidence": 0.97,
+    "confidence": 0.95,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "rule engine (embedding suggested 'discount amount')",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine override (Embedding mapped this to 'discount amount')"
     ]
   },
   "trx_v": {
@@ -229,11 +253,11 @@
     "business_name": "Total Invoice Value",
     "category": "amount",
     "description": "Mapped from ERP column 'trx_v'",
-    "confidence": 0.97,
+    "confidence": 0.95,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "rule engine (embedding suggested 'gst amount')",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine override (Embedding mapped this to 'gst amount')"
     ]
   },
   "slsp": {
@@ -241,11 +265,11 @@
     "business_name": "Salesperson Code",
     "category": "identifier",
     "description": "Mapped from ERP column 'slsp'",
-    "confidence": 0.97,
+    "confidence": 0.91,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "rule engine (embedding suggested 'quantity sold')",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine override (Embedding mapped this to 'quantity sold')"
     ]
   },
   "cust_seg": {
@@ -253,11 +277,11 @@
     "business_name": "Customer Type",
     "category": "customer",
     "description": "Mapped from ERP column 'cust_seg'",
-    "confidence": 0.97,
+    "confidence": 0.91,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "rule engine (embedding suggested 'customer name')",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine override (Embedding mapped this to 'customer name')"
     ]
   },
   "mrgn_pct": {
@@ -265,11 +289,11 @@
     "business_name": "Margin Percentage",
     "category": "percentage",
     "description": "Mapped from ERP column 'mrgn_pct'",
-    "confidence": 0.97,
+    "confidence": 0.95,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "rule engine (embedding suggested 'unit price')",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine override (Embedding mapped this to 'unit price')"
     ]
   },
   "prod_grp": {
@@ -286,11 +310,12 @@
     "business_name": "Delivery City",
     "category": "geography",
     "description": "Mapped from ERP column 'dlv_st'",
-    "confidence": 0.97,
+    "confidence": 0.91,
     "human_corrected": false,
-    "source": "rule engine (embedding unavailable)",
+    "source": "hybrid (rule + embedding agreed)",
     "reasons": [
-      "Embedding failed; used rule match"
+      "Rule engine match",
+      "Semantic similarity: 0.81"
     ]
   }
 }

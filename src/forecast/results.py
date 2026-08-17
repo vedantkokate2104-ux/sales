@@ -26,6 +26,15 @@ class ModelEvalResult:
     stability: Optional[float] = None  # 0-1 walk-forward fold-to-fold consistency score; None if too few folds to estimate
     status: str = ""                   # short machine-readable outcome, e.g. "trained_validated" / "trained_no_validation" / "skipped_unsuitable" / "skipped_unavailable" / "not_implemented" / "failed"
     hyperparameters: Optional[dict] = None  # chosen by this model's own suggest_hyperparameters() (Task 5); None if the model has nothing tunable
+    # ── Additive (Phase 2, Steps 7 & 8). Fold-level performance is no
+    # longer hidden behind the pooled average: `fold_metrics` carries every
+    # fold's own MAE/RMSE/MAPE/SMAPE/WAPE together with its actuals and
+    # predictions, and `fold_stats` summarises the spread of per-fold WAPE
+    # (mean, median, std, min, max) so a model scoring 30/31/32/90 can be
+    # told apart from one scoring 38/39/40/41. ──
+    fold_metrics: Optional[List[dict]] = None
+    fold_stats: Optional[dict] = None
+    runtime_seconds: Optional[float] = None
 
     def to_dict(self) -> dict:
         return {
@@ -40,6 +49,9 @@ class ModelEvalResult:
             "stability":              self.stability,
             "status":                 self.status,
             "hyperparameters":        self.hyperparameters,
+            "fold_metrics":           self.fold_metrics,
+            "fold_stats":             self.fold_stats,
+            "runtime_seconds":        self.runtime_seconds,
         }
 
 
@@ -65,6 +77,13 @@ class SelectionResult:
     # points. `confidence` (0-1) is unchanged and remains the field the
     # existing frontend reads (Task 17).
     confidence_pct: Optional[int] = None
+    # Additive (Phase 2, Step 10): the ensemble's OWN backtest — its
+    # measured per-fold and pooled metrics, its weights and the basis they
+    # were derived from. Populated only when a measured ensemble actually
+    # beat the best single model and was therefore selected. `metrics`
+    # above now carries the ensemble's real performance in that case,
+    # rather than its best component's.
+    ensemble_evaluation: Optional[dict] = None
 
     def to_dict(self) -> dict:
         return {
@@ -75,6 +94,7 @@ class SelectionResult:
             "ranking":             [r.to_dict() for r in self.ranking],
             "ensemble_components": self.ensemble_components,
             "confidence_pct":      self.confidence_pct,
+            "ensemble_evaluation": self.ensemble_evaluation,
         }
 
 
@@ -128,6 +148,27 @@ class AutoForecastResult:
     candidate_frequencies: Optional[Dict[str, dict]] = None  # per-grain diagnostics (see forecast.grain)
     n_modelled_periods: Optional[int] = None      # length of the series actually trained on
     n_transactions: Optional[int] = None          # raw ERP rows behind that series
+    # ── Additive (Phase 2, Step 12: explicit horizon semantics) ───────────
+    # `horizon` above is retained unchanged for existing consumers. These
+    # spell out what it actually means, because the API parameter is named
+    # "months" while periods follow the SELECTED grain — so a requested
+    # horizon of 3 on a weekly series is 3 weeks, not 3 months. Rather
+    # than renaming the public parameter, the resolved meaning is stated:
+    #   requested_horizon = 3, forecast_periods = 3, forecast_unit = "month"
+    # `validation_horizon` is how many steps ahead each walk-forward fold
+    # was actually scored at; it equals forecast_periods except on series
+    # too short to support that, where the mismatch is flagged rather than
+    # hidden.
+    requested_horizon: Optional[int] = None
+    forecast_periods: Optional[int] = None
+    forecast_unit: Optional[str] = None
+    validation_horizon: Optional[int] = None
+    horizon_note: Optional[str] = None
+    # Additive (Phase 2, Steps 4/7/8/10): the fold plan every model was
+    # scored against, and the ensemble's own measured backtest when one
+    # was selected.
+    validation: Optional[Dict[str, object]] = None
+    ensemble_evaluation: Optional[dict] = None
 
     def to_dict(self) -> dict:
         return {
@@ -151,4 +192,11 @@ class AutoForecastResult:
             "candidate_frequencies":    self.candidate_frequencies,
             "n_modelled_periods":       self.n_modelled_periods,
             "n_transactions":           self.n_transactions,
+            "requested_horizon":        self.requested_horizon,
+            "forecast_periods":         self.forecast_periods,
+            "forecast_unit":            self.forecast_unit,
+            "validation_horizon":       self.validation_horizon,
+            "horizon_note":             self.horizon_note,
+            "validation":               self.validation,
+            "ensemble_evaluation":      self.ensemble_evaluation,
         }

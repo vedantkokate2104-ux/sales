@@ -17,6 +17,7 @@ sentence-transformers is missing.
 from .base import BaseForecastModel
 from .moving_average import MovingAverageModel
 from .naive import NaiveModel
+from .seasonal_naive import SeasonalNaiveModel
 from .simple_exponential import SimpleExponentialSmoothingModel
 from .holt import HoltLinearModel
 from .holt_winters import HoltWintersModel
@@ -30,6 +31,7 @@ from .xgboost import XGBoostModel
 MODEL_REGISTRY = {
     "Moving Average":                MovingAverageModel,
     "Naive":                         NaiveModel,
+    "Seasonal Naive":                SeasonalNaiveModel,
     "Simple Exponential Smoothing":  SimpleExponentialSmoothingModel,
     "Holt Linear":                   HoltLinearModel,
     "Holt-Winters":                  HoltWintersModel,

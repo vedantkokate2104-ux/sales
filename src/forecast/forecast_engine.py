@@ -106,10 +106,20 @@ def run_auto_forecast(
     # The trainer aggregates at the SELECTED grain, so the Dataset Analysis
     # panel, the validation window and the models all describe the same
     # series at the same cadence.
-    eval_results, trained_models, training_warnings, series, preprocessing_info = train_candidates(
-        working_df[date_col], working_df[rev_col], candidate_names, frequency=stats.frequency
+    # `horizon` is threaded in so the VALIDATION horizon equals the
+    # PRODUCTION horizon (Phase 2, Steps 3 & 12) — previously the trainer
+    # chose its own evaluation depth and could silently score 1-step
+    # accuracy while production forecast 3 steps.
+    outcome = train_candidates(
+        working_df[date_col], working_df[rev_col], candidate_names,
+        frequency=stats.frequency, horizon=horizon,
     )
-    warnings = validation_warnings + training_warnings + list(construction.notes)
+    eval_results = outcome.results
+    trained_models = outcome.trained_models
+    series = outcome.series
+    preprocessing_info = outcome.preprocessing_info
+    plan = outcome.plan
+    warnings = validation_warnings + outcome.warnings + list(construction.notes)
     if grain_selection.fallback:
         warnings.append(grain_selection.reason)
 
@@ -123,7 +133,10 @@ def run_auto_forecast(
         missing_timestamp_ratio=preprocessing_info.get("missing_timestamp_ratio", 0.0),
     )
 
-    grain_fields = _grain_fields(stats, grain_selection)
+    grain_fields = {
+        **_grain_fields(stats, grain_selection),
+        **_horizon_fields(horizon, stats.frequency, plan),
+    }
 
     if not trained_models:
         return AutoForecastResult(
@@ -143,7 +156,11 @@ def run_auto_forecast(
             **grain_fields,
         )
 
-    selection = select_best_model(eval_results, stats=stats, classification=classification, data_quality=data_quality)
+    selection = select_best_model(
+        eval_results, stats=stats, classification=classification,
+        data_quality=data_quality, backtests=outcome.backtests,
+    )
+    grain_fields["ensemble_evaluation"] = selection.ensemble_evaluation
 
     if selection.ensemble_components:
         # Task 8 — the selected "model" is a blend of the top two, not a
@@ -222,6 +239,45 @@ def run_auto_forecast(
         data_quality_score=data_quality,
         **grain_fields,
     )
+
+
+_FREQUENCY_UNIT = {
+    "daily": "day", "weekly": "week", "monthly": "month",
+    "quarterly": "quarter", "yearly": "year",
+}
+
+
+def _horizon_fields(horizon: int, frequency: str, plan) -> dict:
+    """
+    Phase 2, Step 12 — state what the horizon actually means, without
+    renaming the public API parameter.
+
+    `/api/forecast/auto` takes a parameter called `months`, but forecast
+    periods follow the SELECTED grain, so on a weekly series "3 months"
+    produced three WEEKS. Rather than a silent rename, the resolved
+    semantics are published: requested_horizon / forecast_periods /
+    forecast_unit / validation_horizon. `validation_horizon` equals
+    forecast_periods except on series too short to support that, where
+    plan.degraded records the mismatch explicitly instead of it passing
+    unnoticed.
+    """
+    unit = _FREQUENCY_UNIT.get(frequency, "period")
+    validation_horizon = plan.horizon if plan is not None else None
+    note = (
+        f"Forecasting {horizon} {unit}(s) ahead at the selected '{frequency}' grain. "
+        f"The API parameter is named 'months' for backward compatibility, but each forecast "
+        f"period is one {unit}."
+    )
+    if plan is not None and plan.degraded and plan.degradation_reason:
+        note += " " + plan.degradation_reason
+    return {
+        "requested_horizon":  horizon,
+        "forecast_periods":   horizon,
+        "forecast_unit":      unit,
+        "validation_horizon": validation_horizon,
+        "horizon_note":       note,
+        "validation":         plan.to_dict() if plan is not None else None,
+    }
 
 
 def _grain_fields(stats, grain_selection) -> dict:

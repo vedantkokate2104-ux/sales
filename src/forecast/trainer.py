@@ -140,17 +140,28 @@ Forecasting-quality pass (this pass — multi-step-aware validation):
 
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 
 from analytics import _clean_numeric
+from .backtest import (
+    BacktestResult,
+    EnsembleBacktest,
+    FoldSpec,
+    ValidationPlan,
+    backtest_model,
+    evaluate_ensemble,
+    plan_validation,
+    prepare_training_window,
+)
 from .evaluator import compute_metrics
 from .grain import build_forecast_series
 from .models import MODEL_REGISTRY
 from .preprocessing import cap_outliers, clean_transactions, interpolate_short_gaps, parse_dates_deterministic
-from .utils import effective_training_frequency, infer_frequency, period_freq_code
+from .utils import effective_training_frequency, infer_frequency, period_freq_code, seasonal_period_for_freq
 
 logger = logging.getLogger(__name__)
 
@@ -159,7 +170,15 @@ logger = logging.getLogger(__name__)
 # keeps series types like "Intermittent Demand" or "Highly Volatile"
 # (whose Phase 1 top picks, Croston/XGBoost, are not yet implemented in
 # this library) from ending up with zero candidates to compare.
-GUARANTEED_CANDIDATES = ["Naive", "Moving Average", "Simple Exponential Smoothing"]
+#
+# Phase 2: "Seasonal Naive" joins the list. The other three are all FLAT
+# forecasters, so before this there was no benchmark answering "is this
+# series' seasonal structure exploitable at all" — a seasonal model that
+# cannot beat "repeat the same month last year" has demonstrated nothing.
+# Seasonal Naive blocks itself via check_requirements() when the series
+# does not cover two full cycles, so adding it here is safe for short
+# series.
+GUARANTEED_CANDIDATES = ["Naive", "Seasonal Naive", "Moving Average", "Simple Exponential Smoothing"]
 
 MIN_VALIDATION_POINTS = 1
 MAX_VALIDATION_POINTS = 6
@@ -194,14 +213,12 @@ _MULTISTEP_EVAL_HORIZON = 3
 
 def _resolve_eval_horizon(n: int, min_train_size: int) -> int:
     """
-    How many steps ahead each walk-forward fold evaluates this run.
-    Defaults toward _MULTISTEP_EVAL_HORIZON when there is enough trailing
-    data (beyond min_train_size) to still get a reasonable number of
-    folds at that depth; degrades toward 1-step — this function's
-    original, exact behaviour — as available data shrinks, so a short
-    series is never left with fewer, noisier folds just to exercise a
-    longer horizon it cannot meaningfully support. Requires room for at
-    least 2 folds at whatever horizon it picks.
+    DEPRECATED (Phase 2) — retained only so any existing caller keeps
+    importing successfully. The validation horizon is now decided by
+    forecast.backtest.plan_validation(), which holds it equal to the
+    PRODUCTION horizon and reduces it only as a last resort, reporting
+    the mismatch via `ValidationPlan.degraded` instead of silently
+    dropping to 1-step evaluation as this function did.
     """
     available = n - min_train_size
     if available < 2:
@@ -386,57 +403,36 @@ def walk_forward_validate(
     if n - min_train_size < 1:
         return None, 0, None
 
-    eval_horizon = _resolve_eval_horizon(n, min_train_size)
+    # Phase 2: delegate to the backtest engine rather than keeping a second
+    # copy of the walk-forward loop here. One implementation means the
+    # leakage-safe per-fold preprocessing and the multi-step scoring can
+    # never drift apart from what this function reports. Every origin from
+    # `min_train_size` onward is used (step 1), preserving this function's
+    # original fold layout for callers that pass an explicit
+    # min_train_size.
+    horizon = _resolve_eval_horizon(n, min_train_size)
+    folds = [
+        FoldSpec(index=i + 1, train_end=origin, val_start=origin, val_end=origin + horizon)
+        for i, origin in enumerate(range(min_train_size, n - horizon + 1))
+    ]
+    if not folds:
+        return None, 0, None
 
-    actuals: List[float] = []
-    preds: List[float] = []
-    fold_abs_errors: List[float] = []
+    plan = ValidationPlan(
+        horizon=horizon, requested_horizon=horizon, min_train_size=min_train_size,
+        step=1, folds=folds,
+        rule="explicit min_train_size supplied by caller (legacy walk_forward_validate path)",
+    )
+    observed = pd.Series(True, index=series.index)
+    result = backtest_model(
+        series, observed, model_cls, plan, frequency,
+        hyperparams=hyperparams, model_name=getattr(model_cls, "name", model_cls.__name__),
+    )
 
-    for train_end in range(min_train_size, n - eval_horizon + 1):
-        train = series.iloc[:train_end]
-        actual_window = series.iloc[train_end:train_end + eval_horizon]
-        try:
-            probe = model_cls()
-            probe.fit(train, frequency=frequency, **hyperparams)
-            pred_window = probe.predict(eval_horizon)
-            if len(pred_window) < eval_horizon:
-                raise ValueError(
-                    f"predict({eval_horizon}) returned only {len(pred_window)} value(s)"
-                )
-        except Exception as exc:
-            logger.debug(
-                "%s skipped walk-forward fold ending at %d (%d obs, horizon %d): %s",
-                getattr(model_cls, "name", model_cls.__name__), train_end, len(train), eval_horizon, exc,
-            )
-            continue
-
-        fold_actuals = [float(v) for v in actual_window.tolist()]
-        fold_preds = [float(v) for v in list(pred_window)[:eval_horizon]]
-        actuals.extend(fold_actuals)
-        preds.extend(fold_preds)
-        fold_abs_errors.append(
-            float(np.mean([abs(a - p) for a, p in zip(fold_actuals, fold_preds)]))
-        )
-
-    n_folds = len(fold_abs_errors)
-    if n_folds < MIN_WALKFORWARD_FOLDS:
-        return None, n_folds, None
-
-    metrics = compute_metrics(np.array(actuals), np.array(preds))
-
-    stability = None
-    if n_folds >= MIN_FOLDS_FOR_STABILITY:
-        mean_err = float(np.mean(fold_abs_errors))
-        std_err = float(np.std(fold_abs_errors))
-        if mean_err <= _STABILITY_EPS:
-            # every fold's error was ~0 -- perfectly consistent (and
-            # perfectly accurate), not "undefined"
-            cv = 0.0
-        else:
-            cv = std_err / (mean_err + _STABILITY_EPS)
-        stability = round(max(0.0, min(1.0, 1 - min(1.0, cv))), 4)
-
-    return metrics, n_folds, stability
+    if result.n_folds < MIN_WALKFORWARD_FOLDS or result.pooled_metrics is None:
+        return None, result.n_folds, None
+    stability = result.stability if result.n_folds >= MIN_FOLDS_FOR_STABILITY else None
+    return result.pooled_metrics, result.n_folds, stability
 
 
 def _dedupe_preserve_order(names: List[str]) -> List[str]:
@@ -484,6 +480,9 @@ def _train_one_candidate(
     min_train_size: int,
     tuning_prefix: pd.Series,
     n_obs_total: int,
+    raw_series: Optional[pd.Series] = None,
+    observed_mask: Optional[pd.Series] = None,
+    plan: Optional[ValidationPlan] = None,
 ):
     """
     Task 16 — the full per-candidate pipeline (tune -> validate -> final
@@ -514,22 +513,42 @@ def _train_one_candidate(
         hyperparams = {}
 
     try:
+        # ── Phase 2: honest walk-forward backtest ──────────────────────────
+        # Every fold refits from scratch on its own training prefix, with
+        # preprocessing fitted INSIDE the fold (see backtest.py), and is
+        # scored at the production horizon against raw actuals.
+        backtest: Optional[BacktestResult] = None
         metrics, n_folds, stability = None, 0, None
-        if len(series) >= 4:
-            metrics, n_folds, stability = walk_forward_validate(
-                series, model_cls, training_frequency, min_train_size=min_train_size, hyperparams=hyperparams
+        fold_metrics: List[dict] = []
+        fold_stats: Optional[dict] = None
+
+        if plan is not None and plan.n_folds > 0 and raw_series is not None and observed_mask is not None:
+            backtest = backtest_model(
+                raw_series, observed_mask, model_cls, plan, training_frequency,
+                hyperparams=hyperparams, model_name=name,
             )
-            if metrics is None and n_folds == 0:
+            metrics = backtest.pooled_metrics
+            n_folds = backtest.n_folds
+            stability = backtest.stability
+            fold_metrics = [f.to_dict() for f in backtest.folds]
+            fold_stats = backtest.fold_stats
+            if metrics is None:
                 logger.debug("%s: no walk-forward folds could be validated", name)
                 local_warnings.append(
-                    f"{name}: not enough history for repeated walk-forward validation folds — "
-                    f"trained on all available data, but no independent accuracy estimate is "
-                    f"available yet."
+                    f"{name}: could not complete any of the {plan.n_folds} walk-forward validation "
+                    f"folds — trained on all available data, but no independent accuracy estimate "
+                    f"is available."
                 )
+        elif plan is not None and plan.n_folds == 0:
+            local_warnings.append(
+                f"{name}: series too short for walk-forward validation — trained on all available "
+                f"data without an independent accuracy estimate."
+            )
 
         final_model = model_cls()
-        # refit on full history, with the SAME tuned hyperparameters every
-        # walk-forward fold above just used, for the actual forecast
+        # Refit on full history with the SAME tuned hyperparameters every
+        # fold used, so the reported accuracy describes the configuration
+        # that actually produces the forecast.
         final_model.fit(series, frequency=training_frequency, **hyperparams)
 
         status = "trained_validated" if metrics is not None else "trained_no_validation"
@@ -538,8 +557,11 @@ def _train_one_candidate(
             validation_folds=n_folds, training_observations=n_obs_total,
             stability=stability, status=status,
             hyperparameters=(hyperparams or None),
+            fold_metrics=fold_metrics or None,
+            fold_stats=fold_stats,
+            runtime_seconds=round(backtest.runtime_seconds, 3) if backtest else None,
         )
-        return result, final_model, local_warnings
+        return result, final_model, local_warnings, backtest
 
     except Exception as exc:
         logger.exception("%s failed to train on the full series", name)
@@ -549,7 +571,7 @@ def _train_one_candidate(
             model=name, available=True, trained=False, error=friendly,
             training_observations=n_obs_total, status="failed",
         )
-        return result, None, local_warnings
+        return result, None, local_warnings, None
 
 
 def _train_sequential(
@@ -559,6 +581,9 @@ def _train_sequential(
     min_train_size: int,
     tuning_prefix: pd.Series,
     n_obs_total: int,
+    raw_series: Optional[pd.Series] = None,
+    observed_mask: Optional[pd.Series] = None,
+    plan: Optional[ValidationPlan] = None,
 ) -> Dict[str, tuple]:
     """
     Run _train_one_candidate() for every pending candidate one at a time,
@@ -579,6 +604,7 @@ def _train_sequential(
         try:
             outcomes[name] = _train_one_candidate(
                 name, model_cls, series, training_frequency, min_train_size, tuning_prefix, n_obs_total,
+                raw_series=raw_series, observed_mask=observed_mask, plan=plan,
             )
         except Exception as exc:
             logger.exception("%s: failed during sequential training", name)
@@ -590,8 +616,27 @@ def _train_sequential(
                 ),
                 None,
                 [f"{name}: unexpected internal error during training — skipped."],
+                None,
             )
     return outcomes
+
+
+@dataclass
+class TrainingOutcome:
+    """
+    Everything train_candidates() produces. Phase 2 replaced the previous
+    5-tuple return with this so the fold plan, the per-model backtests and
+    the evaluated ensemble travel alongside the existing fields instead of
+    the tuple growing further. forecast_engine.py is the only caller.
+    """
+    results: List["ModelEvalResult"]
+    trained_models: Dict[str, object]
+    warnings: List[str]
+    series: pd.Series
+    preprocessing_info: dict
+    plan: ValidationPlan
+    backtests: Dict[str, BacktestResult] = field(default_factory=dict)
+    ensemble: Optional[EnsembleBacktest] = None
 
 
 def train_candidates(
@@ -599,35 +644,35 @@ def train_candidates(
     values: pd.Series,
     candidate_names: List[str],
     frequency: Optional[str] = None,
-):
+    horizon: int = 3,
+) -> "TrainingOutcome":
     """
-    Build the historical series at its detected frequency, then validate
-    (walk-forward) and train every candidate model (Phase 1's
-    recommendations plus the guaranteed baselines).
+    Build the historical series at the selected forecast grain, backtest
+    every candidate model against one shared fold plan, and refit each on
+    the full history for production forecasting.
+
+    Phase 2 changes:
+      - Validation is planned once (forecast.backtest.plan_validation) and
+        shared by every candidate, so all models are scored on identical
+        origins at the PRODUCTION horizon and their rankings are directly
+        comparable.
+      - Outlier capping and gap bridging are no longer applied to the whole
+        series here. They are fitted INSIDE each fold on that fold's
+        training window only (see backtest.prepare_training_window), which
+        removes the leak where IQR bounds were derived from periods the
+        model was about to be scored against. The same preprocessing is
+        applied once to the full series for the final production fit.
+      - Per-fold metrics, fold-level summary statistics and a real
+        ensemble backtest are returned rather than only pooled numbers.
 
     Args:
-        frequency — the dataset's detected frequency (from Phase 1's
-            SeriesStats.frequency). If not supplied, it is inferred locally
-            from `dates` so this function remains usable standalone.
+        frequency — the forecast grain chosen in Phase 1
+            (SeriesStats.frequency). Inferred locally if omitted so this
+            function remains usable standalone.
+        horizon   — the production forecast horizon, used as the validation
+            horizon so the two cannot drift apart.
 
-    Returns:
-        results          — list[ModelEvalResult] (imported lazily to avoid
-                            a circular import with results.py)
-        trained_models    — dict[model_name -> fitted model instance ready
-                            to forecast()], refit on the FULL series so the
-                            final forecast uses all available history
-        warnings          — list[str] describing any skipped/failed model
-                            OR data correction, written in business-friendly
-                            language
-        series            — the full series (at the detected frequency),
-                            AFTER preprocessing (Tasks 2, 11), used for training
-        preprocessing_info — dict with the raw counts behind the
-                            preprocessing notes above (n_start,
-                            n_dropped_invalid, n_implausible_dates,
-                            n_exact_duplicates, n_negative, n_capped,
-                            n_series_points) — consumed by
-                            forecast_engine.py to compute a data-quality
-                            score for the confidence calculation (Task 8)
+    Returns a TrainingOutcome (see above).
     """
     from .results import ModelEvalResult  # local import avoids a cycle with results.py
 
@@ -675,13 +720,24 @@ def train_candidates(
             frequency = "monthly"
             warnings.append("Could not automatically detect this dataset's frequency — assumed monthly.")
 
+    def _empty_outcome(series_obj: pd.Series) -> "TrainingOutcome":
+        return TrainingOutcome(
+            results=[], trained_models={}, warnings=warnings, series=series_obj,
+            preprocessing_info={**clean_counts, "n_capped": 0, "n_series_points": 0,
+                                "missing_timestamp_ratio": 0.0},
+            plan=plan_validation(0, horizon, None),
+        )
+
     try:
-        series = build_series(dates, values, frequency=frequency)
+        # build_forecast_series() (not build_series()) so the observed /
+        # missing distinction survives into validation — a period nobody
+        # recorded must not be scored as if it were a measured zero.
+        construction = build_forecast_series(dates, values, frequency)
+        series = construction.series
     except Exception:
         logger.exception("build_series() failed — cannot aggregate this dataset into a time series")
         warnings.append("This dataset could not be aggregated into a time series — cannot train any model.")
-        preprocessing_info = {**clean_counts, "n_capped": 0, "n_series_points": 0, "missing_timestamp_ratio": 0.0}
-        return [], {}, warnings, pd.Series(dtype=float), preprocessing_info
+        return _empty_outcome(pd.Series(dtype=float))
 
     # Canonical grain the series above was actually built at — identical to
     # `frequency` for daily/weekly/monthly/quarterly/yearly, but resolved to
@@ -693,28 +749,35 @@ def train_candidates(
 
     if len(series) == 0:
         warnings.append("No valid (date, revenue) observations available — cannot train any model.")
-        preprocessing_info = {**clean_counts, "n_capped": 0, "n_series_points": 0, "missing_timestamp_ratio": 0.0}
-        return [], {}, warnings, series, preprocessing_info
+        return _empty_outcome(series)
 
-    # ── Tasks 2 & 11: period-level cleanup, AFTER aggregation ──────────────
-    # "An outlier" and "a gap" are only meaningful once the data has a
-    # fixed periodicity, so these run on the aggregated series, not the
-    # raw rows. Each step falls back to leaving `series` exactly as it was
-    # going in if it raises — a skipped correction, never a stopped pipeline.
-    n_capped = 0
-    try:
-        series, cap_notes, n_capped = cap_outliers(series)
-        warnings.extend(cap_notes)
-    except Exception:
-        logger.exception("cap_outliers() failed — proceeding without outlier capping for this run")
-        warnings.append("Automated outlier capping hit an unexpected error and was skipped for this run.")
+    # ── Phase 2, Step 5: period-level cleanup is NO LONGER done here ───────
+    # `cap_outliers()` and `interpolate_short_gaps()` used to run on the
+    # complete series at this point, before any train/validation split.
+    # That leaked twice: the IQR bounds used to cap training values were
+    # derived partly from the periods later folds would be scored against,
+    # and a gap could be bridged using a value from the future. Both
+    # operations now happen inside each fold, fitted on that fold's own
+    # training window (see backtest.prepare_training_window), and once on
+    # the full series below purely to produce the final production fit.
+    #
+    # `raw_series` keeps the untransformed period totals so validation can
+    # score forecasts against what actually happened rather than against a
+    # capped version of it.
+    raw_series = series
+    observed_mask = construction.observed_mask
 
-    try:
-        series, gap_notes = interpolate_short_gaps(series)
-        warnings.extend(gap_notes)
-    except Exception:
-        logger.exception("interpolate_short_gaps() failed — proceeding without gap interpolation for this run")
-        warnings.append("Automated gap interpolation hit an unexpected error and was skipped for this run.")
+    clean_values, full_preprocessor = prepare_training_window(
+        raw_series.to_numpy(dtype=float), observed_mask.to_numpy(dtype=bool),
+    )
+    series = pd.Series(clean_values, index=raw_series.index)
+    n_capped = full_preprocessor.n_capped
+    if n_capped:
+        warnings.append(
+            f"{n_capped} period(s) had a revenue spike or drop far outside this series' normal range "
+            f"and were capped before the final model fit. During validation the same capping was "
+            f"re-fitted inside each fold, using only that fold's training data."
+        )
 
     # Missing-timestamp ratio (Task 8's data-quality signal): what fraction
     # of the gapless period range build_series() produced had NO underlying
@@ -739,22 +802,33 @@ def train_candidates(
 
     all_candidates = _dedupe_preserve_order(list(candidate_names) + GUARANTEED_CANDIDATES)
 
-    if len(series) < 4:
+    n_obs_total = len(series)
+
+    # ── Phase 2, Steps 2-4: one fold plan, shared by every candidate ───────
+    # Computed once from the series length, the PRODUCTION horizon and the
+    # seasonal cycle, so every model is scored on identical origins and the
+    # rankings below compare like with like.
+    plan = plan_validation(
+        n_obs_total, requested_horizon=horizon,
+        seasonal_period=seasonal_period_for_freq(training_frequency),
+    )
+    if plan.degraded and plan.degradation_reason:
+        warnings.append(plan.degradation_reason)
+    if plan.n_folds == 0:
         warnings.append(
-            f"Only {len(series)} {frequency} observation(s) available — too little history for "
-            f"reliable validation. Models were fit on all available data without validation metrics."
+            f"Only {n_obs_total} {frequency} observation(s) available — too little history for "
+            f"walk-forward validation. Models were fit on all available data without validation metrics."
         )
 
     results_by_name: Dict[str, ModelEvalResult] = {}
     warnings_by_name: Dict[str, List[str]] = {}
     trained_models: Dict[str, object] = {}
+    backtests: Dict[str, BacktestResult] = {}
 
-    n_obs_total = len(series)
-    # Task 5 — the SAME chronological prefix walk-forward's first fold
-    # would use, shared across every candidate so hyperparameter tuning is
-    # done once per model (not once per fold) and never sees data beyond
-    # what the earliest fold itself would have had.
-    min_train_size = _default_min_train_size(n_obs_total)
+    # Task 5 — hyperparameter tuning uses the SAME chronological prefix the
+    # first validation fold trains on, so tuning never sees data that fold
+    # would not yet have had.
+    min_train_size = plan.min_train_size if plan.n_folds else _default_min_train_size(n_obs_total)
     tuning_prefix = series.iloc[:min_train_size] if 0 < min_train_size < n_obs_total else series
 
     # ── Pass 1 (sequential, fast): registry lookup / dependency / suitability
@@ -833,6 +907,7 @@ def train_candidates(
                         executor.submit(
                             _train_one_candidate, name, model_cls, series,
                             training_frequency, min_train_size, tuning_prefix, n_obs_total,
+                            raw_series, observed_mask, plan,
                         ): name
                         for name, model_cls in pending
                     }
@@ -860,6 +935,7 @@ def train_candidates(
                                 ),
                                 None,
                                 [f"{name}: unexpected internal error during training — skipped."],
+                                None,
                             )
             except Exception:
                 # Defensive fallback: if the thread pool itself cannot be
@@ -870,18 +946,22 @@ def train_candidates(
                 logger.exception("Parallel candidate training failed — falling back to sequential training.")
                 outcomes = _train_sequential(
                     pending, series, training_frequency, min_train_size, tuning_prefix, n_obs_total,
+                    raw_series=raw_series, observed_mask=observed_mask, plan=plan,
                 )
         else:
             outcomes = _train_sequential(
                 pending, series, training_frequency, min_train_size, tuning_prefix, n_obs_total,
+                raw_series=raw_series, observed_mask=observed_mask, plan=plan,
             )
 
         for name, _model_cls in pending:
-            result, trained_model, local_warnings = outcomes[name]
+            result, trained_model, local_warnings, backtest = outcomes[name]
             results_by_name[name] = result
             warnings_by_name[name] = local_warnings
             if trained_model is not None:
                 trained_models[name] = trained_model
+            if backtest is not None and backtest.folds:
+                backtests[name] = backtest
 
     # ── Final assembly: reconstruct `results` (and each candidate's own
     # warnings) in the ORIGINAL all_candidates order, identical in shape and
@@ -891,4 +971,12 @@ def train_candidates(
     for name in all_candidates:
         warnings.extend(warnings_by_name.get(name, []))
 
-    return results, trained_models, warnings, series, preprocessing_info
+    return TrainingOutcome(
+        results=results,
+        trained_models=trained_models,
+        warnings=warnings,
+        series=series,
+        preprocessing_info=preprocessing_info,
+        plan=plan,
+        backtests=backtests,
+    )

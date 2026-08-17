@@ -23,7 +23,7 @@
     "source": "hybrid (rule + embedding agreed)",
     "reasons": [
       "Rule engine match",
-      "Semantic similarity: 0.84",
+      "Semantic similarity: 0.85",
       "Exact/Expanded name match (+0.15)"
     ]
   },
@@ -45,7 +45,7 @@
     "business_name": "Customer Name",
     "category": "customer",
     "description": "Mapped from ERP column 'cust_nm'",
-    "confidence": 0.91,
+    "confidence": 0.92,
     "human_corrected": false,
     "source": "rule engine (embedding suggested 'customer code')",
     "reasons": [
@@ -126,8 +126,9 @@
     "source": "hybrid (rule + embedding agreed)",
     "reasons": [
       "Rule engine match",
-      "Semantic similarity: 0.84",
-      "Exact/Expanded name match (+0.15)"
+      "Semantic similarity: 0.85",
+      "Exact/Expanded name match (+0.15)",
+      "Currency pattern match (+0.10)"
     ]
   },
   "gross_amt": {
@@ -141,7 +142,8 @@
     "reasons": [
       "Rule engine match",
       "Semantic similarity: 0.84",
-      "Exact/Expanded name match (+0.15)"
+      "Exact/Expanded name match (+0.15)",
+      "Currency pattern match (+0.10)"
     ]
   },
   "disc_pct": {
@@ -166,7 +168,7 @@
     "source": "hybrid (rule + embedding agreed)",
     "reasons": [
       "Rule engine match",
-      "Semantic similarity: 0.83",
+      "Semantic similarity: 0.84",
       "Currency pattern match (+0.10)"
     ]
   },
@@ -222,7 +224,7 @@
     "source": "hybrid (rule + embedding agreed)",
     "reasons": [
       "Rule engine match",
-      "Semantic similarity: 0.84"
+      "Semantic similarity: 0.83"
     ]
   },
   "cust_seg": {
@@ -244,9 +246,9 @@
     "description": "Mapped from ERP column 'mrgn_pct'",
     "confidence": 0.95,
     "human_corrected": false,
-    "source": "rule engine (embedding suggested 'gst amount')",
+    "source": "rule engine (embedding suggested 'unit price')",
     "reasons": [
-      "Rule engine override (Embedding mapped this to 'gst amount')"
+      "Rule engine override (Embedding mapped this to 'unit price')"
     ]
   },
   "dlv_st": {
