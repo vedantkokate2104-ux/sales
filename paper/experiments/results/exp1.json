@@ -1,0 +1,543 @@
+{
+  "dataset": {
+    "n_rows": 392,
+    "n_columns": 21,
+    "columns": [
+      "inv_no",
+      "inv_dt",
+      "cust_cd",
+      "cust_nm",
+      "reg_cd",
+      "prod_id",
+      "prod_grp",
+      "slsp",
+      "qty_sold",
+      "unit_pr",
+      "gross_amt",
+      "disc_pct",
+      "disc_val",
+      "nsv",
+      "gst_amt",
+      "trx_v",
+      "pmt_stat",
+      "cust_seg",
+      "mrgn_pct",
+      "dlv_st",
+      "rev"
+    ],
+    "date_min": "2021-01-03",
+    "date_max": "2024-12-27",
+    "span_days": 1454,
+    "n_customers": 30,
+    "n_products": 15,
+    "n_regions": 4,
+    "n_salespeople": 5,
+    "n_product_groups": 5,
+    "total_nsv": 59203948.47,
+    "nulls_by_column": {
+      "cust_nm": 17,
+      "nsv": 8,
+      "mrgn_pct": 13,
+      "dlv_st": 10
+    },
+    "n_duplicate_invoice_numbers": 212,
+    "n_unique_invoice_numbers": 180,
+    "monthly_periods_observed": 48,
+    "monthly_cv": 0.6086660061508804,
+    "monthly_series": {
+      "2021-01": 821163.3,
+      "2021-02": 998178.95,
+      "2021-03": 461977.93,
+      "2021-04": 2441333.27,
+      "2021-05": 725373.2899999999,
+      "2021-06": 918070.71,
+      "2021-07": 699000.4400000001,
+      "2021-08": 721240.28,
+      "2021-09": 885837.59,
+      "2021-10": 1861504.09,
+      "2021-11": 876078.4099999999,
+      "2021-12": 287612.4,
+      "2022-01": 1006077.8999999999,
+      "2022-02": 2715668.4,
+      "2022-03": 475564.37,
+      "2022-04": 887582.38,
+      "2022-05": 1587883.3,
+      "2022-06": 2559526.42,
+      "2022-07": 611212.56,
+      "2022-08": 501628.89999999997,
+      "2022-09": 1020269.17,
+      "2022-10": 868932.66,
+      "2022-11": 410737.03,
+      "2022-12": 814589.0499999999,
+      "2023-01": 2428432.34,
+      "2023-02": 649761.31,
+      "2023-03": 3140432.08,
+      "2023-04": 1344105.43,
+      "2023-05": 706875.78,
+      "2023-06": 1141610.8599999999,
+      "2023-07": 1235675.37,
+      "2023-08": 997363.65,
+      "2023-09": 980192.82,
+      "2023-10": 1330542.6,
+      "2023-11": 766917.15,
+      "2023-12": 2155275.87,
+      "2024-01": 2628782.52,
+      "2024-02": 930411.21,
+      "2024-03": 569049.96,
+      "2024-04": 618868.0800000001,
+      "2024-05": 1099584.9100000001,
+      "2024-06": 2422291.99,
+      "2024-07": 585632.54,
+      "2024-08": 1063454.31,
+      "2024-09": 2445087.31,
+      "2024-10": 1474416.68,
+      "2024-11": 815018.88,
+      "2024-12": 2517122.02
+    }
+  },
+  "schema_mapping": {
+    "seconds": 31.64,
+    "n_columns": 21,
+    "rows": [
+      {
+        "column": "inv_no",
+        "business_name": "Invoice Number",
+        "category": "identifier",
+        "confidence": 0.98,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "inv_dt",
+        "business_name": "Invoice Date",
+        "category": "date",
+        "confidence": 0.98,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "cust_cd",
+        "business_name": "Customer Code",
+        "category": "identifier",
+        "confidence": 0.91,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "cust_nm",
+        "business_name": "Customer Name",
+        "category": "customer",
+        "confidence": 0.92,
+        "source": "rule engine (embedding suggested 'customer code')"
+      },
+      {
+        "column": "reg_cd",
+        "business_name": "Region",
+        "category": "geography",
+        "confidence": 0.91,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "prod_id",
+        "business_name": "Product Id",
+        "category": "identifier",
+        "confidence": 0.92,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "prod_grp",
+        "business_name": "Product Category",
+        "category": "product",
+        "confidence": 0.91,
+        "source": "rule engine (embedding suggested 'product id')"
+      },
+      {
+        "column": "slsp",
+        "business_name": "Salesperson Code",
+        "category": "identifier",
+        "confidence": 0.91,
+        "source": "rule engine (embedding suggested 'quantity sold')"
+      },
+      {
+        "column": "qty_sold",
+        "business_name": "Quantity Sold",
+        "category": "quantity",
+        "confidence": 0.98,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "unit_pr",
+        "business_name": "Unit Price",
+        "category": "amount",
+        "confidence": 0.98,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "gross_amt",
+        "business_name": "Gross Amount",
+        "category": "amount",
+        "confidence": 0.98,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "disc_pct",
+        "business_name": "Discount Percentage",
+        "category": "percentage",
+        "confidence": 0.91,
+        "source": "rule engine (embedding suggested 'discount amount')"
+      },
+      {
+        "column": "disc_val",
+        "business_name": "Discount Amount",
+        "category": "amount",
+        "confidence": 0.96,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "nsv",
+        "business_name": "Net Sales Value",
+        "category": "amount",
+        "confidence": 0.98,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "gst_amt",
+        "business_name": "Gst Amount",
+        "category": "amount",
+        "confidence": 0.98,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "trx_v",
+        "business_name": "Total Invoice Value",
+        "category": "amount",
+        "confidence": 0.95,
+        "source": "rule engine (embedding suggested 'gst amount')"
+      },
+      {
+        "column": "pmt_stat",
+        "business_name": "Payment Status",
+        "category": "status",
+        "confidence": 0.92,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "cust_seg",
+        "business_name": "Customer Type",
+        "category": "customer",
+        "confidence": 0.91,
+        "source": "rule engine (embedding suggested 'customer name')"
+      },
+      {
+        "column": "mrgn_pct",
+        "business_name": "Margin Percentage",
+        "category": "percentage",
+        "confidence": 0.95,
+        "source": "rule engine (embedding suggested 'unit price')"
+      },
+      {
+        "column": "dlv_st",
+        "business_name": "Delivery City",
+        "category": "geography",
+        "confidence": 0.91,
+        "source": "hybrid (rule + embedding agreed)"
+      },
+      {
+        "column": "rev",
+        "business_name": "Net Sales Value",
+        "category": "amount",
+        "confidence": 0.95,
+        "source": "rule engine (embedding suggested 'discount amount')"
+      }
+    ],
+    "n_high_0.75": 21,
+    "n_medium": 0,
+    "n_low": 0,
+    "mean_confidence": 0.9429,
+    "by_source": {
+      "hybrid (rule + embedding agreed)": 13,
+      "rule engine (embedding suggested 'customer code')": 1,
+      "rule engine (embedding suggested 'product id')": 1,
+      "rule engine (embedding suggested 'quantity sold')": 1,
+      "rule engine (embedding suggested 'discount amount')": 2,
+      "rule engine (embedding suggested 'gst amount')": 1,
+      "rule engine (embedding suggested 'customer name')": 1,
+      "rule engine (embedding suggested 'unit price')": 1
+    }
+  },
+  "duplicates": {
+    "business_key_columns": [
+      "inv_no",
+      "inv_dt",
+      "prod_id",
+      "cust_cd",
+      "qty_sold",
+      "nsv"
+    ],
+    "basis": "inv_no + inv_dt + prod_id + cust_cd + qty_sold + nsv",
+    "limitation": null,
+    "analysis": {
+      "total_rows": 392,
+      "exact_duplicate_rows": 7,
+      "business_key_duplicate_rows": 20,
+      "identifier_column": "inv_no",
+      "repeated_identifier_rows": 212,
+      "repeated_identifier_values": 121,
+      "preserved_repeated_identifier_rows": 192,
+      "business_key_columns": [
+        "inv_no",
+        "inv_dt",
+        "prod_id",
+        "cust_cd",
+        "qty_sold",
+        "nsv"
+      ],
+      "business_key_basis": "inv_no + inv_dt + prod_id + cust_cd + qty_sold + nsv",
+      "strategy": "business_key",
+      "limitation": null,
+      "rows_removed": 20,
+      "rows_retained": 372,
+      "removal_reason": "Removed rows that are identical on the business transaction key (inv_no + inv_dt + prod_id + cust_cd + qty_sold + nsv) \u2014 the same real-world transaction recorded more than once. Rows sharing only an invoice number but differing in date, product, quantity or value were KEPT, because a repeated identifier does not make two transactions the same transaction."
+    },
+    "naive_identifier_dedup": {
+      "column": "inv_no",
+      "rows_before": 392,
+      "rows_after": 180,
+      "rows_destroyed": 212,
+      "pct_rows_destroyed": 54.08,
+      "revenue_before": 59203948.47,
+      "revenue_after": 25664937.169999998,
+      "pct_revenue_destroyed": 56.65
+    }
+  },
+  "grain": {
+    "inter_arrival_inferred_frequency": "weekly",
+    "selected": "monthly",
+    "reason": "Selected 'monthly' grain: 48 modelled periods, 100.0% of them containing real transactions, coefficient of variation 0.6087, and enough history to test a 12-period seasonal cycle (strength 0.1955). Ranked above quarterly (score 0.8019, density 100.0%, 16 periods); weekly (score 0.7602, density 73.6%, 201 periods). Rejected: daily (Only 19.5% of daily periods contain any transaction (minimum 60%) \u2014 at this grain most of the series would be filled rather than measured.).",
+    "selection_basis": "structural diagnostics computed on the leading 80% of the date range; no model was fit and no forecast error was measured",
+    "fallback": false,
+    "candidates": {
+      "daily": {
+        "frequency": "daily",
+        "n_periods": 1455,
+        "observed_periods": 330,
+        "empty_periods": 1125,
+        "zero_value_periods": 1131,
+        "zero_pct": 77.73,
+        "density": 0.2268,
+        "mean": 40690.0,
+        "std": 160156.92,
+        "coefficient_of_variation": 3.936,
+        "trend_strength": 0.0313,
+        "seasonality_strength": 0.2743,
+        "seasonal_period": 365,
+        "history_length_days": 1454,
+        "usable": false,
+        "rejection_reason": "Only 22.7% of daily periods contain any transaction (minimum 60%) \u2014 at this grain most of the series would be filled rather than measured.",
+        "score": null
+      },
+      "weekly": {
+        "frequency": "weekly",
+        "n_periods": 209,
+        "observed_periods": 177,
+        "empty_periods": 32,
+        "zero_value_periods": 0,
+        "zero_pct": 0.0,
+        "density": 0.8469,
+        "mean": 336389.12,
+        "std": 414131.68,
+        "coefficient_of_variation": 1.2311,
+        "trend_strength": 0.0781,
+        "seasonality_strength": 0.2167,
+        "seasonal_period": 52,
+        "history_length_days": 1456,
+        "usable": true,
+        "rejection_reason": null,
+        "score": 0.7602
+      },
+      "monthly": {
+        "frequency": "monthly",
+        "n_periods": 48,
+        "observed_periods": 48,
+        "empty_periods": 0,
+        "zero_value_periods": 0,
+        "zero_pct": 0.0,
+        "density": 1.0,
+        "mean": 1233415.59,
+        "std": 750738.14,
+        "coefficient_of_variation": 0.6087,
+        "trend_strength": 0.2065,
+        "seasonality_strength": 0.1955,
+        "seasonal_period": 12,
+        "history_length_days": 1430,
+        "usable": true,
+        "rejection_reason": null,
+        "score": 0.8691
+      },
+      "quarterly": {
+        "frequency": "quarterly",
+        "n_periods": 16,
+        "observed_periods": 16,
+        "empty_periods": 0,
+        "zero_value_periods": 0,
+        "zero_pct": 0.0,
+        "density": 1.0,
+        "mean": 3700246.78,
+        "std": 1169702.06,
+        "coefficient_of_variation": 0.3161,
+        "trend_strength": 0.3992,
+        "seasonality_strength": 0.2015,
+        "seasonal_period": 4,
+        "history_length_days": 1369,
+        "usable": true,
+        "rejection_reason": null,
+        "score": 0.8019
+      }
+    },
+    "construction": {
+      "daily": {
+        "frequency": "daily",
+        "fill_strategy": "zero_filled_sparse",
+        "n_periods": 1455,
+        "n_observed": 330,
+        "n_missing": 1125,
+        "n_explicit_zero": 6,
+        "n_interpolated": 0,
+        "n_zero_filled": 1125,
+        "density": 0.2268,
+        "notes": [
+          "1125 of 1455 daily period(s) (77.3%) had no transaction recorded. These are missing observations, not confirmed zero demand.",
+          "1125 missing period(s) were set to zero because the gap was too long (or the series too sparse) to justify inventing a value.",
+          "6 period(s) were observed with a genuine total of zero \u2014 these are real zero-demand periods, counted separately from missing periods above.",
+          "Series density at daily grain is only 22.7% \u2014 a large share of the modelled series is filled rather than measured."
+        ]
+      },
+      "weekly": {
+        "frequency": "weekly",
+        "fill_strategy": "interpolate_short_gaps",
+        "n_periods": 209,
+        "n_observed": 177,
+        "n_missing": 32,
+        "n_explicit_zero": 0,
+        "n_interpolated": 32,
+        "n_zero_filled": 0,
+        "density": 0.8469,
+        "notes": [
+          "32 of 209 weekly period(s) (15.3%) had no transaction recorded. These are missing observations, not confirmed zero demand.",
+          "32 missing period(s) sat in short runs of 2 or fewer surrounded by real activity and were interpolated as likely recording gaps."
+        ]
+      },
+      "monthly": {
+        "frequency": "monthly",
+        "fill_strategy": "none_needed",
+        "n_periods": 48,
+        "n_observed": 48,
+        "n_missing": 0,
+        "n_explicit_zero": 0,
+        "n_interpolated": 0,
+        "n_zero_filled": 0,
+        "density": 1.0,
+        "notes": []
+      },
+      "quarterly": {
+        "frequency": "quarterly",
+        "fill_strategy": "none_needed",
+        "n_periods": 16,
+        "n_observed": 16,
+        "n_missing": 0,
+        "n_explicit_zero": 0,
+        "n_interpolated": 0,
+        "n_zero_filled": 0,
+        "density": 1.0,
+        "notes": []
+      }
+    }
+  },
+  "series_stats": {
+    "group": "ALL",
+    "n_observations": 48,
+    "start_date": "2021-01-01",
+    "end_date": "2024-12-01",
+    "frequency": "monthly",
+    "missing_timestamps": 0,
+    "missing_values": 8,
+    "trend_strength": 0.2065,
+    "seasonality_strength": 0.1955,
+    "variance": 563607759342.5,
+    "coefficient_of_variation": 0.6087,
+    "pct_zero_sales": 0.0,
+    "outlier_percentage": 4.17,
+    "history_length_days": 1430,
+    "n_transactions": 392,
+    "observed_periods": 48,
+    "empty_periods": 0,
+    "series_density": 1.0,
+    "zero_period_ratio": 0.0,
+    "seasonal_period": 12,
+    "fill_strategy": "none_needed"
+  },
+  "classification": {
+    "series_type": "Long History",
+    "confidence": 0.6,
+    "reasons": [
+      "History spans 1430 days (2+ years) with no strong trend or seasonal signal detected."
+    ]
+  },
+  "recommended_candidates": [
+    {
+      "rank": 1,
+      "model": "SARIMA",
+      "reason": "1430 days of history is enough to reliably fit a seasonal ARIMA model. Recommendation only \u2014 Phase 1 does not train or execute this model."
+    },
+    {
+      "rank": 2,
+      "model": "Prophet",
+      "reason": "Long history also supports Prophet's automatic seasonality and changepoint detection. Recommendation only \u2014 Phase 1 does not train or execute this model."
+    }
+  ],
+  "series_stats_transaction_level": {
+    "group": "ALL",
+    "n_observations": 392,
+    "start_date": "2021-01-06",
+    "end_date": "2024-12-27",
+    "frequency": "weekly",
+    "missing_timestamps": 39,
+    "missing_values": 8,
+    "trend_strength": 0.1686,
+    "seasonality_strength": 0.2124,
+    "variance": 67810809651.6,
+    "coefficient_of_variation": 1.7242,
+    "pct_zero_sales": 2.04,
+    "outlier_percentage": 5.36,
+    "history_length_days": 1451,
+    "n_transactions": 392,
+    "observed_periods": 0,
+    "empty_periods": 0,
+    "series_density": 1.0,
+    "zero_period_ratio": 0.0,
+    "seasonal_period": null,
+    "fill_strategy": ""
+  },
+  "classification_transaction_level": {
+    "series_type": "Highly Volatile",
+    "confidence": 0.93,
+    "reasons": [
+      "Coefficient of variation is 1.7242, indicating volatility far above the series mean.",
+      "5.36% of values are statistical outliers."
+    ]
+  },
+  "recommended_candidates_transaction_level": [
+    {
+      "rank": 1,
+      "model": "XGBoost",
+      "reason": "Volatility (coefficient of variation 1.7242) suggests non-linear drivers that a gradient-boosted model can capture better than a classical linear method. Recommendation only \u2014 Phase 1 does not train or execute this model."
+    },
+    {
+      "rank": 2,
+      "model": "Prophet",
+      "reason": "Robust to outliers (5.36% detected) via automatic changepoint detection. Recommendation only \u2014 Phase 1 does not train or execute this model."
+    },
+    {
+      "rank": 3,
+      "model": "SARIMA",
+      "reason": "Can model volatility if it is driven by autocorrelated noise rather than external factors. Recommendation only \u2014 Phase 1 does not train or execute this model."
+    }
+  ]
+}

@@ -102,9 +102,37 @@ class SelectionResult:
 class ForecastPoint:
     period: str
     value: float
+    # ── Additive (Phase 4: prediction intervals) ──────────────────────────
+    # `period` and `value` are unchanged in name, position and meaning, so
+    # every existing consumer — including the chart and month cards in
+    # ui/static/js/app.js, which read only those two keys — keeps working
+    # untouched. Bounds are None when there is too little out-of-sample
+    # error history to estimate an interval (see forecast.intervals), which
+    # consumers must render as "unavailable" rather than as zero.
+    lower_80: Optional[float] = None
+    upper_80: Optional[float] = None
+    lower_95: Optional[float] = None
+    upper_95: Optional[float] = None
+    interval_width_80: Optional[float] = None
+    interval_width_95: Optional[float] = None
 
     def to_dict(self) -> dict:
-        return {"period": self.period, "value": self.value}
+        payload = {"period": self.period, "value": self.value}
+        if self.lower_80 is not None:
+            payload.update({
+                "lower_80": self.lower_80,
+                "upper_80": self.upper_80,
+                "interval_width_80": self.interval_width_80,
+                "prediction_interval_80": [self.lower_80, self.upper_80],
+            })
+        if self.lower_95 is not None:
+            payload.update({
+                "lower_95": self.lower_95,
+                "upper_95": self.upper_95,
+                "interval_width_95": self.interval_width_95,
+                "prediction_interval_95": [self.lower_95, self.upper_95],
+            })
+        return payload
 
 
 @dataclass
@@ -169,6 +197,60 @@ class AutoForecastResult:
     # was selected.
     validation: Optional[Dict[str, object]] = None
     ensemble_evaluation: Optional[dict] = None
+    # ── Additive (Phase 4: prediction intervals) ──────────────────────────
+    # `prediction_intervals` carries the full report from
+    # forecast.intervals — method, per-level empirical coverage, sharpness,
+    # calibration status and the caveats attached to them. The per-period
+    # bounds also ride along inside each `forecast` entry so a consumer
+    # that only reads the forecast list still gets them.
+    #
+    # These are a DIFFERENT QUANTITY from `forecast_confidence`, which
+    # remains untouched: confidence is a 0-1 heuristic reliability score
+    # built from eight signals about the model and the data, and it is not
+    # a probability that the forecast is correct. A prediction interval is
+    # a range with a stated nominal coverage level measured against actual
+    # out-of-sample outcomes. Phase 4 deliberately does not let one move
+    # the other.
+    prediction_intervals: Optional[dict] = None
+    interval_method: Optional[str] = None
+    interval_calibration_status: Optional[str] = None
+    coverage_80: Optional[float] = None
+    coverage_95: Optional[float] = None
+    coverage_sample_size: Optional[int] = None
+    # ── Additive (Phase 5: grouped / segment-level forecasting) ───────────
+    # All None on a company-total forecast, which is what every existing
+    # client already receives — so omitting group_col/group_value from a
+    # request produces byte-identical behaviour to before Phase 5.
+    #
+    # `group_status` is the important one: it distinguishes a real segment
+    # forecast (OK) from an unknown column, unknown value or empty segment.
+    # Before Phase 5 an unknown column silently returned the COMPANY
+    # forecast, so a consumer had no way to tell it was being shown the
+    # wrong series under the label it asked for.
+    group_col: Optional[str] = None
+    group_value: Optional[str] = None
+    group_label: Optional[str] = None
+    group_status: Optional[str] = None
+    group_records: Optional[int] = None
+    group_message: Optional[str] = None
+    group_history_status: Optional[str] = None
+    group_history_note: Optional[str] = None
+    # ── Additive (Phase 6: reliability and explainability) ────────────────
+    # `forecast_confidence` and `forecast_confidence_pct` above are
+    # UNCHANGED and still populated by selector._compute_confidence(), so
+    # any client reading them keeps working. They are, however, a weighted
+    # heuristic that was never calibrated against outcomes, and the UI used
+    # to render one as "69%" beside the word confidence — which reads as a
+    # probability the system cannot support.
+    #
+    # `reliability` supersedes them for display: the same idea, but scored
+    # from measured signals (including Phase 4 interval calibration and
+    # Phase 1 series density, neither of which the confidence score sees),
+    # carrying a named level, a per-factor breakdown, and an explicit
+    # `is_probability: false`.
+    reliability: Optional[dict] = None
+    model_explanation: Optional[dict] = None
+    forecast_insights: Optional[dict] = None
 
     def to_dict(self) -> dict:
         return {
@@ -199,4 +281,21 @@ class AutoForecastResult:
             "horizon_note":             self.horizon_note,
             "validation":               self.validation,
             "ensemble_evaluation":      self.ensemble_evaluation,
+            "prediction_intervals":         self.prediction_intervals,
+            "interval_method":              self.interval_method,
+            "interval_calibration_status":  self.interval_calibration_status,
+            "coverage_80":                  self.coverage_80,
+            "coverage_95":                  self.coverage_95,
+            "coverage_sample_size":         self.coverage_sample_size,
+            "group_col":                    self.group_col,
+            "group_value":                  self.group_value,
+            "group_label":                  self.group_label,
+            "group_status":                 self.group_status,
+            "group_records":                self.group_records,
+            "group_message":                self.group_message,
+            "group_history_status":         self.group_history_status,
+            "group_history_note":           self.group_history_note,
+            "reliability":                  self.reliability,
+            "model_explanation":            self.model_explanation,
+            "forecast_insights":            self.forecast_insights,
         }

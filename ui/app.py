@@ -27,6 +27,7 @@ from forecast.analyzer       import analyze_primary, analyze_primary_with_grain
 from forecast.classifier     import classify_series
 from forecast.model_selector import recommend_models
 from forecast.forecast_engine import run_auto_forecast
+from forecast.segments      import group_metadata
 
 app = Flask(__name__)
 
@@ -41,6 +42,9 @@ STATE = {
     "report":   None,
     "loaded":   False,
     "auto_forecast": None,   # Phase 2: cached AutoForecastResult (dict), set by /api/forecast/auto
+    # Phase 5: one cached result PER (horizon, group_col, group_value) so a
+    # segment forecast can never be served under another segment's label.
+    "auto_forecast_cache": {},
 }
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'erp_export.csv')
@@ -60,6 +64,7 @@ def _run_pipeline():
         "df": df, "df_clean": df_clean, "mappings": mappings,
         "kpis": kpis, "anomalies": anomalies, "forecast": forecast,
         "report": report, "loaded": True,
+        "auto_forecast": None, "auto_forecast_cache": {},
     })
 
 
@@ -195,19 +200,78 @@ def api_forecast_auto():
     if not STATE["loaded"]:
         return jsonify({"ok": False, "error": "Load data first"}), 400
 
+    # Phase 5: group_col/group_value are optional and additive. Omitting
+    # them runs the company total exactly as before, so every existing
+    # client is unaffected.
     if request.method == "POST":
         data = request.json or {}
         months = int(data.get("months", 3))
+        group_col = (data.get("group_col") or None)
+        group_value = (data.get("group_value") or None)
+    else:
+        months = int(request.args.get("months", 3))
+        group_col = request.args.get("group_col") or None
+        group_value = request.args.get("group_value") or None
+
+    cache_key = _auto_cache_key(months, group_col, group_value)
+
+    if request.method == "POST":
         try:
-            result = run_auto_forecast(STATE["df_clean"], STATE["mappings"], horizon=months)
-            STATE["auto_forecast"] = result.to_dict()
+            result = run_auto_forecast(
+                STATE["df_clean"], STATE["mappings"], horizon=months,
+                group_col=group_col, group_value=group_value,
+            )
+            payload = result.to_dict()
+            # Cached PER SEGMENT. A single shared slot would let a GET
+            # after a segment run serve one series under another's label,
+            # which is precisely the company/segment mix-up Phase 5 has to
+            # rule out.
+            STATE["auto_forecast_cache"][cache_key] = payload
+            STATE["auto_forecast"] = payload
         except Exception as e:
             return jsonify({"ok": False, "error": str(e)}), 500
 
-    if STATE["auto_forecast"] is None:
-        return jsonify({"ok": False, "error": "Auto forecast has not been run yet"}), 400
+    cached = STATE["auto_forecast_cache"].get(cache_key)
+    if cached is None:
+        # Fall back to the single-slot cache only for an ungrouped request,
+        # preserving the pre-Phase-5 GET behaviour exactly.
+        if group_col is None and STATE["auto_forecast"] is not None:
+            cached = STATE["auto_forecast"]
+        else:
+            return jsonify({
+                "ok": False,
+                "error": "Auto forecast has not been run yet for this selection",
+            }), 400
 
-    return jsonify({"ok": True, **STATE["auto_forecast"]})
+    return jsonify({"ok": True, **cached})
+
+
+def _auto_cache_key(months, group_col, group_value):
+    return f"{months}|{group_col or ''}|{group_value or ''}"
+
+
+@app.route("/api/forecast/groups")
+def api_forecast_groups():
+    """
+    Phase 5, Step 13 — the grouping dimensions available in the CURRENTLY
+    LOADED dataset, and the values of each, so the UI can offer a Forecast
+    Level selector without anything being hard-coded.
+
+    Deliberately lightweight: value counts and date ranges only. No model
+    is trained here, so a dataset with many segments costs one pass rather
+    than one forecast per segment (Step 17).
+    """
+    if not STATE["loaded"]:
+        return jsonify({"ok": False, "error": "Load data first"}), 400
+    try:
+        frequency = "monthly"
+        auto = STATE.get("auto_forecast")
+        if auto and auto.get("frequency"):
+            frequency = auto["frequency"]
+        meta = group_metadata(STATE["df_clean"], STATE["mappings"], frequency=frequency)
+        return jsonify({"ok": True, **meta})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 
 @app.route("/api/query", methods=["POST"])
@@ -270,7 +334,12 @@ def api_upload():
 
     file.save(save_path)
 
+    # Invalidate every cached forecast. Without this a GET after an
+    # upload re-serves the PREVIOUS dataset's forecast, since
+    # STATE["loaded"] = False alone only forces a reload of the frame.
     STATE["loaded"] = False
+    STATE["auto_forecast"] = None
+    STATE["auto_forecast_cache"] = {}
 
     return jsonify({
         "ok": True,

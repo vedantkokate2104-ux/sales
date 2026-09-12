@@ -213,6 +213,16 @@
             <div class="fc-hero-sub">AI-powered revenue projection for your business</div>
           </div>
           <div class="fc-hero-controls">
+            <!-- Phase 5: forecast level. Populated from
+                 /api/forecast/groups against the loaded dataset — no
+                 column or value is hard-coded here. Defaults to Company
+                 Total, which is the pre-Phase-5 behaviour. -->
+            <select id="fc-group-col" class="inp" onchange="onGroupColChange()"
+                    style="width: 150px;" title="Forecast level">
+              <option value="">Company Total</option>
+            </select>
+            <select id="fc-group-value" class="inp" style="width: 160px; display: none;"
+                    title="Select segment"></select>
             <select id="forecast-horizon" class="inp" onchange="updateForecast()" style="width: 130px;">
               <option value="1">1 month</option>
               <option value="3" selected>3 months</option>
@@ -226,6 +236,14 @@
           </div>
         </div>
 
+        <!-- What is actually being forecast. Always visible after a run so
+             a segment result can never be read as a company result. -->
+        <div class="fc-scope-banner" id="fc-scope-banner" style="display:none;">
+          <span class="fc-scope-label">Forecasting:</span>
+          <span class="fc-scope-value" id="fc-scope-value">Company Total</span>
+          <span class="fc-scope-meta" id="fc-scope-meta"></span>
+        </div>
+
         <div class="fc-hero-grid">
           <div class="fc-hero-card">
             <div class="fc-hero-label">Selected Model</div>
@@ -237,8 +255,12 @@
             <div class="fc-hero-value" id="fc-hero-horizon">3 Months</div>
             <div class="fc-hero-sub-text">projection window</div>
           </div>
+          <!-- Phase 6: relabelled from "Forecast Confidence: 69%". That
+               read as a probability the system cannot support. This shows
+               a named reliability level (with the score as secondary
+               detail) and links to the factor breakdown below. -->
           <div class="fc-hero-card">
-            <div class="fc-hero-label">Forecast Confidence</div>
+            <div class="fc-hero-label">Forecast Reliability</div>
             <div class="fc-hero-value"><span class="conf-pill-lg conf-neutral" id="fc-hero-confidence">—</span></div>
             <div class="fc-hero-sub-text" id="fc-hero-confidence-sub">not yet calculated</div>
           </div>
@@ -246,6 +268,60 @@
             <div class="fc-hero-label">Expected Revenue</div>
             <div class="fc-hero-value" id="fc-hero-revenue">—</div>
             <div class="fc-hero-sub-text" id="fc-hero-revenue-sub">total across horizon</div>
+          </div>
+        </div>
+
+        <!-- Prediction intervals (Phase 4). A DIFFERENT quantity from
+             "Forecast Confidence" above: that is a reliability score for
+             the model and the data, this is the range the revenue is
+             expected to fall in, with a stated coverage level measured
+             against past out-of-sample forecasts. Hidden entirely when
+             there is too little validation history to estimate one. -->
+        <div class="fc-hero-intervals" id="fc-interval-block" style="display:none;">
+          <div class="fc-interval-row">
+            <div class="fc-interval-card">
+              <div class="fc-hero-label">80% Prediction Range</div>
+              <div class="fc-hero-value fc-interval-value" id="fc-interval-80">—</div>
+              <div class="fc-hero-sub-text" id="fc-interval-80-sub">total across horizon</div>
+            </div>
+            <div class="fc-interval-card">
+              <div class="fc-hero-label">95% Prediction Range</div>
+              <div class="fc-hero-value fc-interval-value" id="fc-interval-95">—</div>
+              <div class="fc-hero-sub-text" id="fc-interval-95-sub">total across horizon</div>
+            </div>
+            <div class="fc-interval-card">
+              <div class="fc-hero-label">Interval Calibration</div>
+              <div class="fc-hero-value"><span class="conf-pill-lg conf-neutral" id="fc-interval-status">—</span></div>
+              <div class="fc-hero-sub-text" id="fc-interval-status-sub">not yet measured</div>
+            </div>
+          </div>
+          <div class="fc-interval-note" id="fc-interval-note"></div>
+        </div>
+
+        <!-- Shown instead of the block above when no interval could be
+             estimated, so the user sees an honest explanation rather than
+             a fabricated range. -->
+        <div class="fc-interval-unavailable" id="fc-interval-unavailable" style="display:none;"></div>
+
+        <!-- Phase 6: why this reliability level, why this model, and the
+             data-derived insight list. Kept inside the existing hero card
+             so the dashboard layout is unchanged. -->
+        <div class="fc-explain" id="fc-explain" style="display:none;">
+          <div class="fc-explain-block">
+            <div class="fc-explain-title">Why this reliability?</div>
+            <ul class="fc-factor-list" id="fc-factor-list"></ul>
+            <div class="fc-explain-note" id="fc-reliability-note"></div>
+          </div>
+
+          <div class="fc-explain-block">
+            <div class="fc-explain-title">Why this model?</div>
+            <div class="fc-explain-body" id="fc-model-why"></div>
+            <div class="fc-alt-table" id="fc-alt-table"></div>
+          </div>
+
+          <div class="fc-explain-block">
+            <div class="fc-explain-title">Forecast Insights</div>
+            <ul class="fc-insight-list" id="fc-insight-list"></ul>
           </div>
         </div>
       </div>
@@ -257,7 +333,12 @@
           <span class="fc-legend">
             <span class="fc-legend-item"><i class="fc-dot fc-dot-hist"></i>Historical</span>
             <span class="fc-legend-item"><i class="fc-dot fc-dot-fc"></i>Forecast</span>
-            <span class="fc-legend-item"><i class="fc-dot fc-dot-band"></i>Confidence Range</span>
+            <!-- Default text only; renderAutoForecast() replaces it with
+                 "80% Prediction Range" once a real interval exists, or
+                 "Forecast" when none does. It previously read "Confidence
+                 Range", which labelled the shaded band with the very
+                 confidence/interval conflation Phase 6 removed. -->
+            <span class="fc-legend-item"><i class="fc-dot fc-dot-band"></i><span id="fc-legend-band">Prediction Range</span></span>
           </span>
         </div>
         <div class="fc-chart-outer">

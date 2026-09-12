@@ -1,0 +1,3677 @@
+{
+  "auto_forecast": {
+    "runtime_seconds": 132.29,
+    "result": {
+      "horizon": 3,
+      "selected_model": "Simple Exponential Smoothing",
+      "selection_reason": [
+        "Lowest WAPE among tested models (46.82%) \u2014 the most reliable accuracy measure for this kind of revenue data.",
+        "Stable during walk-forward validation across 11 folds.",
+        "Long historical data available (1430 days).",
+        "Series classified as Long History (confidence 0.6).",
+        "A weighted ensemble of Simple Exponential Smoothing + Naive + Moving Average was built and scored on the same 11 validation folds, but achieved 49.62% WAPE against Simple Exponential Smoothing's 46.82% \u2014 not the 1% improvement required to justify the added complexity, so the single model was kept."
+      ],
+      "evaluation_metrics": {
+        "mae": 615816.25,
+        "rmse": 806387.23,
+        "mape": 52.21,
+        "smape": 46.88,
+        "wape": 46.82,
+        "n_points": 33,
+        "n_valid_points": 33,
+        "n_mape_points": 33
+      },
+      "forecast_confidence": 0.65,
+      "model_ranking": [
+        {
+          "model": "Simple Exponential Smoothing",
+          "available": true,
+          "trained": true,
+          "error": null,
+          "metrics": {
+            "mae": 615816.25,
+            "rmse": 806387.23,
+            "mape": 52.21,
+            "smape": 46.88,
+            "wape": 46.82,
+            "n_points": 33,
+            "n_valid_points": 33,
+            "n_mape_points": 33
+          },
+          "rank": 1,
+          "validation_folds": 11,
+          "training_observations": 48,
+          "stability": 0.6222,
+          "status": "trained_validated",
+          "hyperparameters": null,
+          "fold_metrics": [
+            {
+              "fold": 1,
+              "train_size": 24,
+              "origin_period": "2022-12",
+              "periods": [
+                "2023-01",
+                "2023-02",
+                "2023-03"
+              ],
+              "actuals": [
+                2400142.26,
+                576441.31,
+                2684225.98
+              ],
+              "predictions": [
+                924896.14,
+                924896.14,
+                924896.14
+              ],
+              "metrics": {
+                "mae": 1194343.6,
+                "rmse": 1340772.59,
+                "mape": 62.49,
+                "smape": 77.55,
+                "wape": 63.3,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 2,
+              "train_size": 26,
+              "origin_period": "2023-02",
+              "periods": [
+                "2023-03",
+                "2023-04",
+                "2023-05"
+              ],
+              "actuals": [
+                2684225.98,
+                1119214.79,
+                706875.78
+              ],
+              "predictions": [
+                1014863.82,
+                1014863.82,
+                1014863.82
+              ],
+              "metrics": {
+                "mae": 693900.39,
+                "rmse": 981922.57,
+                "mape": 38.36,
+                "smape": 45.27,
+                "wape": 46.15,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 3,
+              "train_size": 28,
+              "origin_period": "2023-04",
+              "periods": [
+                "2023-05",
+                "2023-06",
+                "2023-07"
+              ],
+              "actuals": [
+                706875.78,
+                1006068.76,
+                1235675.37
+              ],
+              "predictions": [
+                1220907.77,
+                1220907.77,
+                1220907.77
+              ],
+              "metrics": {
+                "mae": 247879.53,
+                "rmse": 321767.39,
+                "mape": 31.76,
+                "smape": 24.61,
+                "wape": 25.22,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 4,
+              "train_size": 30,
+              "origin_period": "2023-06",
+              "periods": [
+                "2023-07",
+                "2023-08",
+                "2023-09"
+              ],
+              "actuals": [
+                1235675.37,
+                997363.65,
+                980192.82
+              ],
+              "predictions": [
+                1098663.72,
+                1098663.72,
+                1098663.72
+              ],
+              "metrics": {
+                "mae": 118927.54,
+                "rmse": 119818.26,
+                "mape": 11.11,
+                "smape": 10.93,
+                "wape": 11.1,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 5,
+              "train_size": 32,
+              "origin_period": "2023-08",
+              "periods": [
+                "2023-09",
+                "2023-10",
+                "2023-11"
+              ],
+              "actuals": [
+                980192.82,
+                1330542.6,
+                581249.67
+              ],
+              "predictions": [
+                1127455.83,
+                1127455.83,
+                1127455.83
+              ],
+              "metrics": {
+                "mae": 298851.98,
+                "rmse": 347021.52,
+                "mape": 41.42,
+                "smape": 31.48,
+                "wape": 31.0,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 6,
+              "train_size": 34,
+              "origin_period": "2023-10",
+              "periods": [
+                "2023-11",
+                "2023-12",
+                "2024-01"
+              ],
+              "actuals": [
+                581249.67,
+                1835895.71,
+                2628782.52
+              ],
+              "predictions": [
+                1148474.51,
+                1148474.51,
+                1148474.51
+              ],
+              "metrics": {
+                "mae": 911651.35,
+                "rmse": 997597.74,
+                "mape": 63.78,
+                "smape": 63.34,
+                "wape": 54.2,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 7,
+              "train_size": 36,
+              "origin_period": "2023-12",
+              "periods": [
+                "2024-01",
+                "2024-02",
+                "2024-03"
+              ],
+              "actuals": [
+                2628782.52,
+                930411.21,
+                552997.62
+              ],
+              "predictions": [
+                1166371.5,
+                1166371.5,
+                1166371.5
+              ],
+              "metrics": {
+                "mae": 770581.73,
+                "rmse": 925662.06,
+                "mape": 63.97,
+                "smape": 56.97,
+                "wape": 56.22,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 8,
+              "train_size": 38,
+              "origin_period": "2024-02",
+              "periods": [
+                "2024-03",
+                "2024-04",
+                "2024-05"
+              ],
+              "actuals": [
+                552997.62,
+                618868.08,
+                1099584.91
+              ],
+              "predictions": [
+                1274392.46,
+                1274392.46,
+                1274392.46
+              ],
+              "metrics": {
+                "mae": 517242.26,
+                "rmse": 571745.99,
+                "mape": 84.09,
+                "smape": 54.31,
+                "wape": 68.31,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 9,
+              "train_size": 40,
+              "origin_period": "2024-04",
+              "periods": [
+                "2024-05",
+                "2024-06",
+                "2024-07"
+              ],
+              "actuals": [
+                1099584.91,
+                2422291.99,
+                490654.64
+              ],
+              "predictions": [
+                1143914.49,
+                1143914.49,
+                1143914.49
+              ],
+              "metrics": {
+                "mae": 658655.64,
+                "rmse": 829249.17,
+                "mape": 63.32,
+                "smape": 51.86,
+                "wape": 49.24,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 10,
+              "train_size": 42,
+              "origin_period": "2024-06",
+              "periods": [
+                "2024-07",
+                "2024-08",
+                "2024-09"
+              ],
+              "actuals": [
+                490654.64,
+                1063454.31,
+                2445087.31
+              ],
+              "predictions": [
+                1267762.58,
+                1267762.58,
+                1267762.58
+              ],
+              "metrics": {
+                "mae": 719580.31,
+                "rmse": 822948.39,
+                "mape": 75.25,
+                "smape": 56.44,
+                "wape": 53.98,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 11,
+              "train_size": 44,
+              "origin_period": "2024-08",
+              "periods": [
+                "2024-09",
+                "2024-10",
+                "2024-11"
+              ],
+              "actuals": [
+                2445087.31,
+                1474416.68,
+                815018.88
+              ],
+              "predictions": [
+                1177392.04,
+                1177392.04,
+                1177392.04
+              ],
+              "metrics": {
+                "mae": 642364.36,
+                "rmse": 780296.79,
+                "mape": 38.82,
+                "smape": 42.92,
+                "wape": 40.7,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            }
+          ],
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 45.4018,
+            "median": 49.24,
+            "std": 17.1519,
+            "min": 11.1,
+            "max": 68.31
+          },
+          "runtime_seconds": 0.005
+        },
+        {
+          "model": "Naive",
+          "available": true,
+          "trained": true,
+          "error": null,
+          "metrics": {
+            "mae": 675935.41,
+            "rmse": 928296.75,
+            "mape": 60.69,
+            "smape": 50.45,
+            "wape": 51.4,
+            "n_points": 33,
+            "n_valid_points": 33,
+            "n_mape_points": 33
+          },
+          "rank": 2,
+          "validation_folds": 11,
+          "training_observations": 48,
+          "stability": 0.5219,
+          "status": "trained_validated",
+          "hyperparameters": null,
+          "fold_metrics": [
+            {
+              "fold": 1,
+              "train_size": 24,
+              "origin_period": "2022-12",
+              "periods": [
+                "2023-01",
+                "2023-02",
+                "2023-03"
+              ],
+              "actuals": [
+                2400142.26,
+                576441.31,
+                2684225.98
+              ],
+              "predictions": [
+                814589.05,
+                814589.05,
+                814589.05
+              ],
+              "metrics": {
+                "mae": 1231112.63,
+                "rmse": 1421998.08,
+                "mape": 59.01,
+                "smape": 79.92,
+                "wape": 65.24,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 2,
+              "train_size": 26,
+              "origin_period": "2023-02",
+              "periods": [
+                "2023-03",
+                "2023-04",
+                "2023-05"
+              ],
+              "actuals": [
+                2684225.98,
+                1119214.79,
+                706875.78
+              ],
+              "predictions": [
+                576441.31,
+                576441.31,
+                576441.31
+              ],
+              "metrics": {
+                "mae": 926997.54,
+                "rmse": 1258884.75,
+                "mape": 48.49,
+                "smape": 71.21,
+                "wape": 61.66,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 3,
+              "train_size": 28,
+              "origin_period": "2023-04",
+              "periods": [
+                "2023-05",
+                "2023-06",
+                "2023-07"
+              ],
+              "actuals": [
+                706875.78,
+                1006068.76,
+                1235675.37
+              ],
+              "predictions": [
+                1119214.79,
+                1119214.79,
+                1119214.79
+              ],
+              "metrics": {
+                "mae": 213981.87,
+                "rmse": 255857.09,
+                "mape": 26.33,
+                "smape": 21.9,
+                "wape": 21.77,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 4,
+              "train_size": 30,
+              "origin_period": "2023-06",
+              "periods": [
+                "2023-07",
+                "2023-08",
+                "2023-09"
+              ],
+              "actuals": [
+                1235675.37,
+                997363.65,
+                980192.82
+              ],
+              "predictions": [
+                1006068.76,
+                1006068.76,
+                1006068.76
+              ],
+              "metrics": {
+                "mae": 88062.55,
+                "rmse": 133497.24,
+                "mape": 7.36,
+                "smape": 7.99,
+                "wape": 8.22,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 5,
+              "train_size": 32,
+              "origin_period": "2023-08",
+              "periods": [
+                "2023-09",
+                "2023-10",
+                "2023-11"
+              ],
+              "actuals": [
+                980192.82,
+                1330542.6,
+                581249.67
+              ],
+              "predictions": [
+                997363.65,
+                997363.65,
+                997363.65
+              ],
+              "metrics": {
+                "mae": 255487.92,
+                "rmse": 307925.26,
+                "mape": 32.79,
+                "smape": 27.69,
+                "wape": 26.5,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 6,
+              "train_size": 34,
+              "origin_period": "2023-10",
+              "periods": [
+                "2023-11",
+                "2023-12",
+                "2024-01"
+              ],
+              "actuals": [
+                581249.67,
+                1835895.71,
+                2628782.52
+              ],
+              "predictions": [
+                1330542.6,
+                1330542.6,
+                1330542.6
+              ],
+              "metrics": {
+                "mae": 850961.99,
+                "rmse": 913281.36,
+                "mape": 68.61,
+                "smape": 58.63,
+                "wape": 50.59,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 7,
+              "train_size": 36,
+              "origin_period": "2023-12",
+              "periods": [
+                "2024-01",
+                "2024-02",
+                "2024-03"
+              ],
+              "actuals": [
+                2628782.52,
+                930411.21,
+                552997.62
+              ],
+              "predictions": [
+                1835895.71,
+                1835895.71,
+                1835895.71
+              ],
+              "metrics": {
+                "mae": 993756.47,
+                "rmse": 1015611.34,
+                "mape": 119.82,
+                "smape": 69.46,
+                "wape": 72.5,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 8,
+              "train_size": 38,
+              "origin_period": "2024-02",
+              "periods": [
+                "2024-03",
+                "2024-04",
+                "2024-05"
+              ],
+              "actuals": [
+                552997.62,
+                618868.08,
+                1099584.91
+              ],
+              "predictions": [
+                930411.21,
+                930411.21,
+                930411.21
+              ],
+              "metrics": {
+                "mae": 286043.47,
+                "rmse": 298953.66,
+                "mape": 44.66,
+                "smape": 35.92,
+                "wape": 37.78,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 9,
+              "train_size": 40,
+              "origin_period": "2024-04",
+              "periods": [
+                "2024-05",
+                "2024-06",
+                "2024-07"
+              ],
+              "actuals": [
+                1099584.91,
+                2422291.99,
+                490654.64
+              ],
+              "predictions": [
+                618868.08,
+                618868.08,
+                618868.08
+              ],
+              "metrics": {
+                "mae": 804118.06,
+                "rmse": 1080102.64,
+                "mape": 48.1,
+                "smape": 65.89,
+                "wape": 60.12,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 10,
+              "train_size": 42,
+              "origin_period": "2024-06",
+              "periods": [
+                "2024-07",
+                "2024-08",
+                "2024-09"
+              ],
+              "actuals": [
+                490654.64,
+                1063454.31,
+                2445087.31
+              ],
+              "predictions": [
+                2422291.99,
+                2422291.99,
+                2422291.99
+              ],
+              "metrics": {
+                "mae": 1104423.45,
+                "rmse": 1363596.02,
+                "mape": 174.13,
+                "smape": 70.51,
+                "wape": 82.85,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 11,
+              "train_size": 44,
+              "origin_period": "2024-08",
+              "periods": [
+                "2024-09",
+                "2024-10",
+                "2024-11"
+              ],
+              "actuals": [
+                2445087.31,
+                1474416.68,
+                815018.88
+              ],
+              "predictions": [
+                1063454.31,
+                1063454.31,
+                1063454.31
+              ],
+              "metrics": {
+                "mae": 680343.6,
+                "rmse": 844495.9,
+                "mape": 38.29,
+                "smape": 45.87,
+                "wape": 43.11,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            }
+          ],
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 48.2127,
+            "median": 50.59,
+            "std": 23.0494,
+            "min": 8.22,
+            "max": 82.85
+          },
+          "runtime_seconds": 0.005
+        },
+        {
+          "model": "Moving Average",
+          "available": true,
+          "trained": true,
+          "error": null,
+          "metrics": {
+            "mae": 702876.91,
+            "rmse": 893683.03,
+            "mape": 61.09,
+            "smape": 52.64,
+            "wape": 53.44,
+            "n_points": 33,
+            "n_valid_points": 33,
+            "n_mape_points": 33
+          },
+          "rank": 3,
+          "validation_folds": 11,
+          "training_observations": 48,
+          "stability": 0.4274,
+          "status": "trained_validated",
+          "hyperparameters": null,
+          "fold_metrics": [
+            {
+              "fold": 1,
+              "train_size": 24,
+              "origin_period": "2022-12",
+              "periods": [
+                "2023-01",
+                "2023-02",
+                "2023-03"
+              ],
+              "actuals": [
+                2400142.26,
+                576441.31,
+                2684225.98
+              ],
+              "predictions": [
+                698086.25,
+                698086.25,
+                698086.25
+              ],
+              "metrics": {
+                "mae": 1269946.89,
+                "rmse": 1511791.78,
+                "mape": 55.34,
+                "smape": 82.13,
+                "wape": 67.3,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 2,
+              "train_size": 26,
+              "origin_period": "2023-02",
+              "periods": [
+                "2023-03",
+                "2023-04",
+                "2023-05"
+              ],
+              "actuals": [
+                2684225.98,
+                1119214.79,
+                706875.78
+              ],
+              "predictions": [
+                1186145.73,
+                1186145.73,
+                1186145.73
+              ],
+              "metrics": {
+                "mae": 681427.05,
+                "rmse": 908923.15,
+                "mape": 43.2,
+                "smape": 44.62,
+                "wape": 45.32,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 3,
+              "train_size": 28,
+              "origin_period": "2023-04",
+              "periods": [
+                "2023-05",
+                "2023-06",
+                "2023-07"
+              ],
+              "actuals": [
+                706875.78,
+                1006068.76,
+                1235675.37
+              ],
+              "predictions": [
+                1459960.69,
+                1459960.69,
+                1459960.69
+              ],
+              "metrics": {
+                "mae": 477087.39,
+                "rmse": 523914.33,
+                "mape": 56.6,
+                "smape": 40.99,
+                "wape": 48.54,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 4,
+              "train_size": 30,
+              "origin_period": "2023-06",
+              "periods": [
+                "2023-07",
+                "2023-08",
+                "2023-09"
+              ],
+              "actuals": [
+                1235675.37,
+                997363.65,
+                980192.82
+              ],
+              "predictions": [
+                944053.11,
+                944053.11,
+                944053.11
+              ],
+              "metrics": {
+                "mae": 127024.17,
+                "rmse": 172425.48,
+                "mape": 10.88,
+                "smape": 12.0,
+                "wape": 11.86,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 5,
+              "train_size": 32,
+              "origin_period": "2023-08",
+              "periods": [
+                "2023-09",
+                "2023-10",
+                "2023-11"
+              ],
+              "actuals": [
+                980192.82,
+                1330542.6,
+                581249.67
+              ],
+              "predictions": [
+                1079702.59,
+                1079702.59,
+                1079702.59
+              ],
+              "metrics": {
+                "mae": 282934.23,
+                "rmse": 327250.27,
+                "mape": 38.25,
+                "smape": 30.17,
+                "wape": 29.35,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 6,
+              "train_size": 34,
+              "origin_period": "2023-10",
+              "periods": [
+                "2023-11",
+                "2023-12",
+                "2024-01"
+              ],
+              "actuals": [
+                581249.67,
+                1835895.71,
+                2628782.52
+              ],
+              "predictions": [
+                1102699.69,
+                1102699.69,
+                1102699.69
+              ],
+              "metrics": {
+                "mae": 926909.62,
+                "rmse": 1022809.09,
+                "mape": 62.57,
+                "smape": 64.54,
+                "wape": 55.11,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 7,
+              "train_size": 36,
+              "origin_period": "2023-12",
+              "periods": [
+                "2024-01",
+                "2024-02",
+                "2024-03"
+              ],
+              "actuals": [
+                2628782.52,
+                930411.21,
+                552997.62
+              ],
+              "predictions": [
+                1249229.33,
+                1249229.33,
+                1249229.33
+              ],
+              "metrics": {
+                "mae": 798201.01,
+                "rmse": 910961.14,
+                "mape": 70.88,
+                "smape": 59.22,
+                "wape": 58.23,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 8,
+              "train_size": 38,
+              "origin_period": "2024-02",
+              "periods": [
+                "2024-03",
+                "2024-04",
+                "2024-05"
+              ],
+              "actuals": [
+                552997.62,
+                618868.08,
+                1099584.91
+              ],
+              "predictions": [
+                1798363.15,
+                1798363.15,
+                1798363.15
+              ],
+              "metrics": {
+                "mae": 1041212.94,
+                "rmse": 1069335.45,
+                "mape": 159.78,
+                "smape": 83.91,
+                "wape": 137.52,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 9,
+              "train_size": 40,
+              "origin_period": "2024-04",
+              "periods": [
+                "2024-05",
+                "2024-06",
+                "2024-07"
+              ],
+              "actuals": [
+                1099584.91,
+                2422291.99,
+                490654.64
+              ],
+              "predictions": [
+                700758.97,
+                700758.97,
+                700758.97
+              ],
+              "metrics": {
+                "mae": 776821.1,
+                "rmse": 1027437.25,
+                "mape": 50.05,
+                "smape": 63.27,
+                "wape": 58.08,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 10,
+              "train_size": 42,
+              "origin_period": "2024-06",
+              "periods": [
+                "2024-07",
+                "2024-08",
+                "2024-09"
+              ],
+              "actuals": [
+                490654.64,
+                1063454.31,
+                2445087.31
+              ],
+              "predictions": [
+                1380248.33,
+                1380248.33,
+                1380248.33
+              ],
+              "metrics": {
+                "mae": 757075.56,
+                "rmse": 821709.08,
+                "mape": 84.88,
+                "smape": 58.9,
+                "wape": 56.79,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 11,
+              "train_size": 44,
+              "origin_period": "2024-08",
+              "periods": [
+                "2024-09",
+                "2024-10",
+                "2024-11"
+              ],
+              "actuals": [
+                2445087.31,
+                1474416.68,
+                815018.88
+              ],
+              "predictions": [
+                1325466.98,
+                1325466.98,
+                1325466.98
+              ],
+              "metrics": {
+                "mae": 593006.04,
+                "rmse": 715609.99,
+                "mape": 39.51,
+                "smape": 39.24,
+                "wape": 37.58,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            }
+          ],
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 55.0618,
+            "median": 55.11,
+            "std": 31.5306,
+            "min": 11.86,
+            "max": 137.52
+          },
+          "runtime_seconds": 0.007
+        },
+        {
+          "model": "Seasonal Naive",
+          "available": true,
+          "trained": true,
+          "error": null,
+          "metrics": {
+            "mae": 820527.53,
+            "rmse": 1065576.0,
+            "mape": 82.07,
+            "smape": 63.11,
+            "wape": 62.39,
+            "n_points": 33,
+            "n_valid_points": 33,
+            "n_mape_points": 33
+          },
+          "rank": 4,
+          "validation_folds": 11,
+          "training_observations": 48,
+          "stability": 0.477,
+          "status": "trained_validated",
+          "hyperparameters": null,
+          "fold_metrics": [
+            {
+              "fold": 1,
+              "train_size": 24,
+              "origin_period": "2022-12",
+              "periods": [
+                "2023-01",
+                "2023-02",
+                "2023-03"
+              ],
+              "actuals": [
+                2400142.26,
+                576441.31,
+                2684225.98
+              ],
+              "predictions": [
+                1006077.9,
+                2007342.46,
+                475564.37
+              ],
+              "metrics": {
+                "mae": 1677875.71,
+                "rmse": 1719406.84,
+                "mape": 129.53,
+                "smape": 110.8,
+                "wape": 88.92,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 2,
+              "train_size": 26,
+              "origin_period": "2023-02",
+              "periods": [
+                "2023-03",
+                "2023-04",
+                "2023-05"
+              ],
+              "actuals": [
+                2684225.98,
+                1119214.79,
+                706875.78
+              ],
+              "predictions": [
+                475564.37,
+                887582.38,
+                1587883.3
+              ],
+              "metrics": {
+                "mae": 1107100.51,
+                "rmse": 1379373.52,
+                "mape": 75.87,
+                "smape": 79.89,
+                "wape": 73.64,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 3,
+              "train_size": 28,
+              "origin_period": "2023-04",
+              "periods": [
+                "2023-05",
+                "2023-06",
+                "2023-07"
+              ],
+              "actuals": [
+                706875.78,
+                1006068.76,
+                1235675.37
+              ],
+              "predictions": [
+                1587883.3,
+                2559526.42,
+                611212.56
+              ],
+              "metrics": {
+                "mae": 1019642.66,
+                "rmse": 1092300.13,
+                "mape": 109.86,
+                "smape": 77.18,
+                "wape": 103.74,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 4,
+              "train_size": 30,
+              "origin_period": "2023-06",
+              "periods": [
+                "2023-07",
+                "2023-08",
+                "2023-09"
+              ],
+              "actuals": [
+                1235675.37,
+                997363.65,
+                980192.82
+              ],
+              "predictions": [
+                611212.56,
+                501628.9,
+                1020269.17
+              ],
+              "metrics": {
+                "mae": 386757.97,
+                "rmse": 460909.56,
+                "mape": 34.78,
+                "smape": 45.92,
+                "wape": 36.11,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 5,
+              "train_size": 32,
+              "origin_period": "2023-08",
+              "periods": [
+                "2023-09",
+                "2023-10",
+                "2023-11"
+              ],
+              "actuals": [
+                980192.82,
+                1330542.6,
+                581249.67
+              ],
+              "predictions": [
+                1020269.17,
+                868932.66,
+                410737.03
+              ],
+              "metrics": {
+                "mae": 224066.31,
+                "rmse": 285052.28,
+                "mape": 22.71,
+                "smape": 26.79,
+                "wape": 23.24,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 6,
+              "train_size": 34,
+              "origin_period": "2023-10",
+              "periods": [
+                "2023-11",
+                "2023-12",
+                "2024-01"
+              ],
+              "actuals": [
+                581249.67,
+                1835895.71,
+                2628782.52
+              ],
+              "predictions": [
+                410737.03,
+                814589.05,
+                2400142.26
+              ],
+              "metrics": {
+                "mae": 473486.52,
+                "rmse": 612214.08,
+                "mape": 31.22,
+                "smape": 40.18,
+                "wape": 28.15,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 7,
+              "train_size": 36,
+              "origin_period": "2023-12",
+              "periods": [
+                "2024-01",
+                "2024-02",
+                "2024-03"
+              ],
+              "actuals": [
+                2628782.52,
+                930411.21,
+                552997.62
+              ],
+              "predictions": [
+                2400142.26,
+                576441.31,
+                2684225.98
+              ],
+              "metrics": {
+                "mae": 904612.84,
+                "rmse": 1254286.7,
+                "mape": 144.05,
+                "smape": 62.58,
+                "wape": 65.99,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 8,
+              "train_size": 38,
+              "origin_period": "2024-02",
+              "periods": [
+                "2024-03",
+                "2024-04",
+                "2024-05"
+              ],
+              "actuals": [
+                552997.62,
+                618868.08,
+                1099584.91
+              ],
+              "predictions": [
+                2684225.98,
+                1119214.79,
+                706875.78
+              ],
+              "metrics": {
+                "mae": 1008094.73,
+                "rmse": 1284095.22,
+                "mape": 167.32,
+                "smape": 77.57,
+                "wape": 133.14,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 9,
+              "train_size": 40,
+              "origin_period": "2024-04",
+              "periods": [
+                "2024-05",
+                "2024-06",
+                "2024-07"
+              ],
+              "actuals": [
+                1099584.91,
+                2422291.99,
+                490654.64
+              ],
+              "predictions": [
+                706875.78,
+                1006068.76,
+                1235675.37
+              ],
+              "metrics": {
+                "mae": 851317.7,
+                "rmse": 951308.68,
+                "mape": 82.01,
+                "smape": 70.8,
+                "wape": 63.65,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 10,
+              "train_size": 42,
+              "origin_period": "2024-06",
+              "periods": [
+                "2024-07",
+                "2024-08",
+                "2024-09"
+              ],
+              "actuals": [
+                490654.64,
+                1063454.31,
+                2445087.31
+              ],
+              "predictions": [
+                1235675.37,
+                997363.65,
+                980192.82
+              ],
+              "metrics": {
+                "mae": 758668.63,
+                "rmse": 949620.93,
+                "mape": 72.66,
+                "smape": 59.42,
+                "wape": 56.91,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 11,
+              "train_size": 44,
+              "origin_period": "2024-08",
+              "periods": [
+                "2024-09",
+                "2024-10",
+                "2024-11"
+              ],
+              "actuals": [
+                2445087.31,
+                1474416.68,
+                815018.88
+              ],
+              "predictions": [
+                980192.82,
+                1330542.6,
+                581249.67
+              ],
+              "metrics": {
+                "mae": 614179.26,
+                "rmse": 860477.32,
+                "mape": 32.78,
+                "smape": 43.09,
+                "wape": 38.92,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            }
+          ],
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 64.7645,
+            "median": 63.65,
+            "std": 33.8747,
+            "min": 23.24,
+            "max": 133.14
+          },
+          "runtime_seconds": 0.006
+        },
+        {
+          "model": "SARIMA",
+          "available": true,
+          "trained": true,
+          "error": null,
+          "metrics": {
+            "mae": 947974.15,
+            "rmse": 1170714.86,
+            "mape": 97.24,
+            "smape": 68.87,
+            "wape": 72.08,
+            "n_points": 33,
+            "n_valid_points": 33,
+            "n_mape_points": 33
+          },
+          "rank": 5,
+          "validation_folds": 11,
+          "training_observations": 48,
+          "stability": 0.4132,
+          "status": "trained_validated",
+          "hyperparameters": {
+            "order": [
+              0,
+              1,
+              1
+            ]
+          },
+          "fold_metrics": [
+            {
+              "fold": 1,
+              "train_size": 24,
+              "origin_period": "2022-12",
+              "periods": [
+                "2023-01",
+                "2023-02",
+                "2023-03"
+              ],
+              "actuals": [
+                2400142.26,
+                576441.31,
+                2684225.98
+              ],
+              "predictions": [
+                1160145.26,
+                2161409.82,
+                629631.73
+              ],
+              "metrics": {
+                "mae": 1626519.92,
+                "rmse": 1660429.19,
+                "mape": 134.39,
+                "smape": 103.15,
+                "wape": 86.2,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 2,
+              "train_size": 26,
+              "origin_period": "2023-02",
+              "periods": [
+                "2023-03",
+                "2023-04",
+                "2023-05"
+              ],
+              "actuals": [
+                2684225.98,
+                1119214.79,
+                706875.78
+              ],
+              "predictions": [
+                299954.52,
+                711972.53,
+                1412273.45
+              ],
+              "metrics": {
+                "mae": 1165637.13,
+                "rmse": 1454668.64,
+                "mape": 75.0,
+                "smape": 90.28,
+                "wape": 77.53,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 3,
+              "train_size": 28,
+              "origin_period": "2023-04",
+              "periods": [
+                "2023-05",
+                "2023-06",
+                "2023-07"
+              ],
+              "actuals": [
+                706875.78,
+                1006068.76,
+                1235675.37
+              ],
+              "predictions": [
+                2662233.66,
+                3867946.29,
+                1389485.84
+              ],
+              "metrics": {
+                "mae": 1657015.29,
+                "rmse": 2003116.33,
+                "mape": 191.18,
+                "smape": 81.74,
+                "wape": 168.59,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 4,
+              "train_size": 30,
+              "origin_period": "2023-06",
+              "periods": [
+                "2023-07",
+                "2023-08",
+                "2023-09"
+              ],
+              "actuals": [
+                1235675.37,
+                997363.65,
+                980192.82
+              ],
+              "predictions": [
+                355617.67,
+                328109.74,
+                574386.12
+              ],
+              "metrics": {
+                "mae": 651706.1,
+                "rmse": 679970.94,
+                "mape": 59.91,
+                "smape": 87.93,
+                "wape": 60.85,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 5,
+              "train_size": 32,
+              "origin_period": "2023-08",
+              "periods": [
+                "2023-09",
+                "2023-10",
+                "2023-11"
+              ],
+              "actuals": [
+                980192.82,
+                1330542.6,
+                581249.67
+              ],
+              "predictions": [
+                1087820.11,
+                961327.37,
+                1183392.45
+              ],
+              "metrics": {
+                "mae": 359661.77,
+                "rmse": 412504.32,
+                "mape": 47.44,
+                "smape": 36.96,
+                "wape": 37.31,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 6,
+              "train_size": 34,
+              "origin_period": "2023-10",
+              "periods": [
+                "2023-11",
+                "2023-12",
+                "2024-01"
+              ],
+              "actuals": [
+                581249.67,
+                1835895.71,
+                2628782.52
+              ],
+              "predictions": [
+                1263474.77,
+                1251583.97,
+                1635779.38
+              ],
+              "metrics": {
+                "mae": 753179.99,
+                "rmse": 773068.89,
+                "mape": 62.32,
+                "smape": 52.8,
+                "wape": 44.78,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 7,
+              "train_size": 36,
+              "origin_period": "2023-12",
+              "periods": [
+                "2024-01",
+                "2024-02",
+                "2024-03"
+              ],
+              "actuals": [
+                2628782.52,
+                930411.21,
+                552997.62
+              ],
+              "predictions": [
+                1829955.56,
+                1654591.66,
+                1938841.93
+              ],
+              "metrics": {
+                "mae": 969617.24,
+                "rmse": 1013759.71,
+                "mape": 119.61,
+                "smape": 67.7,
+                "wape": 70.74,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 8,
+              "train_size": 38,
+              "origin_period": "2024-02",
+              "periods": [
+                "2024-03",
+                "2024-04",
+                "2024-05"
+              ],
+              "actuals": [
+                552997.62,
+                618868.08,
+                1099584.91
+              ],
+              "predictions": [
+                2577811.42,
+                1409767.91,
+                1861910.95
+              ],
+              "metrics": {
+                "mae": 1192679.89,
+                "rmse": 1329979.26,
+                "mape": 187.76,
+                "smape": 86.27,
+                "wape": 157.52,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 9,
+              "train_size": 40,
+              "origin_period": "2024-04",
+              "periods": [
+                "2024-05",
+                "2024-06",
+                "2024-07"
+              ],
+              "actuals": [
+                1099584.91,
+                2422291.99,
+                490654.64
+              ],
+              "predictions": [
+                1161374.54,
+                976492.22,
+                1294192.56
+              ],
+              "metrics": {
+                "mae": 770375.77,
+                "rmse": 955654.77,
+                "mape": 76.36,
+                "smape": 60.19,
+                "wape": 57.6,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 10,
+              "train_size": 42,
+              "origin_period": "2024-06",
+              "periods": [
+                "2024-07",
+                "2024-08",
+                "2024-09"
+              ],
+              "actuals": [
+                490654.64,
+                1063454.31,
+                2445087.31
+              ],
+              "predictions": [
+                1463065.51,
+                1443732.07,
+                1464988.8
+              ],
+              "metrics": {
+                "mae": 777595.71,
+                "rmse": 826798.48,
+                "mape": 91.34,
+                "smape": 60.0,
+                "wape": 58.33,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            },
+            {
+              "fold": 11,
+              "train_size": 44,
+              "origin_period": "2024-08",
+              "periods": [
+                "2024-09",
+                "2024-10",
+                "2024-11"
+              ],
+              "actuals": [
+                2445087.31,
+                1474416.68,
+                815018.88
+              ],
+              "predictions": [
+                1149735.89,
+                1354972.07,
+                911403.44
+              ],
+              "metrics": {
+                "mae": 503726.86,
+                "rmse": 753102.98,
+                "mape": 24.3,
+                "smape": 30.56,
+                "wape": 31.92,
+                "n_points": 3,
+                "n_valid_points": 3,
+                "n_mape_points": 3
+              }
+            }
+          ],
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 77.3973,
+            "median": 60.85,
+            "std": 45.4158,
+            "min": 31.92,
+            "max": 168.59
+          },
+          "runtime_seconds": 0.436
+        },
+        {
+          "model": "Prophet",
+          "available": true,
+          "trained": false,
+          "error": "Prophet could not be trained on this dataset \u2014 it may not be well suited to this data's pattern or size.",
+          "metrics": null,
+          "rank": null,
+          "validation_folds": 0,
+          "training_observations": 48,
+          "stability": null,
+          "status": "failed",
+          "hyperparameters": null,
+          "fold_metrics": null,
+          "fold_stats": null,
+          "runtime_seconds": null
+        }
+      ],
+      "forecast": [
+        {
+          "period": "2025-01",
+          "value": 1377756.41,
+          "lower_80": 597850.38,
+          "upper_80": 3575332.68,
+          "interval_width_80": 2977482.3,
+          "prediction_interval_80": [
+            597850.38,
+            3575332.68
+          ],
+          "lower_95": 579409.39,
+          "upper_95": 3714938.77,
+          "interval_width_95": 3135529.37,
+          "prediction_interval_95": [
+            579409.39,
+            3714938.77
+          ]
+        },
+        {
+          "period": "2025-02",
+          "value": 1377756.41,
+          "lower_80": 597850.38,
+          "upper_80": 3575332.68,
+          "interval_width_80": 2977482.3,
+          "prediction_interval_80": [
+            597850.38,
+            3575332.68
+          ],
+          "lower_95": 579409.39,
+          "upper_95": 3714938.77,
+          "interval_width_95": 3135529.37,
+          "prediction_interval_95": [
+            579409.39,
+            3714938.77
+          ]
+        },
+        {
+          "period": "2025-03",
+          "value": 1377756.41,
+          "lower_80": 597850.38,
+          "upper_80": 3575332.68,
+          "interval_width_80": 2977482.3,
+          "prediction_interval_80": [
+            597850.38,
+            3575332.68
+          ],
+          "lower_95": 579409.39,
+          "upper_95": 3714938.77,
+          "interval_width_95": 3135529.37,
+          "prediction_interval_95": [
+            579409.39,
+            3714938.77
+          ]
+        }
+      ],
+      "alternative_models": [
+        "SARIMA",
+        "Naive",
+        "Seasonal Naive",
+        "Moving Average"
+      ],
+      "explainability": {
+        "series_type": "Long History",
+        "classification_confidence": 0.6,
+        "classification_reasons": [
+          "History spans 1430 days (2+ years) with no strong trend or seasonal signal detected."
+        ],
+        "trend_strength": 0.2065,
+        "seasonality_strength": 0.1955,
+        "history_length_days": 1430,
+        "n_observations": 48,
+        "n_transactions": 392,
+        "observed_periods": 48,
+        "empty_periods": 0,
+        "series_density": 1.0,
+        "zero_period_ratio": 0.0,
+        "seasonal_period": 12,
+        "fill_strategy": "none_needed"
+      },
+      "warnings": [
+        "8 row(s) (2.0%) are missing a sales value and were treated as zero.",
+        "62 duplicate date entries found \u2014 sales on the same date were summed together.",
+        "17 exact duplicate row(s) (same date and value) were removed.",
+        "Prophet: could not complete any of the 11 walk-forward validation folds \u2014 trained on all available data, but no independent accuracy estimate is available.",
+        "Prophet could not be trained on this dataset \u2014 it may not be well suited to this data's pattern or size."
+      ],
+      "frequency": "monthly",
+      "forecast_confidence_pct": 65,
+      "data_quality_score": 0.9133,
+      "selected_frequency": "monthly",
+      "frequency_reason": "Selected 'monthly' grain: 48 modelled periods, 100.0% of them containing real transactions, coefficient of variation 0.6087, and enough history to test a 12-period seasonal cycle (strength 0.1955). Ranked above quarterly (score 0.8019, density 100.0%, 16 periods); weekly (score 0.7602, density 73.6%, 201 periods). Rejected: daily (Only 19.5% of daily periods contain any transaction (minimum 60%) \u2014 at this grain most of the series would be filled rather than measured.).",
+      "series_density": 1.0,
+      "zero_period_ratio": 0.0,
+      "candidate_frequencies": {
+        "daily": {
+          "frequency": "daily",
+          "n_periods": 1455,
+          "observed_periods": 330,
+          "empty_periods": 1125,
+          "zero_value_periods": 1131,
+          "zero_pct": 77.73,
+          "density": 0.2268,
+          "mean": 40690.0,
+          "std": 160156.92,
+          "coefficient_of_variation": 3.936,
+          "trend_strength": 0.0313,
+          "seasonality_strength": 0.2743,
+          "seasonal_period": 365,
+          "history_length_days": 1454,
+          "usable": false,
+          "rejection_reason": "Only 22.7% of daily periods contain any transaction (minimum 60%) \u2014 at this grain most of the series would be filled rather than measured.",
+          "score": null
+        },
+        "weekly": {
+          "frequency": "weekly",
+          "n_periods": 209,
+          "observed_periods": 177,
+          "empty_periods": 32,
+          "zero_value_periods": 0,
+          "zero_pct": 0.0,
+          "density": 0.8469,
+          "mean": 336389.12,
+          "std": 414131.68,
+          "coefficient_of_variation": 1.2311,
+          "trend_strength": 0.0781,
+          "seasonality_strength": 0.2167,
+          "seasonal_period": 52,
+          "history_length_days": 1456,
+          "usable": true,
+          "rejection_reason": null,
+          "score": 0.7602
+        },
+        "monthly": {
+          "frequency": "monthly",
+          "n_periods": 48,
+          "observed_periods": 48,
+          "empty_periods": 0,
+          "zero_value_periods": 0,
+          "zero_pct": 0.0,
+          "density": 1.0,
+          "mean": 1233415.59,
+          "std": 750738.14,
+          "coefficient_of_variation": 0.6087,
+          "trend_strength": 0.2065,
+          "seasonality_strength": 0.1955,
+          "seasonal_period": 12,
+          "history_length_days": 1430,
+          "usable": true,
+          "rejection_reason": null,
+          "score": 0.8691
+        },
+        "quarterly": {
+          "frequency": "quarterly",
+          "n_periods": 16,
+          "observed_periods": 16,
+          "empty_periods": 0,
+          "zero_value_periods": 0,
+          "zero_pct": 0.0,
+          "density": 1.0,
+          "mean": 3700246.78,
+          "std": 1169702.06,
+          "coefficient_of_variation": 0.3161,
+          "trend_strength": 0.3992,
+          "seasonality_strength": 0.2015,
+          "seasonal_period": 4,
+          "history_length_days": 1369,
+          "usable": true,
+          "rejection_reason": null,
+          "score": 0.8019
+        }
+      },
+      "n_modelled_periods": 48,
+      "n_transactions": 392,
+      "requested_horizon": 3,
+      "forecast_periods": 3,
+      "forecast_unit": "month",
+      "validation_horizon": 3,
+      "horizon_note": "Forecasting 3 month(s) ahead at the selected 'monthly' grain. The API parameter is named 'months' for backward compatibility, but each forecast period is one month.",
+      "validation": {
+        "horizon": 3,
+        "requested_horizon": 3,
+        "min_train_size": 24,
+        "step": 2,
+        "n_folds": 11,
+        "n_validation_points": 33,
+        "rule": "min_train = max(absolute floor 8, two full seasonal cycles (24 periods), 50% of 48 periods) = 24; origins 24..45 stepped by 2 to target ~12 folds; horizon 3 evaluated at every origin",
+        "degraded": false,
+        "degradation_reason": null,
+        "folds": [
+          {
+            "fold": 1,
+            "train_end": 24,
+            "val_start": 24,
+            "val_end": 27,
+            "train_size": 24
+          },
+          {
+            "fold": 2,
+            "train_end": 26,
+            "val_start": 26,
+            "val_end": 29,
+            "train_size": 26
+          },
+          {
+            "fold": 3,
+            "train_end": 28,
+            "val_start": 28,
+            "val_end": 31,
+            "train_size": 28
+          },
+          {
+            "fold": 4,
+            "train_end": 30,
+            "val_start": 30,
+            "val_end": 33,
+            "train_size": 30
+          },
+          {
+            "fold": 5,
+            "train_end": 32,
+            "val_start": 32,
+            "val_end": 35,
+            "train_size": 32
+          },
+          {
+            "fold": 6,
+            "train_end": 34,
+            "val_start": 34,
+            "val_end": 37,
+            "train_size": 34
+          },
+          {
+            "fold": 7,
+            "train_end": 36,
+            "val_start": 36,
+            "val_end": 39,
+            "train_size": 36
+          },
+          {
+            "fold": 8,
+            "train_end": 38,
+            "val_start": 38,
+            "val_end": 41,
+            "train_size": 38
+          },
+          {
+            "fold": 9,
+            "train_end": 40,
+            "val_start": 40,
+            "val_end": 43,
+            "train_size": 40
+          },
+          {
+            "fold": 10,
+            "train_end": 42,
+            "val_start": 42,
+            "val_end": 45,
+            "train_size": 42
+          },
+          {
+            "fold": 11,
+            "train_end": 44,
+            "val_start": 44,
+            "val_end": 47,
+            "train_size": 44
+          }
+        ]
+      },
+      "ensemble_evaluation": null,
+      "prediction_intervals": {
+        "available": true,
+        "interval_method": "split-conformal quantiles of out-of-sample relative errors",
+        "interval_calibration_status": "LIMITED_DATA",
+        "interval_basis": "POOLED",
+        "periods": [
+          {
+            "period": "2025-01",
+            "horizon": 1,
+            "point_forecast": 1377756.41,
+            "lower_80": 597850.38,
+            "upper_80": 3575332.68,
+            "interval_width_80": 2977482.3,
+            "prediction_interval_80": [
+              597850.38,
+              3575332.68
+            ],
+            "lower_95": 579409.39,
+            "upper_95": 3714938.77,
+            "interval_width_95": 3135529.37,
+            "prediction_interval_95": [
+              579409.39,
+              3714938.77
+            ]
+          },
+          {
+            "period": "2025-02",
+            "horizon": 2,
+            "point_forecast": 1377756.41,
+            "lower_80": 597850.38,
+            "upper_80": 3575332.68,
+            "interval_width_80": 2977482.3,
+            "prediction_interval_80": [
+              597850.38,
+              3575332.68
+            ],
+            "lower_95": 579409.39,
+            "upper_95": 3714938.77,
+            "interval_width_95": 3135529.37,
+            "prediction_interval_95": [
+              579409.39,
+              3714938.77
+            ]
+          },
+          {
+            "period": "2025-03",
+            "horizon": 3,
+            "point_forecast": 1377756.41,
+            "lower_80": 597850.38,
+            "upper_80": 3575332.68,
+            "interval_width_80": 2977482.3,
+            "prediction_interval_80": [
+              597850.38,
+              3575332.68
+            ],
+            "lower_95": 579409.39,
+            "upper_95": 3714938.77,
+            "interval_width_95": 3135529.37,
+            "prediction_interval_95": [
+              579409.39,
+              3714938.77
+            ]
+          }
+        ],
+        "n_errors_total": 33,
+        "n_errors_by_horizon": {
+          "1": 11,
+          "2": 11,
+          "3": 11
+        },
+        "coverage": {
+          "80": {
+            "nominal": 80.0,
+            "observed": 66.7,
+            "coverage_error_pp": -13.3,
+            "n": 21,
+            "note": "narrower than nominal; measured on 21 out-of-sample point(s), standard error about 10.3pp"
+          },
+          "95": {
+            "nominal": 95.0,
+            "observed": 66.7,
+            "coverage_error_pp": -28.3,
+            "n": 21,
+            "note": "narrower than nominal; measured on 21 out-of-sample point(s), standard error about 10.3pp"
+          }
+        },
+        "sharpness": {
+          "80": {
+            "mean_width": 2673059.06,
+            "median_width": 2725679.05,
+            "mean_normalized_width": 2.2554,
+            "interval_score": 2839209.81,
+            "n": 21
+          },
+          "95": {
+            "mean_width": 2759744.61,
+            "median_width": 2741007.63,
+            "mean_normalized_width": 2.3268,
+            "interval_score": 3305255.35,
+            "n": 21
+          }
+        },
+        "notes": [
+          "Error basis: a 80% interval needs at least 19 errors per horizon to be an interior quantile rather than the observed min/max, and this series has fewer (h1: 11, h2: 11, h3: 11), so all 33 errors are pooled across horizons. Pooling understates uncertainty at the far horizon and overstates it at the near one, but it is the honest choice at this sample size.",
+          "Calibration is based on 33 out-of-sample error(s), below the 40 at which a two-sided 95% conformal interval first becomes attainable. Treat the bounds as indicative rather than guaranteed.",
+          "The 95% level(s) exceed what 33 errors can support as a conformal guarantee, so their bounds are extrapolated from the observed error range and will understate the true uncertainty."
+        ],
+        "unavailable_reason": null
+      },
+      "interval_method": "split-conformal quantiles of out-of-sample relative errors",
+      "interval_calibration_status": "LIMITED_DATA",
+      "coverage_80": 66.7,
+      "coverage_95": 66.7,
+      "coverage_sample_size": 21,
+      "group_col": null,
+      "group_value": null,
+      "group_label": "Company Total",
+      "group_status": "OK",
+      "group_records": 392,
+      "group_message": null,
+      "group_history_status": "SUFFICIENT_HISTORY",
+      "group_history_note": "48 monthly period(s) support 11 validation folds at horizon 3 \u2014 enough for independent metrics and prediction intervals.",
+      "reliability": {
+        "score": 0.602,
+        "score_pct": 60,
+        "level": "MODERATE",
+        "label": "Moderate",
+        "summary": "Company Total is usable as a planning estimate, but uncertainty calibration and model selection strength limit how much weight it can bear.",
+        "factors": [
+          {
+            "factor": "accuracy",
+            "label": "Validation error",
+            "status": "measured",
+            "value": "WAPE 46.82%",
+            "score": 0.532,
+            "weight": 0.28,
+            "impact": "neutral",
+            "explanation": "Historical forecast error is high. Across walk-forward validation the forecast was off by 46.8% of actual volume on average (forecasting zero every period would score 100%)."
+          },
+          {
+            "factor": "consistency",
+            "label": "Fold-to-fold consistency",
+            "status": "measured",
+            "value": "error std 17.15 across 11 folds (min 11.1%, max 68.3%)",
+            "score": 0.622,
+            "weight": 0.22,
+            "impact": "neutral",
+            "explanation": "Accuracy varied between 11.1% and 68.3% WAPE across validation folds. The worst window was 6.2x the error of the best, so performance in any single future window is hard to anticipate."
+          },
+          {
+            "factor": "history",
+            "label": "History available",
+            "status": "measured",
+            "value": "48 monthly periods, 11 validation folds",
+            "score": 0.889,
+            "weight": 0.18,
+            "impact": "positive",
+            "explanation": "48 monthly periods supported 11 independent validation folds. That is at or near the 12-fold design target, so the error estimate rests on a reasonable amount of evidence."
+          },
+          {
+            "factor": "data_quality",
+            "label": "Input data quality",
+            "status": "measured",
+            "value": "100% of periods observed, quality score 0.91",
+            "score": 0.957,
+            "weight": 0.12,
+            "impact": "positive",
+            "explanation": "Every one of the 48 modelled periods contains real recorded transactions, and the input needed little correction."
+          },
+          {
+            "factor": "interval_calibration",
+            "label": "Uncertainty calibration",
+            "status": "limited_data",
+            "value": "LIMITED_DATA, 80% coverage 67%",
+            "score": 0.167,
+            "weight": 0.12,
+            "impact": "negative",
+            "explanation": "The 80% interval actually contained the outcome 67% of the time across 21 out-of-sample checks (-13.3pp against its 80% target). Calibration rests on a limited number of out-of-sample errors, so the stated levels are indicative rather than guaranteed."
+          },
+          {
+            "factor": "selection_strength",
+            "label": "Model selection strength",
+            "status": "measured",
+            "value": "+4.58pp over Naive",
+            "score": 0.267,
+            "weight": 0.08,
+            "impact": "negative",
+            "explanation": "Simple Exponential Smoothing (46.82% WAPE) beat Naive (51.40%) by 4.58pp, which is 0.27x the 17.15pp fold-to-fold variation. The margin is smaller than the noise between folds, so several models perform similarly here and the ranking could change on different data."
+          },
+          {
+            "factor": "interval_width",
+            "label": "Prediction interval width",
+            "status": "measured",
+            "value": "80% interval spans 2.2x the forecast value",
+            "score": null,
+            "weight": 0.0,
+            "impact": "negative",
+            "explanation": "The 80% prediction range is about 2.2 times the size of the forecast itself. That is a wide range \u2014 the forecast is best used as a rough planning estimate. Width follows from the accuracy and consistency measured above, so it is shown here as context rather than counted again in the score."
+          }
+        ],
+        "warnings": [
+          "Prediction interval calibration is limited by the amount of historical validation data available.",
+          "The 95% interval exceeds what the available validation history can support and will understate true uncertainty."
+        ],
+        "is_probability": false,
+        "interpretation": "Forecast reliability is a 0-100 rating of how much evidence supports this forecast \u2014 its measured accuracy, how consistent that accuracy is over time, how much history it rests on, the quality of the input data, and whether its uncertainty range is calibrated. It is NOT a probability that the forecast is correct, and it should not be read as one. For the likely range of outcomes, use the prediction interval."
+      },
+      "model_explanation": {
+        "selected_model": "Simple Exponential Smoothing",
+        "reason": "Simple Exponential Smoothing achieved the lowest validated error for Company Total (46.82% WAPE across 11 leakage-safe walk-forward folds).",
+        "selection_strength": "WEAK",
+        "strength_reason": "Simple Exponential Smoothing ranked first, but its 4.58pp advantage over Naive is smaller than the 17.15pp variation between validation folds. Several models performed similarly here, and the ranking could change on different data.",
+        "alternatives": [
+          {
+            "model": "Simple Exponential Smoothing",
+            "wape": 46.82,
+            "folds": 11,
+            "selected": true
+          },
+          {
+            "model": "Naive",
+            "wape": 51.4,
+            "folds": 11,
+            "selected": false
+          },
+          {
+            "model": "Moving Average",
+            "wape": 53.44,
+            "folds": 11,
+            "selected": false
+          },
+          {
+            "model": "Seasonal Naive",
+            "wape": 62.39,
+            "folds": 11,
+            "selected": false
+          },
+          {
+            "model": "SARIMA",
+            "wape": 72.08,
+            "folds": 11,
+            "selected": false
+          }
+        ],
+        "scope": "Company Total"
+      },
+      "forecast_insights": {
+        "scope": "Company Total",
+        "trend": {
+          "direction": "RISING",
+          "strength": 0.2065,
+          "slope_per_period": 9495.63,
+          "relative_slope": 0.0079,
+          "explanation": "Revenue rose over the observed periods, by about 0.8% of the series average per period (trend strength 0.21)."
+        },
+        "seasonality": {
+          "level": "WEAK",
+          "strength": 0.1955,
+          "period": 12,
+          "explanation": "Only a weak repeating seasonal pattern was measured over a 12-month cycle (strength 0.20). Seasonal models therefore have little structure to exploit here."
+        },
+        "volatility": {
+          "level": "MODERATE",
+          "value": 0.6087,
+          "explanation": "Period-to-period revenue is moderately variable (coefficient of variation 0.61). This level of variability puts a practical floor under achievable forecast error."
+        },
+        "data_quality": {
+          "level": "GOOD",
+          "score": 0.957,
+          "explanation": "Good \u2014 48 monthly observations from 392 transactions, with complete period coverage."
+        },
+        "uncertainty": {
+          "drivers": [
+            "high historical forecast error (46.8% WAPE)",
+            "interval calibration resting on a limited number of out-of-sample errors",
+            "a 95% level that exceeds what the available validation history supports"
+          ],
+          "primary": "high historical forecast error (46.8% WAPE)",
+          "explanation": "Forecast uncertainty here is driven mainly by high historical forecast error (46.8% WAPE)."
+        },
+        "insights": [
+          {
+            "kind": "trend",
+            "headline": "Revenue trend: Rising",
+            "detail": "Revenue rose over the observed periods, by about 0.8% of the series average per period (trend strength 0.21).",
+            "basis": "trend strength 0.2065"
+          },
+          {
+            "kind": "volatility",
+            "headline": "Series variability: Moderate",
+            "detail": "Period-to-period revenue is moderately variable (coefficient of variation 0.61). This level of variability puts a practical floor under achievable forecast error.",
+            "basis": "coefficient of variation 0.6087"
+          },
+          {
+            "kind": "seasonality",
+            "headline": "Seasonality: Weak",
+            "detail": "Only a weak repeating seasonal pattern was measured over a 12-month cycle (strength 0.20). Seasonal models therefore have little structure to exploit here.",
+            "basis": "seasonal strength 0.1955 at cycle 12"
+          },
+          {
+            "kind": "data_quality",
+            "headline": "Data quality: Good",
+            "detail": "Good \u2014 48 monthly observations from 392 transactions, with complete period coverage.",
+            "basis": "combined score 0.957"
+          },
+          {
+            "kind": "reliability",
+            "headline": "Forecast reliability: Moderate",
+            "detail": "Company Total is usable as a planning estimate, but uncertainty calibration and model selection strength limit how much weight it can bear.",
+            "basis": "see reliability factors"
+          },
+          {
+            "kind": "model",
+            "headline": "Model: Simple Exponential Smoothing",
+            "detail": "Simple Exponential Smoothing ranked first, but its 4.58pp advantage over Naive is smaller than the 17.15pp variation between validation folds. Several models performed similarly here, and the ranking could change on different data.",
+            "basis": "selection strength WEAK"
+          },
+          {
+            "kind": "uncertainty",
+            "headline": "Main source of uncertainty",
+            "detail": "Forecast uncertainty here is driven mainly by high historical forecast error (46.8% WAPE).",
+            "basis": "high historical forecast error (46.8% WAPE)"
+          },
+          {
+            "kind": "recommendation",
+            "headline": "Recommendation",
+            "detail": "Use Company Total as a planning estimate rather than a precise target, and plan against the 80% prediction range rather than the single point value.",
+            "basis": "reliability level MODERATE"
+          }
+        ]
+      }
+    }
+  },
+  "benchmark_untuned": {
+    "frequency": "monthly",
+    "n_periods": 48,
+    "validation": {
+      "horizon": 3,
+      "requested_horizon": 3,
+      "min_train_size": 24,
+      "step": 2,
+      "n_folds": 11,
+      "n_validation_points": 33,
+      "rule": "min_train = max(absolute floor 8, two full seasonal cycles (24 periods), 50% of 48 periods) = 24; origins 24..45 stepped by 2 to target ~12 folds; horizon 3 evaluated at every origin",
+      "degraded": false,
+      "degradation_reason": null,
+      "folds": [
+        {
+          "fold": 1,
+          "train_end": 24,
+          "val_start": 24,
+          "val_end": 27,
+          "train_size": 24
+        },
+        {
+          "fold": 2,
+          "train_end": 26,
+          "val_start": 26,
+          "val_end": 29,
+          "train_size": 26
+        },
+        {
+          "fold": 3,
+          "train_end": 28,
+          "val_start": 28,
+          "val_end": 31,
+          "train_size": 28
+        },
+        {
+          "fold": 4,
+          "train_end": 30,
+          "val_start": 30,
+          "val_end": 33,
+          "train_size": 30
+        },
+        {
+          "fold": 5,
+          "train_end": 32,
+          "val_start": 32,
+          "val_end": 35,
+          "train_size": 32
+        },
+        {
+          "fold": 6,
+          "train_end": 34,
+          "val_start": 34,
+          "val_end": 37,
+          "train_size": 34
+        },
+        {
+          "fold": 7,
+          "train_end": 36,
+          "val_start": 36,
+          "val_end": 39,
+          "train_size": 36
+        },
+        {
+          "fold": 8,
+          "train_end": 38,
+          "val_start": 38,
+          "val_end": 41,
+          "train_size": 38
+        },
+        {
+          "fold": 9,
+          "train_end": 40,
+          "val_start": 40,
+          "val_end": 43,
+          "train_size": 40
+        },
+        {
+          "fold": 10,
+          "train_end": 42,
+          "val_start": 42,
+          "val_end": 45,
+          "train_size": 42
+        },
+        {
+          "fold": 11,
+          "train_end": 44,
+          "val_start": 44,
+          "val_end": 47,
+          "train_size": 44
+        }
+      ]
+    },
+    "rows": [
+      {
+        "model": "Simple Exponential Smoothing",
+        "wape": 47.48,
+        "mae": 657349.67,
+        "rmse": 870564.4,
+        "mape": 50.32,
+        "smape": 46.9,
+        "fold_std": 18.3151,
+        "fold_mean": 46.0673,
+        "fold_median": 50.87,
+        "fold_min": 14.87,
+        "fold_max": 76.34,
+        "stability": 0.6024,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.004998207092285156
+      },
+      {
+        "model": "Naive",
+        "wape": 51.8,
+        "mae": 717130.22,
+        "rmse": 1006546.04,
+        "mape": 58.08,
+        "smape": 49.55,
+        "fold_std": 22.5706,
+        "fold_mean": 48.4918,
+        "fold_median": 48.4,
+        "fold_min": 12.44,
+        "fold_max": 79.56,
+        "stability": 0.5345,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.003823995590209961
+      },
+      {
+        "model": "Holt Linear",
+        "wape": 53.27,
+        "mae": 737565.47,
+        "rmse": 949591.1,
+        "mape": 57.77,
+        "smape": 52.19,
+        "fold_std": 22.3632,
+        "fold_mean": 53.8464,
+        "fold_median": 53.35,
+        "fold_min": 26.98,
+        "fold_max": 108.63,
+        "stability": 0.5847,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.011527538299560547
+      },
+      {
+        "model": "Moving Average",
+        "wape": 54.59,
+        "mae": 755752.23,
+        "rmse": 975058.75,
+        "mape": 60.72,
+        "smape": 52.56,
+        "fold_std": 35.637,
+        "fold_mean": 56.8864,
+        "fold_median": 53.15,
+        "fold_min": 10.03,
+        "fold_max": 149.81,
+        "stability": 0.3735,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.004600048065185547
+      },
+      {
+        "model": "Holt-Winters",
+        "wape": 57.56,
+        "mae": 796897.37,
+        "rmse": 1033123.69,
+        "mape": 71.5,
+        "smape": 54.83,
+        "fold_std": 32.1883,
+        "fold_mean": 58.6464,
+        "fold_median": 43.22,
+        "fold_min": 15.77,
+        "fold_max": 122.26,
+        "stability": 0.4511,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.5332581996917725
+      },
+      {
+        "model": "XGBoost",
+        "wape": 62.44,
+        "mae": 864443.82,
+        "rmse": 1071983.16,
+        "mape": 80.95,
+        "smape": 58.8,
+        "fold_std": 58.6276,
+        "fold_mean": 67.5755,
+        "fold_median": 63.72,
+        "fold_min": 20.35,
+        "fold_max": 231.36,
+        "stability": 0.1324,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 1.2492647171020508
+      },
+      {
+        "model": "Seasonal Naive",
+        "wape": 63.89,
+        "mae": 884514.76,
+        "rmse": 1182645.55,
+        "mape": 83.26,
+        "smape": 63.98,
+        "fold_std": 38.8814,
+        "fold_mean": 67.0609,
+        "fold_median": 56.57,
+        "fold_min": 27.87,
+        "fold_max": 161.28,
+        "stability": 0.4202,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.00690460205078125
+      },
+      {
+        "model": "SARIMA",
+        "wape": 67.66,
+        "mae": 936695.1,
+        "rmse": 1131856.04,
+        "mape": 87.06,
+        "smape": 66.71,
+        "fold_std": 37.8553,
+        "fold_mean": 71.3118,
+        "fold_median": 63.9,
+        "fold_min": 28.12,
+        "fold_max": 164.39,
+        "stability": 0.4692,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 1.0821056365966797
+      }
+    ],
+    "unavailable": {
+      "Prophet": "No validation fold could be completed for this model."
+    },
+    "ensemble": {
+      "components": [
+        "Simple Exponential Smoothing",
+        "Naive",
+        "Holt Linear"
+      ],
+      "weights": {
+        "Simple Exponential Smoothing": 0.3561,
+        "Naive": 0.3264,
+        "Holt Linear": 0.3174
+      },
+      "weight_basis": "inverse pooled WAPE across all folds; during backtesting each fold used weights derived only from the folds before it (fold 1: equal weights)",
+      "pooled_metrics": {
+        "mae": 692957.79,
+        "rmse": 912590.99,
+        "mape": 54.33,
+        "smape": 49.08,
+        "wape": 50.05,
+        "n_points": 33,
+        "n_valid_points": 33,
+        "n_mape_points": 33
+      },
+      "fold_stats": {
+        "n_folds": 11,
+        "mean": 48.4291,
+        "median": 50.02,
+        "std": 17.7621,
+        "min": 15.74,
+        "max": 68.69
+      },
+      "stability": 0.6332,
+      "n_folds": 11,
+      "folds": [
+        {
+          "fold": 1,
+          "train_size": 24,
+          "origin_period": "2022-12",
+          "periods": [
+            "2023-01",
+            "2023-02",
+            "2023-03"
+          ],
+          "actuals": [
+            2428432.34,
+            649761.31,
+            3140432.08
+          ],
+          "predictions": [
+            814192.54,
+            788309.34,
+            762426.13
+          ],
+          "metrics": {
+            "mae": 1376931.26,
+            "rmse": 1661312.53,
+            "mape": 54.51,
+            "smape": 80.23,
+            "wape": 66.43,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 2,
+          "train_size": 26,
+          "origin_period": "2023-02",
+          "periods": [
+            "2023-03",
+            "2023-04",
+            "2023-05"
+          ],
+          "actuals": [
+            3140432.08,
+            1344105.43,
+            706875.78
+          ],
+          "predictions": [
+            864699.1,
+            864795.27,
+            864891.44
+          ],
+          "metrics": {
+            "mae": 971019.6,
+            "rmse": 1345816.7,
+            "mape": 43.49,
+            "smape": 59.05,
+            "wape": 56.11,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 3,
+          "train_size": 28,
+          "origin_period": "2023-04",
+          "periods": [
+            "2023-05",
+            "2023-06",
+            "2023-07"
+          ],
+          "actuals": [
+            706875.78,
+            1141610.86,
+            1235675.37
+          ],
+          "predictions": [
+            1384790.47,
+            1404543.86,
+            1424297.26
+          ],
+          "metrics": {
+            "mae": 376489.86,
+            "rmse": 433697.4,
+            "mape": 44.73,
+            "smape": 33.22,
+            "wape": 36.62,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 4,
+          "train_size": 30,
+          "origin_period": "2023-06",
+          "periods": [
+            "2023-07",
+            "2023-08",
+            "2023-09"
+          ],
+          "actuals": [
+            1235675.37,
+            997363.65,
+            980192.82
+          ],
+          "predictions": [
+            1232157.45,
+            1237305.13,
+            1242452.81
+          ],
+          "metrics": {
+            "mae": 168573.13,
+            "rmse": 205235.3,
+            "mape": 17.03,
+            "smape": 15.12,
+            "wape": 15.74,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 5,
+          "train_size": 32,
+          "origin_period": "2023-08",
+          "periods": [
+            "2023-09",
+            "2023-10",
+            "2023-11"
+          ],
+          "actuals": [
+            980192.82,
+            1330542.6,
+            766917.15
+          ],
+          "predictions": [
+            1143652.28,
+            1143283.11,
+            1142913.95
+          ],
+          "metrics": {
+            "mae": 242238.58,
+            "rmse": 260229.84,
+            "mape": 26.59,
+            "smape": 23.3,
+            "wape": 23.61,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 6,
+          "train_size": 34,
+          "origin_period": "2023-10",
+          "periods": [
+            "2023-11",
+            "2023-12",
+            "2024-01"
+          ],
+          "actuals": [
+            766917.15,
+            2155275.87,
+            2628782.52
+          ],
+          "predictions": [
+            1247417.33,
+            1245213.21,
+            1243009.09
+          ],
+          "metrics": {
+            "mae": 925445.42,
+            "rmse": 996571.2,
+            "mape": 52.53,
+            "smape": 57.61,
+            "wape": 50.02,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 7,
+          "train_size": 36,
+          "origin_period": "2023-12",
+          "periods": [
+            "2024-01",
+            "2024-02",
+            "2024-03"
+          ],
+          "actuals": [
+            2628782.52,
+            930411.21,
+            569049.96
+          ],
+          "predictions": [
+            1585349.99,
+            1590322.68,
+            1595295.37
+          ],
+          "metrics": {
+            "mae": 909863.14,
+            "rmse": 926897.02,
+            "mape": 96.99,
+            "smape": 65.57,
+            "wape": 66.12,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 8,
+          "train_size": 38,
+          "origin_period": "2024-02",
+          "periods": [
+            "2024-03",
+            "2024-04",
+            "2024-05"
+          ],
+          "actuals": [
+            569049.96,
+            618868.08,
+            1099584.91
+          ],
+          "predictions": [
+            1273958.42,
+            1286267.58,
+            1298576.73
+          ],
+          "metrics": {
+            "mae": 523766.59,
+            "rmse": 572105.99,
+            "mape": 83.27,
+            "smape": 54.38,
+            "wape": 68.69,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 9,
+          "train_size": 40,
+          "origin_period": "2024-04",
+          "periods": [
+            "2024-05",
+            "2024-06",
+            "2024-07"
+          ],
+          "actuals": [
+            1099584.91,
+            2422291.99,
+            585632.54
+          ],
+          "predictions": [
+            993526.68,
+            984549.63,
+            975572.59
+          ],
+          "metrics": {
+            "mae": 644580.21,
+            "rmse": 862246.03,
+            "mape": 45.19,
+            "smape": 48.16,
+            "wape": 47.08,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 10,
+          "train_size": 42,
+          "origin_period": "2024-06",
+          "periods": [
+            "2024-07",
+            "2024-08",
+            "2024-09"
+          ],
+          "actuals": [
+            585632.54,
+            1063454.31,
+            2445087.31
+          ],
+          "predictions": [
+            1718813.29,
+            1724637.53,
+            1730461.77
+          ],
+          "metrics": {
+            "mae": 836329.84,
+            "rmse": 862544.98,
+            "mape": 94.97,
+            "smape": 60.0,
+            "wape": 61.28,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 11,
+          "train_size": 44,
+          "origin_period": "2024-08",
+          "periods": [
+            "2024-09",
+            "2024-10",
+            "2024-11"
+          ],
+          "actuals": [
+            2445087.31,
+            1474416.68,
+            815018.88
+          ],
+          "predictions": [
+            1156099.6,
+            1149608.38,
+            1143117.15
+          ],
+          "metrics": {
+            "mae": 647298.09,
+            "rmse": 790493.14,
+            "mape": 38.33,
+            "smape": 43.28,
+            "wape": 41.02,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        }
+      ]
+    },
+    "best_model": "Simple Exponential Smoothing",
+    "seasonal_naive_wape": 63.89,
+    "total_runtime_seconds": 133.71,
+    "wall_seconds": 133.88
+  },
+  "benchmark_untuned_text": "Frequency: monthly | modelled periods: 48 | folds: 11 | validation points: 33 | validation horizon: 3 | first training window: 24\nFold rule: min_train = max(absolute floor 8, two full seasonal cycles (24 periods), 50% of 48 periods) = 24; origins 24..45 stepped by 2 to target ~12 folds; horizon 3 evaluated at every origin\n\nModel                             WAPE%          MAE         RMSE   SMAPE%  FoldStd   Stab  Folds  Runtime\n----------------------------------------------------------------------------------------------------------\nSimple Exponential Smoothing      47.48       657350       870564    46.90    18.32  0.602     11     0.0s\nNaive                             51.80       717130      1006546    49.55    22.57  0.534     11     0.0s\nHolt Linear                       53.27       737565       949591    52.19    22.36  0.585     11     0.0s\nMoving Average                    54.59       755752       975059    52.56    35.64  0.373     11     0.0s\nHolt-Winters                      57.56       796897      1033124    54.83    32.19  0.451     11     0.5s\nXGBoost                           62.44       864444      1071983    58.80    58.63  0.132     11     1.2s\nSeasonal Naive                    63.89       884515      1182646    63.98    38.88  0.420     11     0.0s\nSARIMA                            67.66       936695      1131856    66.71    37.86  0.469     11     1.1s\n\nNot benchmarked:\n  Prophet: No validation fold could be completed for this model.\n\nEnsemble (Simple Exponential Smoothing + Naive + Holt Linear):\n  WAPE 50.05%  MAE 692957.79  RMSE 912590.99  SMAPE 49.08%  over 11 folds\n  weights: {'Simple Exponential Smoothing': 0.3561, 'Naive': 0.3264, 'Holt Linear': 0.3174}\n  WORSE than the best single model (Simple Exponential Smoothing, 47.48%)",
+  "benchmark_tuned": {
+    "frequency": "monthly",
+    "n_periods": 48,
+    "validation": {
+      "horizon": 3,
+      "requested_horizon": 3,
+      "min_train_size": 24,
+      "step": 2,
+      "n_folds": 11,
+      "n_validation_points": 33,
+      "rule": "min_train = max(absolute floor 8, two full seasonal cycles (24 periods), 50% of 48 periods) = 24; origins 24..45 stepped by 2 to target ~12 folds; horizon 3 evaluated at every origin",
+      "degraded": false,
+      "degradation_reason": null,
+      "folds": [
+        {
+          "fold": 1,
+          "train_end": 24,
+          "val_start": 24,
+          "val_end": 27,
+          "train_size": 24
+        },
+        {
+          "fold": 2,
+          "train_end": 26,
+          "val_start": 26,
+          "val_end": 29,
+          "train_size": 26
+        },
+        {
+          "fold": 3,
+          "train_end": 28,
+          "val_start": 28,
+          "val_end": 31,
+          "train_size": 28
+        },
+        {
+          "fold": 4,
+          "train_end": 30,
+          "val_start": 30,
+          "val_end": 33,
+          "train_size": 30
+        },
+        {
+          "fold": 5,
+          "train_end": 32,
+          "val_start": 32,
+          "val_end": 35,
+          "train_size": 32
+        },
+        {
+          "fold": 6,
+          "train_end": 34,
+          "val_start": 34,
+          "val_end": 37,
+          "train_size": 34
+        },
+        {
+          "fold": 7,
+          "train_end": 36,
+          "val_start": 36,
+          "val_end": 39,
+          "train_size": 36
+        },
+        {
+          "fold": 8,
+          "train_end": 38,
+          "val_start": 38,
+          "val_end": 41,
+          "train_size": 38
+        },
+        {
+          "fold": 9,
+          "train_end": 40,
+          "val_start": 40,
+          "val_end": 43,
+          "train_size": 40
+        },
+        {
+          "fold": 10,
+          "train_end": 42,
+          "val_start": 42,
+          "val_end": 45,
+          "train_size": 42
+        },
+        {
+          "fold": 11,
+          "train_end": 44,
+          "val_start": 44,
+          "val_end": 47,
+          "train_size": 44
+        }
+      ]
+    },
+    "rows": [
+      {
+        "model": "Simple Exponential Smoothing",
+        "wape": 47.48,
+        "mae": 657349.67,
+        "rmse": 870564.4,
+        "mape": 50.32,
+        "smape": 46.9,
+        "fold_std": 18.3151,
+        "fold_mean": 46.0673,
+        "fold_median": 50.87,
+        "fold_min": 14.87,
+        "fold_max": 76.34,
+        "stability": 0.6024,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.012250185012817383
+      },
+      {
+        "model": "Naive",
+        "wape": 51.8,
+        "mae": 717130.22,
+        "rmse": 1006546.04,
+        "mape": 58.08,
+        "smape": 49.55,
+        "fold_std": 22.5706,
+        "fold_mean": 48.4918,
+        "fold_median": 48.4,
+        "fold_min": 12.44,
+        "fold_max": 79.56,
+        "stability": 0.5345,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.009074687957763672
+      },
+      {
+        "model": "Holt Linear",
+        "wape": 53.27,
+        "mae": 737565.47,
+        "rmse": 949591.1,
+        "mape": 57.77,
+        "smape": 52.19,
+        "fold_std": 22.3632,
+        "fold_mean": 53.8464,
+        "fold_median": 53.35,
+        "fold_min": 26.98,
+        "fold_max": 108.63,
+        "stability": 0.5847,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.02119612693786621
+      },
+      {
+        "model": "Moving Average",
+        "wape": 54.59,
+        "mae": 755752.23,
+        "rmse": 975058.75,
+        "mape": 60.72,
+        "smape": 52.56,
+        "fold_std": 35.637,
+        "fold_mean": 56.8864,
+        "fold_median": 53.15,
+        "fold_min": 10.03,
+        "fold_max": 149.81,
+        "stability": 0.3735,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.012089252471923828
+      },
+      {
+        "model": "Holt-Winters",
+        "wape": 56.43,
+        "mae": 781197.26,
+        "rmse": 1066011.33,
+        "mape": 60.05,
+        "smape": 56.22,
+        "fold_std": 26.0459,
+        "fold_mean": 54.7682,
+        "fold_median": 58.12,
+        "fold_min": 14.15,
+        "fold_max": 86.22,
+        "stability": 0.5244,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.13721418380737305
+      },
+      {
+        "model": "XGBoost",
+        "wape": 63.65,
+        "mae": 881173.47,
+        "rmse": 1069557.37,
+        "mape": 82.91,
+        "smape": 59.81,
+        "fold_std": 49.6281,
+        "fold_mean": 67.3773,
+        "fold_median": 67.51,
+        "fold_min": 13.83,
+        "fold_max": 202.83,
+        "stability": 0.2634,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 1.3077375888824463
+      },
+      {
+        "model": "Seasonal Naive",
+        "wape": 63.89,
+        "mae": 884514.76,
+        "rmse": 1182645.55,
+        "mape": 83.26,
+        "smape": 63.98,
+        "fold_std": 38.8814,
+        "fold_mean": 67.0609,
+        "fold_median": 56.57,
+        "fold_min": 27.87,
+        "fold_max": 161.28,
+        "stability": 0.4202,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.011466503143310547
+      },
+      {
+        "model": "SARIMA",
+        "wape": 73.7,
+        "mae": 1020373.16,
+        "rmse": 1264697.23,
+        "mape": 96.86,
+        "smape": 68.71,
+        "fold_std": 51.0038,
+        "fold_mean": 79.3345,
+        "fold_median": 65.57,
+        "fold_min": 28.25,
+        "fold_max": 183.22,
+        "stability": 0.3571,
+        "n_folds": 11,
+        "n_points": 33,
+        "runtime_seconds": 0.8552722930908203
+      }
+    ],
+    "unavailable": {
+      "Prophet": "No validation fold could be completed for this model."
+    },
+    "ensemble": {
+      "components": [
+        "Simple Exponential Smoothing",
+        "Naive",
+        "Holt Linear"
+      ],
+      "weights": {
+        "Simple Exponential Smoothing": 0.3561,
+        "Naive": 0.3264,
+        "Holt Linear": 0.3174
+      },
+      "weight_basis": "inverse pooled WAPE across all folds; during backtesting each fold used weights derived only from the folds before it (fold 1: equal weights)",
+      "pooled_metrics": {
+        "mae": 692957.79,
+        "rmse": 912590.99,
+        "mape": 54.33,
+        "smape": 49.08,
+        "wape": 50.05,
+        "n_points": 33,
+        "n_valid_points": 33,
+        "n_mape_points": 33
+      },
+      "fold_stats": {
+        "n_folds": 11,
+        "mean": 48.4291,
+        "median": 50.02,
+        "std": 17.7621,
+        "min": 15.74,
+        "max": 68.69
+      },
+      "stability": 0.6332,
+      "n_folds": 11,
+      "folds": [
+        {
+          "fold": 1,
+          "train_size": 24,
+          "origin_period": "2022-12",
+          "periods": [
+            "2023-01",
+            "2023-02",
+            "2023-03"
+          ],
+          "actuals": [
+            2428432.34,
+            649761.31,
+            3140432.08
+          ],
+          "predictions": [
+            814192.54,
+            788309.34,
+            762426.13
+          ],
+          "metrics": {
+            "mae": 1376931.26,
+            "rmse": 1661312.53,
+            "mape": 54.51,
+            "smape": 80.23,
+            "wape": 66.43,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 2,
+          "train_size": 26,
+          "origin_period": "2023-02",
+          "periods": [
+            "2023-03",
+            "2023-04",
+            "2023-05"
+          ],
+          "actuals": [
+            3140432.08,
+            1344105.43,
+            706875.78
+          ],
+          "predictions": [
+            864699.1,
+            864795.27,
+            864891.44
+          ],
+          "metrics": {
+            "mae": 971019.6,
+            "rmse": 1345816.7,
+            "mape": 43.49,
+            "smape": 59.05,
+            "wape": 56.11,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 3,
+          "train_size": 28,
+          "origin_period": "2023-04",
+          "periods": [
+            "2023-05",
+            "2023-06",
+            "2023-07"
+          ],
+          "actuals": [
+            706875.78,
+            1141610.86,
+            1235675.37
+          ],
+          "predictions": [
+            1384790.47,
+            1404543.86,
+            1424297.26
+          ],
+          "metrics": {
+            "mae": 376489.86,
+            "rmse": 433697.4,
+            "mape": 44.73,
+            "smape": 33.22,
+            "wape": 36.62,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 4,
+          "train_size": 30,
+          "origin_period": "2023-06",
+          "periods": [
+            "2023-07",
+            "2023-08",
+            "2023-09"
+          ],
+          "actuals": [
+            1235675.37,
+            997363.65,
+            980192.82
+          ],
+          "predictions": [
+            1232157.45,
+            1237305.13,
+            1242452.81
+          ],
+          "metrics": {
+            "mae": 168573.13,
+            "rmse": 205235.3,
+            "mape": 17.03,
+            "smape": 15.12,
+            "wape": 15.74,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 5,
+          "train_size": 32,
+          "origin_period": "2023-08",
+          "periods": [
+            "2023-09",
+            "2023-10",
+            "2023-11"
+          ],
+          "actuals": [
+            980192.82,
+            1330542.6,
+            766917.15
+          ],
+          "predictions": [
+            1143652.28,
+            1143283.11,
+            1142913.95
+          ],
+          "metrics": {
+            "mae": 242238.58,
+            "rmse": 260229.84,
+            "mape": 26.59,
+            "smape": 23.3,
+            "wape": 23.61,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 6,
+          "train_size": 34,
+          "origin_period": "2023-10",
+          "periods": [
+            "2023-11",
+            "2023-12",
+            "2024-01"
+          ],
+          "actuals": [
+            766917.15,
+            2155275.87,
+            2628782.52
+          ],
+          "predictions": [
+            1247417.33,
+            1245213.21,
+            1243009.09
+          ],
+          "metrics": {
+            "mae": 925445.42,
+            "rmse": 996571.2,
+            "mape": 52.53,
+            "smape": 57.61,
+            "wape": 50.02,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 7,
+          "train_size": 36,
+          "origin_period": "2023-12",
+          "periods": [
+            "2024-01",
+            "2024-02",
+            "2024-03"
+          ],
+          "actuals": [
+            2628782.52,
+            930411.21,
+            569049.96
+          ],
+          "predictions": [
+            1585349.99,
+            1590322.68,
+            1595295.37
+          ],
+          "metrics": {
+            "mae": 909863.14,
+            "rmse": 926897.02,
+            "mape": 96.99,
+            "smape": 65.57,
+            "wape": 66.12,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 8,
+          "train_size": 38,
+          "origin_period": "2024-02",
+          "periods": [
+            "2024-03",
+            "2024-04",
+            "2024-05"
+          ],
+          "actuals": [
+            569049.96,
+            618868.08,
+            1099584.91
+          ],
+          "predictions": [
+            1273958.42,
+            1286267.58,
+            1298576.73
+          ],
+          "metrics": {
+            "mae": 523766.59,
+            "rmse": 572105.99,
+            "mape": 83.27,
+            "smape": 54.38,
+            "wape": 68.69,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 9,
+          "train_size": 40,
+          "origin_period": "2024-04",
+          "periods": [
+            "2024-05",
+            "2024-06",
+            "2024-07"
+          ],
+          "actuals": [
+            1099584.91,
+            2422291.99,
+            585632.54
+          ],
+          "predictions": [
+            993526.68,
+            984549.63,
+            975572.59
+          ],
+          "metrics": {
+            "mae": 644580.21,
+            "rmse": 862246.03,
+            "mape": 45.19,
+            "smape": 48.16,
+            "wape": 47.08,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 10,
+          "train_size": 42,
+          "origin_period": "2024-06",
+          "periods": [
+            "2024-07",
+            "2024-08",
+            "2024-09"
+          ],
+          "actuals": [
+            585632.54,
+            1063454.31,
+            2445087.31
+          ],
+          "predictions": [
+            1718813.29,
+            1724637.53,
+            1730461.77
+          ],
+          "metrics": {
+            "mae": 836329.84,
+            "rmse": 862544.98,
+            "mape": 94.97,
+            "smape": 60.0,
+            "wape": 61.28,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        },
+        {
+          "fold": 11,
+          "train_size": 44,
+          "origin_period": "2024-08",
+          "periods": [
+            "2024-09",
+            "2024-10",
+            "2024-11"
+          ],
+          "actuals": [
+            2445087.31,
+            1474416.68,
+            815018.88
+          ],
+          "predictions": [
+            1156099.6,
+            1149608.38,
+            1143117.15
+          ],
+          "metrics": {
+            "mae": 647298.09,
+            "rmse": 790493.14,
+            "mape": 38.33,
+            "smape": 43.28,
+            "wape": 41.02,
+            "n_points": 3,
+            "n_valid_points": 3,
+            "n_mape_points": 3
+          }
+        }
+      ]
+    },
+    "best_model": "Simple Exponential Smoothing",
+    "seasonal_naive_wape": 63.89,
+    "total_runtime_seconds": 129.67,
+    "wall_seconds": 129.98
+  },
+  "benchmark_tuned_text": "Frequency: monthly | modelled periods: 48 | folds: 11 | validation points: 33 | validation horizon: 3 | first training window: 24\nFold rule: min_train = max(absolute floor 8, two full seasonal cycles (24 periods), 50% of 48 periods) = 24; origins 24..45 stepped by 2 to target ~12 folds; horizon 3 evaluated at every origin\n\nModel                             WAPE%          MAE         RMSE   SMAPE%  FoldStd   Stab  Folds  Runtime\n----------------------------------------------------------------------------------------------------------\nSimple Exponential Smoothing      47.48       657350       870564    46.90    18.32  0.602     11     0.0s\nNaive                             51.80       717130      1006546    49.55    22.57  0.534     11     0.0s\nHolt Linear                       53.27       737565       949591    52.19    22.36  0.585     11     0.0s\nMoving Average                    54.59       755752       975059    52.56    35.64  0.373     11     0.0s\nHolt-Winters                      56.43       781197      1066011    56.22    26.05  0.524     11     0.1s\nXGBoost                           63.65       881173      1069557    59.81    49.63  0.263     11     1.3s\nSeasonal Naive                    63.89       884515      1182646    63.98    38.88  0.420     11     0.0s\nSARIMA                            73.70      1020373      1264697    68.71    51.00  0.357     11     0.9s\n\nNot benchmarked:\n  Prophet: No validation fold could be completed for this model.\n\nEnsemble (Simple Exponential Smoothing + Naive + Holt Linear):\n  WAPE 50.05%  MAE 692957.79  RMSE 912590.99  SMAPE 49.08%  over 11 folds\n  weights: {'Simple Exponential Smoothing': 0.3561, 'Naive': 0.3264, 'Holt Linear': 0.3174}\n  WORSE than the best single model (Simple Exponential Smoothing, 47.48%)"
+}

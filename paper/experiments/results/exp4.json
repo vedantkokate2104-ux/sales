@@ -1,0 +1,477 @@
+{
+  "E_rank_agreement": {
+    "single_holdout_h3_vs_walk_forward_h3": {
+      "spearman_rho": -0.381,
+      "spearman_p": 0.3518,
+      "kendall_tau": -0.2143,
+      "kendall_p": 0.5484,
+      "top1_a": "Seasonal Naive",
+      "top1_b": "Simple Exponential Smoothing",
+      "ranks_a": {
+        "Simple Exponential Smoothing": 5,
+        "Naive": 8,
+        "Moving Average": 4,
+        "Holt Linear": 2,
+        "Seasonal Naive": 1,
+        "Holt-Winters": 6,
+        "SARIMA": 3,
+        "XGBoost": 7
+      },
+      "ranks_b": {
+        "Simple Exponential Smoothing": 1,
+        "Naive": 2,
+        "Moving Average": 4,
+        "Holt Linear": 3,
+        "Seasonal Naive": 7,
+        "Holt-Winters": 5,
+        "SARIMA": 8,
+        "XGBoost": 6
+      }
+    },
+    "walk_forward_h1_vs_walk_forward_h3": {
+      "spearman_rho": 0.7381,
+      "spearman_p": 0.0366,
+      "kendall_tau": 0.6429,
+      "kendall_p": 0.0312,
+      "top1_a": "Simple Exponential Smoothing",
+      "top1_b": "Simple Exponential Smoothing",
+      "ranks_a": {
+        "Simple Exponential Smoothing": 1,
+        "Naive": 3,
+        "Moving Average": 6,
+        "Holt Linear": 5,
+        "Seasonal Naive": 7,
+        "Holt-Winters": 2,
+        "SARIMA": 8,
+        "XGBoost": 4
+      },
+      "ranks_b": {
+        "Simple Exponential Smoothing": 1,
+        "Naive": 2,
+        "Moving Average": 4,
+        "Holt Linear": 3,
+        "Seasonal Naive": 7,
+        "Holt-Winters": 5,
+        "SARIMA": 8,
+        "XGBoost": 6
+      }
+    }
+  },
+  "F_leakage": {
+    "weekly": {
+      "n_periods": 209,
+      "n_unobserved": 32,
+      "n_capped_whole_series": 15,
+      "honest_per_fold": {
+        "Simple Exponential Smoothing": 69.03,
+        "Naive": 85.51,
+        "Moving Average": 81.0,
+        "Holt Linear": 75.69,
+        "Seasonal Naive": 82.33,
+        "Holt-Winters": 72.64,
+        "SARIMA": 77.66,
+        "XGBoost": 82.55
+      },
+      "leaky_whole_series": {
+        "Simple Exponential Smoothing": 62.75,
+        "Naive": 82.6,
+        "Moving Average": 77.19,
+        "Holt Linear": 70.87,
+        "Seasonal Naive": 78.78,
+        "Holt-Winters": 68.21,
+        "SARIMA": 73.98,
+        "XGBoost": 77.6
+      },
+      "delta_pp": {
+        "Simple Exponential Smoothing": 6.28,
+        "Naive": 2.91,
+        "Moving Average": 3.81,
+        "Holt Linear": 4.82,
+        "Seasonal Naive": 3.55,
+        "Holt-Winters": 4.43,
+        "SARIMA": 3.68,
+        "XGBoost": 4.95
+      }
+    },
+    "monthly_iqr1.5": {
+      "n_capped_whole_series": 2,
+      "bounds": [
+        0.0,
+        2680484.605
+      ],
+      "honest_per_fold_iqr3": {
+        "Simple Exponential Smoothing": 47.48,
+        "Naive": 51.8,
+        "Moving Average": 54.59,
+        "Holt Linear": 53.27,
+        "Seasonal Naive": 63.89,
+        "Holt-Winters": 57.56,
+        "SARIMA": 67.66,
+        "XGBoost": 62.44
+      },
+      "leaky_whole_series_iqr1.5": {
+        "Simple Exponential Smoothing": 45.89,
+        "Naive": 50.81,
+        "Moving Average": 52.63,
+        "Holt Linear": 51.16,
+        "Seasonal Naive": 61.09,
+        "Holt-Winters": 56.48,
+        "SARIMA": 65.29,
+        "XGBoost": 46.81
+      },
+      "honest_per_fold_iqr1.5": {
+        "Simple Exponential Smoothing": 47.48,
+        "Naive": 51.8,
+        "Moving Average": 54.59,
+        "Holt Linear": 53.27,
+        "Seasonal Naive": 63.89,
+        "Holt-Winters": 57.56,
+        "SARIMA": 67.66,
+        "XGBoost": 62.44
+      },
+      "delta_pp": {
+        "Simple Exponential Smoothing": 1.59,
+        "Naive": 0.99,
+        "Moving Average": 1.96,
+        "Holt Linear": 2.11,
+        "Seasonal Naive": 2.8,
+        "Holt-Winters": 1.08,
+        "SARIMA": 2.37,
+        "XGBoost": 15.63
+      }
+    }
+  },
+  "G_metrics": {
+    "n_periods": 1455,
+    "zero_period_share_pct": 77.73,
+    "plan": {
+      "n_folds": 12,
+      "horizon": 3,
+      "min_train": 728,
+      "step": 61
+    },
+    "models": {
+      "Naive": {
+        "n_points": 10,
+        "n_zero_actuals": 1,
+        "epsilon_guarded_mape_pct": 121.38540590238978,
+        "project_mape_pct": 134.87267322487955,
+        "wape_pct": 97.45005436300953,
+        "smape_pct": 169.4
+      },
+      "Moving Average": {
+        "n_points": 10,
+        "n_zero_actuals": 1,
+        "epsilon_guarded_mape_pct": 636397366666751.0,
+        "project_mape_pct": 93.78555245176864,
+        "wape_pct": 97.46301967562664,
+        "smape_pct": 175.4
+      },
+      "Simple Exponential Smoothing": {
+        "n_points": 10,
+        "n_zero_actuals": 1,
+        "epsilon_guarded_mape_pct": 425095243658901.7,
+        "project_mape_pct": 100.11332549320878,
+        "wape_pct": 96.73703020639418,
+        "smape_pct": 167.21
+      }
+    }
+  },
+  "H_segments": {
+    "discovered": [
+      {
+        "name": "cust_seg",
+        "label": "Customer Type",
+        "category": "customer",
+        "cardinality": 3,
+        "n_records": 392,
+        "missing_ratio": 0.0,
+        "unique_ratio": 0.0077,
+        "usable": true,
+        "reason": null
+      },
+      {
+        "name": "reg_cd",
+        "label": "Region",
+        "category": "geography",
+        "cardinality": 4,
+        "n_records": 392,
+        "missing_ratio": 0.0,
+        "unique_ratio": 0.0102,
+        "usable": true,
+        "reason": null
+      },
+      {
+        "name": "pmt_stat",
+        "label": "Payment Status",
+        "category": "status",
+        "cardinality": 4,
+        "n_records": 392,
+        "missing_ratio": 0.0,
+        "unique_ratio": 0.0102,
+        "usable": true,
+        "reason": null
+      },
+      {
+        "name": "prod_grp",
+        "label": "Product Category",
+        "category": "product",
+        "cardinality": 5,
+        "n_records": 392,
+        "missing_ratio": 0.0,
+        "unique_ratio": 0.0128,
+        "usable": true,
+        "reason": null
+      },
+      {
+        "name": "slsp",
+        "label": "Salesperson Code",
+        "category": "identifier",
+        "cardinality": 5,
+        "n_records": 392,
+        "missing_ratio": 0.0,
+        "unique_ratio": 0.0128,
+        "usable": true,
+        "reason": null
+      },
+      {
+        "name": "dlv_st",
+        "label": "Delivery City",
+        "category": "geography",
+        "cardinality": 5,
+        "n_records": 392,
+        "missing_ratio": 0.0255,
+        "unique_ratio": 0.0128,
+        "usable": true,
+        "reason": null
+      },
+      {
+        "name": "prod_id",
+        "label": "Product Id",
+        "category": "identifier",
+        "cardinality": 15,
+        "n_records": 392,
+        "missing_ratio": 0.0,
+        "unique_ratio": 0.0383,
+        "usable": true,
+        "reason": null
+      },
+      {
+        "name": "cust_cd",
+        "label": "Customer Code",
+        "category": "identifier",
+        "cardinality": 30,
+        "n_records": 392,
+        "missing_ratio": 0.0,
+        "unique_ratio": 0.0765,
+        "usable": true,
+        "reason": null
+      },
+      {
+        "name": "cust_nm",
+        "label": "Customer Name",
+        "category": "customer",
+        "cardinality": 30,
+        "n_records": 392,
+        "missing_ratio": 0.0434,
+        "unique_ratio": 0.0765,
+        "usable": true,
+        "reason": null
+      }
+    ],
+    "forecasts": [
+      {
+        "dimension": "reg_cd",
+        "value": "East",
+        "n_records": 92,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "monthly",
+        "n_periods": 46,
+        "selected_model": "Weighted Ensemble (Simple Exponential Smoothing + Seasonal Naive)",
+        "wape": 57.48,
+        "confidence_pct": 52,
+        "reliability_level": "LOW",
+        "reliability_score": 0.348,
+        "coverage_80": 83.3,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 92.0
+      },
+      {
+        "dimension": "reg_cd",
+        "value": "North",
+        "n_records": 89,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "monthly",
+        "n_periods": 48,
+        "selected_model": "Simple Exponential Smoothing",
+        "wape": 50.43,
+        "confidence_pct": 59,
+        "reliability_level": "MODERATE",
+        "reliability_score": 0.548,
+        "coverage_80": 88.2,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 2.6
+      },
+      {
+        "dimension": "reg_cd",
+        "value": "South",
+        "n_records": 90,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "monthly",
+        "n_periods": 48,
+        "selected_model": "Naive",
+        "wape": 76.27,
+        "confidence_pct": 44,
+        "reliability_level": "LOW",
+        "reliability_score": 0.355,
+        "coverage_80": 86.7,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 7.2
+      },
+      {
+        "dimension": "reg_cd",
+        "value": "West",
+        "n_records": 121,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "monthly",
+        "n_periods": 48,
+        "selected_model": "Moving Average",
+        "wape": 65.14,
+        "confidence_pct": 58,
+        "reliability_level": "MODERATE",
+        "reliability_score": 0.556,
+        "coverage_80": 78.9,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 2.7
+      },
+      {
+        "dimension": "prod_grp",
+        "value": "Automotive",
+        "n_records": 45,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "quarterly",
+        "n_periods": 16,
+        "selected_model": "Simple Exponential Smoothing",
+        "wape": 56.67,
+        "confidence_pct": 56,
+        "reliability_level": "MODERATE",
+        "reliability_score": 0.552,
+        "coverage_80": 80.0,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 0.3
+      },
+      {
+        "dimension": "prod_grp",
+        "value": "Electronics",
+        "n_records": 70,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "quarterly",
+        "n_periods": 16,
+        "selected_model": "Simple Exponential Smoothing",
+        "wape": 58.53,
+        "confidence_pct": 52,
+        "reliability_level": "MODERATE",
+        "reliability_score": 0.503,
+        "coverage_80": 83.3,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 0.3
+      },
+      {
+        "dimension": "prod_grp",
+        "value": "FMCG",
+        "n_records": 103,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "monthly",
+        "n_periods": 48,
+        "selected_model": "Weighted Ensemble (Naive + Simple Exponential Smoothing + Moving Average + XGBoost)",
+        "wape": 77.48,
+        "confidence_pct": 54,
+        "reliability_level": "VERY_LOW",
+        "reliability_score": 0.26,
+        "coverage_80": 85.0,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 2.3
+      },
+      {
+        "dimension": "prod_grp",
+        "value": "Healthcare",
+        "n_records": 103,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "monthly",
+        "n_periods": 48,
+        "selected_model": "Simple Exponential Smoothing",
+        "wape": 80.35,
+        "confidence_pct": 48,
+        "reliability_level": "LOW",
+        "reliability_score": 0.363,
+        "coverage_80": 72.2,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 1.0
+      },
+      {
+        "dimension": "prod_grp",
+        "value": "Industrial",
+        "n_records": 71,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "monthly",
+        "n_periods": 48,
+        "selected_model": "Moving Average",
+        "wape": 75.77,
+        "confidence_pct": 48,
+        "reliability_level": "LOW",
+        "reliability_score": 0.409,
+        "coverage_80": 80.0,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 2.1
+      },
+      {
+        "dimension": "cust_seg",
+        "value": "Enterprise",
+        "n_records": 126,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "monthly",
+        "n_periods": 48,
+        "selected_model": "Moving Average",
+        "wape": 57.32,
+        "confidence_pct": 59,
+        "reliability_level": "MODERATE",
+        "reliability_score": 0.576,
+        "coverage_80": 76.2,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 2.1
+      },
+      {
+        "dimension": "cust_seg",
+        "value": "Government",
+        "n_records": 143,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "monthly",
+        "n_periods": 48,
+        "selected_model": "Simple Exponential Smoothing",
+        "wape": 57.61,
+        "confidence_pct": 60,
+        "reliability_level": "MODERATE",
+        "reliability_score": 0.563,
+        "coverage_80": 95.0,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 2.1
+      },
+      {
+        "dimension": "cust_seg",
+        "value": "SMB",
+        "n_records": 123,
+        "history_status": "SUFFICIENT_HISTORY",
+        "frequency": "monthly",
+        "n_periods": 48,
+        "selected_model": "Simple Exponential Smoothing",
+        "wape": 73.99,
+        "confidence_pct": 58,
+        "reliability_level": "MODERATE",
+        "reliability_score": 0.526,
+        "coverage_80": 88.2,
+        "interval_status": "LIMITED_DATA",
+        "seconds": 0.9
+      }
+    ]
+  }
+}

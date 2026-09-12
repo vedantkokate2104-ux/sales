@@ -47,7 +47,19 @@ from .model_selector import recommend_models
 from .trainer import train_candidates
 from .selector import select_best_model
 from .preprocessing import compute_data_quality_score
+from .intervals import UNAVAILABLE as INTERVAL_UNAVAILABLE, IntervalReport, build_interval_report
 from .results import AutoForecastResult, ForecastPoint
+from .segments import classify_history, resolve_group
+from .reliability import assess_reliability
+from .insights import (
+    build_insights,
+    classify_seasonality,
+    classify_trend,
+    classify_volatility,
+    explain_model_selection,
+    explain_uncertainty,
+    summarise_data_quality,
+)
 from .validation import validate_dataset
 
 logger = logging.getLogger(__name__)
@@ -72,9 +84,23 @@ def run_auto_forecast(
     further changes; only the frontend does not yet expose it (documented
     in CHANGELOG.md).
     """
-    working_df = df
-    if group_col and group_value is not None and group_col in df.columns:
-        working_df = df[df[group_col].astype(str) == str(group_value)]
+    # ── Phase 5: resolve the requested segment BEFORE anything else ───────
+    # This guard used to be
+    #     if group_col and group_value is not None and group_col in df.columns:
+    # which failed open: a group_col that was not a real column simply
+    # skipped the filter and the caller received the FULL COMPANY forecast,
+    # which the UI would then label with the segment the user asked for.
+    # Verified on the bundled dataset — a nonexistent column returned a
+    # total identical to the company forecast to the rupee. An unknown
+    # value likewise produced an empty forecast with no explanation.
+    # resolve_group() now returns a typed status for each of those cases
+    # and this function refuses to proceed rather than silently answering a
+    # different question than the one asked.
+    resolution = resolve_group(df, mappings, group_col, group_value)
+    if not resolution.ok:
+        return _unresolvable_group_result(resolution, horizon)
+
+    working_df = resolution.frame if resolution.frame is not None else df
 
     date_col = get_col(working_df, mappings, "invoice date")
     rev_col = get_col(working_df, mappings, "net sales")
@@ -136,6 +162,9 @@ def run_auto_forecast(
     grain_fields = {
         **_grain_fields(stats, grain_selection),
         **_horizon_fields(horizon, stats.frequency, plan),
+        # Segment identity travels with every return path, so a response
+        # can never describe one series while labelling it as another.
+        **_group_fields(resolution, stats, horizon),
     }
 
     if not trained_models:
@@ -223,6 +252,29 @@ def run_auto_forecast(
 
     forecast_points = [ForecastPoint(period=p, value=round(v, 2)) for p, v in forecast_pairs]
 
+    # ── Phase 4: prediction intervals from honest out-of-sample errors ────
+    # Built from the WINNING model's own walk-forward folds (or the
+    # ensemble's, when one was selected), so the uncertainty attached to a
+    # forecast is the uncertainty that model actually exhibited on data it
+    # had not seen. Never touches `forecast_confidence`, which measures a
+    # different thing entirely — see AutoForecastResult.prediction_intervals.
+    interval_fields = _interval_fields(
+        [p.to_dict() for p in forecast_points], selection, outcome, series,
+    )
+    for point in forecast_points:
+        _attach_bounds(point, interval_fields.get("prediction_intervals"))
+
+    # ── Phase 6: reliability and explanation ──────────────────────────────
+    # Built entirely from measurements this run already produced — no model
+    # is refit and no validation is repeated, so this adds milliseconds to
+    # a forecast that takes tens of seconds.
+    explanation_fields = _explanation_fields(
+        selection=selection, outcome=outcome, stats=stats, series=series,
+        forecast_dicts=[p.to_dict() for p in forecast_points],
+        interval_payload=interval_fields.get("prediction_intervals"),
+        data_quality=data_quality, grain_fields=grain_fields, horizon=horizon,
+    )
+
     return AutoForecastResult(
         horizon=horizon,
         selected_model=selection.selected_model,
@@ -238,7 +290,176 @@ def run_auto_forecast(
         forecast_confidence_pct=selection.confidence_pct,
         data_quality_score=data_quality,
         **grain_fields,
+        **interval_fields,
+        **explanation_fields,
     )
+
+
+def _explanation_fields(
+    selection, outcome, stats, series, forecast_dicts,
+    interval_payload, data_quality, grain_fields, horizon,
+) -> dict:
+    """
+    Assemble Phase 6's reliability assessment, model explanation and
+    business insights.
+
+    Everything is scoped to the series ACTUALLY forecast — `stats`,
+    `series` and `outcome` all describe the selected segment when one was
+    requested, so a region's explanation can never quote the company's
+    numbers (Phase 6, Step 9).
+    """
+    ranking = [r.to_dict() for r in selection.ranking]
+    best = next((r for r in selection.ranking if r.model == selection.selected_model), None)
+    fold_stats = getattr(best, "fold_stats", None) if best else None
+    n_folds = getattr(best, "validation_folds", 0) if best else 0
+    scope = grain_fields.get("group_label") or "Company Total"
+
+    try:
+        assessment = assess_reliability(
+            metrics=selection.metrics, fold_stats=fold_stats,
+            n_observations=stats.n_observations, n_folds=n_folds,
+            frequency=stats.frequency, data_quality=data_quality,
+            series_density=stats.series_density, empty_periods=stats.empty_periods,
+            intervals=interval_payload, forecast_points=forecast_dicts,
+            ranking=ranking, selected_model=selection.selected_model,
+            group_label=scope, history_status=grain_fields.get("group_history_status"),
+        )
+        model_explanation = explain_model_selection(
+            selected_model=selection.selected_model, metrics=selection.metrics,
+            ranking=ranking, fold_stats=fold_stats, n_folds=n_folds, scope=scope,
+        )
+        trend = classify_trend(series, stats.trend_strength)
+        seasonality = classify_seasonality(
+            stats.seasonality_strength, stats.seasonal_period, stats.frequency)
+        volatility = classify_volatility(stats.coefficient_of_variation)
+        quality = summarise_data_quality(
+            stats.n_observations, stats.frequency, stats.series_density,
+            stats.empty_periods, data_quality, stats.n_transactions)
+        uncertainty = explain_uncertainty(
+            interval_payload, selection.metrics, fold_stats, volatility,
+            grain_fields.get("group_history_status"))
+        insights = build_insights(
+            trend, seasonality, volatility, quality, uncertainty,
+            assessment.level, assessment.summary, model_explanation, scope)
+
+        return {
+            "reliability": assessment.to_dict(),
+            "model_explanation": model_explanation.to_dict(),
+            "forecast_insights": {
+                "scope":        scope,
+                "trend":        trend,
+                "seasonality":  seasonality,
+                "volatility":   volatility,
+                "data_quality": quality,
+                "uncertainty":  uncertainty,
+                "insights":     [i.to_dict() for i in insights],
+            },
+        }
+    except Exception:
+        logger.exception("Reliability/explanation build failed — omitting rather than guessing")
+        return {"reliability": None, "model_explanation": None, "forecast_insights": None}
+
+
+def _unresolvable_group_result(resolution, horizon: int) -> AutoForecastResult:
+    """
+    A well-formed, honest response for a segment that could not be
+    resolved — unknown column, unknown value, empty segment, or a column
+    that is not a usable dimension.
+
+    Deliberately returns a RESULT rather than raising: the API layer can
+    serve it as a normal payload the UI already knows how to read, with an
+    empty forecast, no fabricated metrics, and a message explaining what
+    went wrong. Every legacy field is present so existing clients do not
+    break on this path.
+    """
+    return AutoForecastResult(
+        horizon=horizon,
+        selected_model="None",
+        selection_reason=[resolution.message or "The requested group could not be resolved."],
+        evaluation_metrics=None,
+        forecast_confidence=0.0,
+        model_ranking=[],
+        forecast=[],
+        alternative_models=[],
+        explainability={},
+        warnings=[resolution.message] if resolution.message else [],
+        forecast_confidence_pct=0,
+        **resolution.to_dict(),
+        group_history_status=None,
+        group_history_note=None,
+    )
+
+
+def _group_fields(resolution, stats, horizon: int) -> dict:
+    """The Phase 5 segment fields carried on every successful forecast."""
+    status, note = classify_history(
+        stats.n_observations, horizon=horizon, frequency=stats.frequency,
+    )
+    return {
+        **resolution.to_dict(),
+        "group_history_status": status,
+        "group_history_note": note,
+    }
+
+
+def _interval_fields(forecast_dicts, selection, outcome, series) -> dict:
+    """
+    Assemble the Phase 4 interval payload for the model that actually
+    produced this forecast.
+
+    Uses the ensemble's own backtest when an ensemble was selected — the
+    interval must describe the thing being published, not one of its
+    components. Falls back to the winning single model's backtest, and
+    degrades to an honest "unavailable" report when neither exists.
+    """
+    backtest = None
+    if getattr(selection, "ensemble_components", None) and getattr(outcome, "ensemble", None):
+        backtest = outcome.ensemble
+    if backtest is None:
+        backtest = (outcome.backtests or {}).get(selection.selected_model)
+    if backtest is None and outcome.backtests:
+        # The forecast fell back to a different model than the selector
+        # picked; use whichever backtest matches what was published.
+        backtest = next(iter(outcome.backtests.values()))
+
+    series_mean = float(series.mean()) if series is not None and len(series) else None
+    try:
+        report = build_interval_report(forecast_dicts, backtest, series_mean=series_mean)
+    except Exception:
+        logger.exception("Prediction interval construction failed — reporting as unavailable")
+        report = IntervalReport(
+            available=False, method="split-conformal quantiles of out-of-sample relative errors",
+            calibration_status=INTERVAL_UNAVAILABLE, basis="POOLED",
+            unavailable_reason="Prediction interval unavailable — the interval calculation failed "
+                               "for this dataset.",
+        )
+
+    payload = report.to_dict()
+    return {
+        "prediction_intervals":        payload,
+        "interval_method":             report.method,
+        "interval_calibration_status": report.calibration_status,
+        "coverage_80":                 (report.coverage.get("80") or {}).get("observed"),
+        "coverage_95":                 (report.coverage.get("95") or {}).get("observed"),
+        "coverage_sample_size":        (report.coverage.get("80") or {}).get("n") or 0,
+    }
+
+
+def _attach_bounds(point: ForecastPoint, payload: Optional[dict]) -> None:
+    """Copy the per-period bounds onto the ForecastPoint so a consumer
+    reading only the `forecast` list still receives them."""
+    if not payload or not payload.get("available"):
+        return
+    for entry in payload.get("periods", []):
+        if entry.get("period") != point.period:
+            continue
+        point.lower_80 = entry.get("lower_80")
+        point.upper_80 = entry.get("upper_80")
+        point.lower_95 = entry.get("lower_95")
+        point.upper_95 = entry.get("upper_95")
+        point.interval_width_80 = entry.get("interval_width_80")
+        point.interval_width_95 = entry.get("interval_width_95")
+        return
 
 
 _FREQUENCY_UNIT = {

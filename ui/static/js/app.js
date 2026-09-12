@@ -102,6 +102,11 @@ async function loadData() {
     // Failure here must never block the rest of the pipeline from loading.
     await loadForecastAnalysis();
 
+    // Phase 5 — populate the forecast-level selector from this
+    // dataset's own dimensions. Lightweight (value counts only) and
+    // non-fatal: on failure the selector stays at Company Total.
+    await loadGroupMetadata();
+
     loaded = true;
     setStatus('ready', 'Data loaded');
     document.getElementById('overview-empty').style.display   = 'none';
@@ -681,7 +686,15 @@ function drawLineChart(container, labels, values, fcPoints, color, bandPct) {
   const chartW = W - PL - PR;
   const chartH = H - PT - PB;
 
-  const bandVals = bandPct ? fcPoints.flatMap(f => [f.value * (1 + bandPct), f.value * (1 - bandPct)]) : [];
+  // Phase 4: when a forecast point carries real prediction bounds
+  // (f.lower / f.upper, populated from the API's lower_80/upper_80), the
+  // band is drawn from THOSE. `bandPct` remains supported only for the
+  // baseline /api/forecast view, which has no validated model behind it
+  // and therefore no interval to draw.
+  const hasBounds = fcPoints.some(f => f.lower != null && f.upper != null);
+  const bandVals = hasBounds
+    ? fcPoints.flatMap(f => [f.upper != null ? f.upper : f.value, f.lower != null ? f.lower : f.value])
+    : (bandPct ? fcPoints.flatMap(f => [f.value * (1 + bandPct), f.value * (1 - bandPct)]) : []);
   const allVals = [...values, ...fcPoints.map(f => f.value), ...bandVals];
   const maxV = Math.max(...allVals, 1) * 1.1;
   const minV = 0;
@@ -706,11 +719,17 @@ function drawLineChart(container, labels, values, fcPoints, color, bandPct) {
   // Confidence band: a shaded ribbon around the forecast line, anchored to
   // the last historical point so it joins the chart with no visual gap.
   let bandPolygon = '';
-  if (bandPct && fcXs.length > 0) {
+  if ((hasBounds || bandPct) && fcXs.length > 0) {
     const anchorX = xs.length ? xs[xs.length - 1] : fcXs[0];
     const anchorY = ys.length ? ys[ys.length - 1] : fcYs[0];
-    const upperPts = [`${anchorX},${anchorY}`].concat(fcXs.map((x, i) => `${x},${toY(fcPoints[i].value * (1 + bandPct))}`));
-    const lowerPts = [`${anchorX},${anchorY}`].concat(fcXs.map((x, i) => `${x},${toY(fcPoints[i].value * (1 - bandPct))}`));
+    const upperOf = i => hasBounds
+      ? (fcPoints[i].upper != null ? fcPoints[i].upper : fcPoints[i].value)
+      : fcPoints[i].value * (1 + bandPct);
+    const lowerOf = i => hasBounds
+      ? (fcPoints[i].lower != null ? fcPoints[i].lower : fcPoints[i].value)
+      : fcPoints[i].value * (1 - bandPct);
+    const upperPts = [`${anchorX},${anchorY}`].concat(fcXs.map((x, i) => `${x},${toY(upperOf(i))}`));
+    const lowerPts = [`${anchorX},${anchorY}`].concat(fcXs.map((x, i) => `${x},${toY(lowerOf(i))}`));
     bandPolygon = `<polygon points="${upperPts.join(' ')} ${lowerPts.slice().reverse().join(' ')}" fill="#7C3AED" opacity="0.10"/>`;
   }
 
@@ -893,6 +912,90 @@ function capitalize(s) {
 // page load) since training SARIMA/Holt-Winters/Prophet can be slow —
 // this keeps the existing loadData() sequence exactly as fast as before.
 
+// ── Phase 5: forecast level (segment) selection ────────────────────────────
+// Every column and value below comes from /api/forecast/groups against the
+// loaded dataset. Nothing is hard-coded, so an arbitrary uploaded ERP CSV
+// gets whatever dimensions it actually has.
+let groupMeta = null;
+
+async function loadGroupMetadata() {
+  try {
+    const res = await fetch('/api/forecast/groups');
+    const data = await res.json();
+    if (!data.ok) return;
+    groupMeta = data;
+
+    const sel = document.getElementById('fc-group-col');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Company Total</option>';
+    (data.group_columns || []).forEach(col => {
+      const opt = document.createElement('option');
+      opt.value = col.name;
+      opt.textContent = col.label || col.name;
+      sel.appendChild(opt);
+    });
+  } catch (err) {
+    // Non-fatal: without metadata the selector simply stays at Company
+    // Total and everything behaves as it did before Phase 5.
+    console.warn('Group metadata unavailable:', err);
+  }
+}
+
+function onGroupColChange() {
+  const colSel = document.getElementById('fc-group-col');
+  const valSel = document.getElementById('fc-group-value');
+  const colName = colSel.value;
+
+  if (!colName) {
+    valSel.style.display = 'none';
+    valSel.innerHTML = '';
+    return;
+  }
+
+  const col = ((groupMeta && groupMeta.group_columns) || []).find(c => c.name === colName);
+  valSel.innerHTML = '';
+  ((col && col.values) || []).forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.value;
+    // Flag segments whose history cannot support reliable validation, so
+    // the user knows before spending a run on them.
+    const short = v.history_status && v.history_status !== 'SUFFICIENT_HISTORY';
+    opt.textContent = v.value + ` (${v.n_periods}p${short ? ' ⚠' : ''})`;
+    valSel.appendChild(opt);
+  });
+  valSel.style.display = ((col && col.values) || []).length ? 'inline-block' : 'none';
+}
+
+// Shown when a segment cannot be resolved — unknown column, unknown
+// value, or no matching transactions. Displays the backend's explanation
+// instead of stale numbers from a previous run.
+function renderGroupProblem(data) {
+  const banner = document.getElementById('fc-scope-banner');
+  banner.style.display = 'block';
+  banner.classList.add('fc-scope-problem');
+  document.getElementById('fc-scope-value').textContent = data.group_label || 'Unresolved segment';
+  document.getElementById('fc-scope-meta').textContent =
+    data.group_message || 'This segment could not be forecast.';
+  document.getElementById('forecast-content').style.display = 'none';
+  document.getElementById('forecast-empty').style.display = 'block';
+}
+
+function renderForecastScope(data) {
+  const banner = document.getElementById('fc-scope-banner');
+  if (!banner) return;
+  banner.style.display = 'block';
+  banner.classList.remove('fc-scope-problem');
+  document.getElementById('fc-scope-value').textContent = data.group_label || 'Company Total';
+
+  const bits = [];
+  if (data.group_records != null && data.group_col) bits.push(`${data.group_records} transactions`);
+  if (data.n_modelled_periods != null) bits.push(`${data.n_modelled_periods} ${data.frequency} periods`);
+  if (data.group_history_status && data.group_history_status !== 'SUFFICIENT_HISTORY') {
+    bits.push(data.group_history_status.replace(/_/g, ' ').toLowerCase());
+  }
+  document.getElementById('fc-scope-meta').textContent = bits.length ? '· ' + bits.join(' · ') : '';
+}
+
 async function runAutoForecast() {
   if (!loaded) {
     alert('Please load the ERP data first by clicking "Load ERP Data".');
@@ -903,14 +1006,32 @@ async function runAutoForecast() {
   btn.disabled = true;
   btn.textContent = 'Training models…';
 
+  // Phase 5: send the selected segment, if any. Empty strings are sent as
+  // nulls so an unselected level means "company total" — byte-identical
+  // to the pre-Phase-5 request.
+  const groupCol = (document.getElementById('fc-group-col') || {}).value || null;
+  const groupValue = (document.getElementById('fc-group-value') || {}).value || null;
+
   try {
     const res = await fetch('/api/forecast/auto', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ months: parseInt(horizon) }),
+      body: JSON.stringify({
+        months: parseInt(horizon),
+        group_col: groupCol,
+        group_value: groupCol ? groupValue : null,
+      }),
     });
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
+
+    // A segment that could not be resolved comes back with a status and a
+    // message rather than numbers. Showing the previous result here would
+    // be exactly the company/segment mix-up Phase 5 exists to prevent.
+    if (data.group_status && data.group_status !== 'OK') {
+      renderGroupProblem(data);
+      return;
+    }
     autoForecastActive = true;
     renderAutoForecast(data);
   } catch (err) {
@@ -926,9 +1047,137 @@ async function runAutoForecast() {
 // same DOM targets renderForecast() uses for the baseline view, so the
 // page transitions from "simple preview" to "AI-selected result" in
 // place rather than showing two competing forecasts at once.
+// Phase 4 — render the prediction intervals, or an honest explanation of
+// why none exists. Deliberately kept separate from the confidence pill
+// above it: confidence is a reliability score for the model and the data,
+// an interval is a range with a measured coverage level. Adding intervals
+// never changes the confidence value.
+function renderPredictionIntervals(data, forecastPts) {
+  const block  = document.getElementById('fc-interval-block');
+  const absent = document.getElementById('fc-interval-unavailable');
+  const info   = data.prediction_intervals;
+
+  if (!info || !info.available) {
+    block.style.display = 'none';
+    absent.style.display = 'block';
+    absent.textContent = (info && info.unavailable_reason)
+      || 'Prediction interval unavailable — insufficient validation history.';
+    return;
+  }
+
+  absent.style.display = 'none';
+  block.style.display = 'block';
+
+  // Horizon totals: summing per-period bounds gives the range for the
+  // whole window under the (stated) assumption that periods move
+  // together. Labelled as a total so it is not mistaken for a per-period
+  // range.
+  const sum = (key) => forecastPts.reduce((t, p) => t + (p[key] != null ? p[key] : p.value), 0);
+  document.getElementById('fc-interval-80').textContent =
+    `${fmtINR(sum('lower_80'))} – ${fmtINR(sum('upper_80'))}`;
+  document.getElementById('fc-interval-95').textContent =
+    `${fmtINR(sum('lower_95'))} – ${fmtINR(sum('upper_95'))}`;
+
+  const per = (k) => forecastPts.length === 1 ? 'for the forecast period'
+    : `total across ${forecastPts.length} periods`;
+  document.getElementById('fc-interval-80-sub').textContent = per('80');
+  document.getElementById('fc-interval-95-sub').textContent = per('95');
+
+  const status = info.interval_calibration_status || '—';
+  const pill = document.getElementById('fc-interval-status');
+  pill.textContent = status.replace(/_/g, ' ');
+  pill.className = 'conf-pill-lg ' +
+    (status === 'CALIBRATED' ? 'conf-high' : status === 'LIMITED_DATA' ? 'conf-medium' : 'conf-low');
+
+  const cov80 = (info.coverage && info.coverage['80']) || {};
+  const cov95 = (info.coverage && info.coverage['95']) || {};
+  document.getElementById('fc-interval-status-sub').textContent =
+    (cov80.observed != null)
+      ? `measured coverage ${cov80.observed}% (80%) · ${cov95.observed}% (95%) on ${cov80.n} out-of-sample points`
+      : 'coverage not yet measurable — too few validation folds';
+
+  document.getElementById('fc-interval-note').textContent = (info.notes || []).join(' ');
+}
+
+// ── Phase 6: reliability factors, model explanation, insights ─────────────
+// Every string rendered here comes from the API payload, which derives it
+// from a measurement. Nothing is composed in the browser.
+function renderExplanations(data) {
+  const wrap = document.getElementById('fc-explain');
+  if (!wrap) return;
+  const rel = data.reliability;
+  const model = data.model_explanation;
+  const insights = data.forecast_insights;
+
+  if (!rel && !model && !insights) {
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'block';
+
+  // Why this reliability — one row per measured factor.
+  const factorList = document.getElementById('fc-factor-list');
+  factorList.innerHTML = '';
+  ((rel && rel.factors) || []).forEach(f => {
+    const li = document.createElement('li');
+    li.className = 'fc-factor fc-factor-' + (f.impact || 'neutral');
+    li.innerHTML =
+      `<span class="fc-factor-label">${f.label}</span>` +
+      `<span class="fc-factor-value">${f.value || '—'}</span>` +
+      `<span class="fc-factor-why">${f.explanation}</span>`;
+    factorList.appendChild(li);
+  });
+
+  const note = document.getElementById('fc-reliability-note');
+  const warnings = ((rel && rel.warnings) || []);
+  note.innerHTML =
+    (rel ? `<div class="fc-explain-interp">${rel.interpretation}</div>` : '') +
+    (warnings.length
+      ? '<ul class="fc-warn-list">' + warnings.map(w => `<li>${w}</li>`).join('') + '</ul>'
+      : '');
+
+  // Why this model.
+  const why = document.getElementById('fc-model-why');
+  const altTable = document.getElementById('fc-alt-table');
+  if (model) {
+    why.innerHTML =
+      `<p>${model.reason}</p>` +
+      `<p class="fc-strength fc-strength-${(model.selection_strength || '').toLowerCase()}">` +
+      `Selection strength: <strong>${model.selection_strength}</strong> — ${model.strength_reason}</p>`;
+    const alts = (model.alternatives || []).slice(0, 6);
+    altTable.innerHTML = alts.length
+      ? '<table class="fc-alt"><thead><tr><th>Model</th><th>WAPE</th><th>Folds</th></tr></thead><tbody>'
+        + alts.map(a =>
+            `<tr class="${a.selected ? 'fc-alt-selected' : ''}">` +
+            `<td>${a.model}${a.selected ? ' ✓' : ''}</td>` +
+            `<td>${a.wape.toFixed(2)}%</td><td>${a.folds}</td></tr>`).join('')
+        + '</tbody></table>'
+      : '';
+  } else {
+    why.textContent = 'No model explanation is available for this forecast.';
+    altTable.innerHTML = '';
+  }
+
+  // Forecast insights.
+  const list = document.getElementById('fc-insight-list');
+  list.innerHTML = '';
+  ((insights && insights.insights) || []).forEach(i => {
+    const li = document.createElement('li');
+    li.className = 'fc-insight fc-insight-' + i.kind;
+    li.innerHTML = `<span class="fc-insight-headline">${i.headline}</span>` +
+                   `<span class="fc-insight-detail">${i.detail}</span>`;
+    list.appendChild(li);
+  });
+}
+
 function renderAutoForecast(data) {
   document.getElementById('forecast-empty').style.display   = 'none';
   document.getElementById('forecast-content').style.display = 'block';
+
+  // Phase 5: label what this payload describes, read from the payload
+  // itself rather than from the selector, so the banner can never
+  // disagree with the numbers underneath it.
+  renderForecastScope(data);
 
   // ── Section 1: hero summary ─────────────────────────────────────────────
   document.getElementById('fc-hero-model').textContent = data.selected_model;
@@ -937,14 +1186,28 @@ function renderAutoForecast(data) {
   document.getElementById('fc-hero-horizon').textContent =
     data.horizon + (data.horizon === 1 ? ' Month' : ' Months');
 
-  const confPct = Math.round(data.forecast_confidence * 100);
+  // Phase 6: show the reliability LEVEL, not a percentage that reads as a
+  // probability. The score is secondary detail; "69%" beside the word
+  // confidence invited exactly the reading the system cannot support.
+  const rel = data.reliability;
   const confEl = document.getElementById('fc-hero-confidence');
-  confEl.textContent = confPct + '%';
-  confEl.className = 'conf-pill-lg ' +
-    (data.forecast_confidence >= 0.75 ? 'conf-high' : data.forecast_confidence >= 0.5 ? 'conf-medium' : 'conf-low');
-  document.getElementById('fc-hero-confidence-sub').textContent =
-    data.forecast_confidence >= 0.75 ? 'high confidence' :
-    data.forecast_confidence >= 0.5  ? 'moderate confidence' : 'low confidence — limited history';
+  const confSub = document.getElementById('fc-hero-confidence-sub');
+  if (rel) {
+    confEl.textContent = rel.label;
+    confEl.className = 'conf-pill-lg ' +
+      (rel.level === 'HIGH' ? 'conf-high' :
+       rel.level === 'MODERATE' ? 'conf-medium' : 'conf-low');
+    confSub.textContent = `reliability score ${rel.score_pct}/100 — not a probability`;
+  } else {
+    // Pre-Phase-6 payloads (or a failed explanation build) still render.
+    const confPct = Math.round((data.forecast_confidence || 0) * 100);
+    confEl.textContent = confPct + '%';
+    confEl.className = 'conf-pill-lg ' +
+      (data.forecast_confidence >= 0.75 ? 'conf-high' :
+       data.forecast_confidence >= 0.5 ? 'conf-medium' : 'conf-low');
+    confSub.textContent = 'reliability score';
+  }
+  renderExplanations(data);
 
   const forecastPts = data.forecast || [];
   const total = forecastPts.reduce((sum, p) => sum + p.value, 0);
@@ -952,11 +1215,25 @@ function renderAutoForecast(data) {
   document.getElementById('fc-hero-revenue-sub').textContent =
     `total across ${forecastPts.length} month${forecastPts.length === 1 ? '' : 's'}`;
 
-  // ── Section 2: chart — confidence band derived from validation MAPE ────
+  // ── Section 1b: prediction intervals (Phase 4) ─────────────────────────
+  renderPredictionIntervals(data, forecastPts);
+
+  // ── Section 2: chart — shaded band is the real 80% prediction interval
+  // when one exists. It used to be Math.min(0.5, mape/100), a symmetric
+  // plus/minus MAPE ribbon with no coverage level behind it (and a
+  // hardcoded plus/minus 15% when metrics were missing), which invited the
+  // user to read a fabricated range as a genuine one.
   const histEntries = (kpiData && kpiData.monthly_revenue) ? Object.entries(kpiData.monthly_revenue).slice(-6) : [];
-  const bandPct = data.evaluation_metrics ? Math.min(0.5, data.evaluation_metrics.mape / 100) : 0.15;
+  const hasIntervals = forecastPts.some(p => p.lower_80 != null && p.upper_80 != null);
+  document.getElementById('fc-legend-band').textContent =
+    hasIntervals ? '80% Prediction Range' : 'Forecast';
   renderCombinedChart('forecast-chart', histEntries,
-    forecastPts.map(p => ({ label: p.period, value: p.value })), bandPct);
+    forecastPts.map(p => ({
+      label: p.period, value: p.value,
+      lower: p.lower_80 != null ? p.lower_80 : null,
+      upper: p.upper_80 != null ? p.upper_80 : null,
+    })),
+    null);
 
   // ── Section 3: monthly result cards + detail table ──────────────────────
   renderMonthCards(forecastPts);

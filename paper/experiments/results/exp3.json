@@ -1,0 +1,2127 @@
+{
+  "A_grain": {
+    "weekly": {
+      "n_periods": 209,
+      "density": 0.8469,
+      "fill_strategy": "interpolate_short_gaps",
+      "plan": {
+        "n_folds": 12,
+        "horizon": 3,
+        "min_train": 105,
+        "step": 9,
+        "n_validation_points": 36,
+        "degraded": false
+      },
+      "models": {
+        "Simple Exponential Smoothing": {
+          "wape": 69.03,
+          "mae": 285445.32,
+          "rmse": 522984.22,
+          "smape": 67.41,
+          "stability": 0.0798,
+          "n_folds": 12,
+          "n_points": 29,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 86.1742,
+            "median": 64.415,
+            "std": 79.3002,
+            "min": 22.64,
+            "max": 327.12
+          }
+        },
+        "Naive": {
+          "wape": 85.51,
+          "mae": 353593.87,
+          "rmse": 576304.76,
+          "smape": 108.44,
+          "stability": 0.5852,
+          "n_folds": 12,
+          "n_points": 29,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 96.9892,
+            "median": 93.155,
+            "std": 40.2293,
+            "min": 45.43,
+            "max": 166.89
+          }
+        },
+        "Moving Average": {
+          "wape": 81.0,
+          "mae": 334938.95,
+          "rmse": 557037.24,
+          "smape": 80.62,
+          "stability": 0.0,
+          "n_folds": 12,
+          "n_points": 29,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 110.9183,
+            "median": 70.43,
+            "std": 121.2255,
+            "min": 43.25,
+            "max": 486.51
+          }
+        },
+        "Holt Linear": {
+          "wape": 75.69,
+          "mae": 312984.86,
+          "rmse": 544113.69,
+          "smape": 76.08,
+          "stability": 0.1143,
+          "n_folds": 12,
+          "n_points": 29,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 97.5042,
+            "median": 75.745,
+            "std": 86.3592,
+            "min": 45.44,
+            "max": 366.46
+          }
+        },
+        "Seasonal Naive": {
+          "wape": 82.33,
+          "mae": 340431.25,
+          "rmse": 583302.59,
+          "smape": 87.55,
+          "stability": 0.5949,
+          "n_folds": 12,
+          "n_points": 29,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 81.1967,
+            "median": 75.87,
+            "std": 32.8953,
+            "min": 36.8,
+            "max": 141.71
+          }
+        },
+        "Holt-Winters": {
+          "wape": 72.64,
+          "mae": 300375.72,
+          "rmse": 573283.8,
+          "smape": 70.25,
+          "stability": 0.0,
+          "n_folds": 12,
+          "n_points": 29,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 119.755,
+            "median": 67.785,
+            "std": 206.3426,
+            "min": 24.01,
+            "max": 770.48
+          }
+        },
+        "SARIMA": {
+          "wape": 77.66,
+          "mae": 321149.16,
+          "rmse": 539538.55,
+          "smape": 74.07,
+          "stability": 0.3659,
+          "n_folds": 12,
+          "n_points": 29,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 93.4192,
+            "median": 83.145,
+            "std": 59.2395,
+            "min": 24.45,
+            "max": 266.21
+          }
+        },
+        "XGBoost": {
+          "wape": 82.55,
+          "mae": 341372.37,
+          "rmse": 526234.51,
+          "smape": 79.24,
+          "stability": 0.0,
+          "n_folds": 12,
+          "n_points": 29,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 111.8758,
+            "median": 78.735,
+            "std": 113.4322,
+            "min": 50.51,
+            "max": 455.45
+          }
+        }
+      },
+      "best_model": "Simple Exponential Smoothing",
+      "best_wape": 69.03,
+      "median_wape": 79.33
+    },
+    "monthly": {
+      "n_periods": 48,
+      "density": 1.0,
+      "fill_strategy": "none_needed",
+      "plan": {
+        "n_folds": 11,
+        "horizon": 3,
+        "min_train": 24,
+        "step": 2,
+        "n_validation_points": 33,
+        "degraded": false
+      },
+      "models": {
+        "Simple Exponential Smoothing": {
+          "wape": 47.48,
+          "mae": 657349.67,
+          "rmse": 870564.4,
+          "smape": 46.9,
+          "stability": 0.6024,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 46.0673,
+            "median": 50.87,
+            "std": 18.3151,
+            "min": 14.87,
+            "max": 76.34
+          }
+        },
+        "Naive": {
+          "wape": 51.8,
+          "mae": 717130.22,
+          "rmse": 1006546.04,
+          "smape": 49.55,
+          "stability": 0.5345,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 48.4918,
+            "median": 48.4,
+            "std": 22.5706,
+            "min": 12.44,
+            "max": 79.56
+          }
+        },
+        "Moving Average": {
+          "wape": 54.59,
+          "mae": 755752.23,
+          "rmse": 975058.75,
+          "smape": 52.56,
+          "stability": 0.3735,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 56.8864,
+            "median": 53.15,
+            "std": 35.637,
+            "min": 10.03,
+            "max": 149.81
+          }
+        },
+        "Holt Linear": {
+          "wape": 53.27,
+          "mae": 737565.47,
+          "rmse": 949591.1,
+          "smape": 52.19,
+          "stability": 0.5847,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 53.8464,
+            "median": 53.35,
+            "std": 22.3632,
+            "min": 26.98,
+            "max": 108.63
+          }
+        },
+        "Seasonal Naive": {
+          "wape": 63.89,
+          "mae": 884514.76,
+          "rmse": 1182645.55,
+          "smape": 63.98,
+          "stability": 0.4202,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 67.0609,
+            "median": 56.57,
+            "std": 38.8814,
+            "min": 27.87,
+            "max": 161.28
+          }
+        },
+        "Holt-Winters": {
+          "wape": 57.56,
+          "mae": 796897.37,
+          "rmse": 1033123.69,
+          "smape": 54.83,
+          "stability": 0.4511,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 58.6464,
+            "median": 43.22,
+            "std": 32.1883,
+            "min": 15.77,
+            "max": 122.26
+          }
+        },
+        "SARIMA": {
+          "wape": 67.66,
+          "mae": 936695.1,
+          "rmse": 1131856.04,
+          "smape": 66.71,
+          "stability": 0.4692,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 71.3118,
+            "median": 63.9,
+            "std": 37.8553,
+            "min": 28.12,
+            "max": 164.39
+          }
+        },
+        "XGBoost": {
+          "wape": 62.44,
+          "mae": 864443.82,
+          "rmse": 1071983.16,
+          "smape": 58.8,
+          "stability": 0.1324,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 67.5755,
+            "median": 63.72,
+            "std": 58.6276,
+            "min": 20.35,
+            "max": 231.36
+          }
+        }
+      },
+      "best_model": "Simple Exponential Smoothing",
+      "best_wape": 47.48,
+      "median_wape": 56.075
+    },
+    "quarterly": {
+      "n_periods": 16,
+      "density": 1.0,
+      "fill_strategy": "none_needed",
+      "plan": {
+        "n_folds": 6,
+        "horizon": 3,
+        "min_train": 8,
+        "step": 1,
+        "n_validation_points": 18,
+        "degraded": false
+      },
+      "models": {
+        "Simple Exponential Smoothing": {
+          "wape": 15.8,
+          "mae": 638996.97,
+          "rmse": 928070.59,
+          "smape": 16.03,
+          "stability": 0.5037,
+          "n_folds": 6,
+          "n_points": 18,
+          "fold_stats": {
+            "n_folds": 6,
+            "mean": 15.7733,
+            "median": 13.86,
+            "std": 7.8287,
+            "min": 8.77,
+            "max": 30.74
+          }
+        },
+        "Naive": {
+          "wape": 27.96,
+          "mae": 1130965.75,
+          "rmse": 1612715.35,
+          "smape": 28.16,
+          "stability": 0.0326,
+          "n_folds": 6,
+          "n_points": 18,
+          "fold_stats": {
+            "n_folds": 6,
+            "mean": 29.0717,
+            "median": 20.205,
+            "std": 28.125,
+            "min": 3.2,
+            "max": 75.03
+          }
+        },
+        "Moving Average": {
+          "wape": 12.87,
+          "mae": 520408.48,
+          "rmse": 857213.99,
+          "smape": 12.78,
+          "stability": 0.3729,
+          "n_folds": 6,
+          "n_points": 18,
+          "fold_stats": {
+            "n_folds": 6,
+            "mean": 12.835,
+            "median": 11.98,
+            "std": 8.0495,
+            "min": 1.53,
+            "max": 26.63
+          }
+        },
+        "Holt Linear": {
+          "wape": 33.32,
+          "mae": 1347776.68,
+          "rmse": 1990057.63,
+          "smape": 37.08,
+          "stability": 0.0,
+          "n_folds": 6,
+          "n_points": 18,
+          "fold_stats": {
+            "n_folds": 6,
+            "mean": 34.675,
+            "median": 15.405,
+            "std": 40.3511,
+            "min": 2.16,
+            "max": 97.03
+          }
+        },
+        "Seasonal Naive": {
+          "wape": 36.88,
+          "mae": 1491845.6,
+          "rmse": 1598898.12,
+          "smape": 39.61,
+          "stability": 0.7076,
+          "n_folds": 6,
+          "n_points": 18,
+          "fold_stats": {
+            "n_folds": 6,
+            "mean": 37.3767,
+            "median": 40.33,
+            "std": 10.9279,
+            "min": 18.27,
+            "max": 47.67
+          }
+        },
+        "Holt-Winters": {
+          "wape": 31.98,
+          "mae": 1293675.45,
+          "rmse": 1521921.99,
+          "smape": 30.99,
+          "stability": 0.6344,
+          "n_folds": 6,
+          "n_points": 18,
+          "fold_stats": {
+            "n_folds": 6,
+            "mean": 32.49,
+            "median": 36.805,
+            "std": 11.8775,
+            "min": 14.39,
+            "max": 43.43
+          }
+        },
+        "SARIMA": {
+          "wape": 283.02,
+          "mae": 11447253.73,
+          "rmse": 34353884.87,
+          "smape": 61.73,
+          "stability": 0.0,
+          "n_folds": 6,
+          "n_points": 18,
+          "fold_stats": {
+            "n_folds": 6,
+            "mean": 317.2367,
+            "median": 40.03,
+            "std": 686.4936,
+            "min": 20.34,
+            "max": 1718.42
+          }
+        },
+        "XGBoost": {
+          "wape": 32.49,
+          "mae": 1313977.56,
+          "rmse": 1724936.28,
+          "smape": 42.23,
+          "stability": 0.364,
+          "n_folds": 6,
+          "n_points": 18,
+          "fold_stats": {
+            "n_folds": 6,
+            "mean": 31.9517,
+            "median": 28.985,
+            "std": 20.3218,
+            "min": 6.0,
+            "max": 62.53
+          }
+        }
+      },
+      "best_model": "Moving Average",
+      "best_wape": 12.87,
+      "median_wape": 32.235
+    }
+  },
+  "B_protocol": {
+    "single_holdout_h3": {
+      "plan": {
+        "horizon": 3,
+        "requested_horizon": 3,
+        "min_train_size": 45,
+        "step": 1,
+        "n_folds": 1,
+        "n_validation_points": 3,
+        "rule": "single trailing hold-out of 3 periods (one origin)",
+        "degraded": false,
+        "degradation_reason": null,
+        "folds": [
+          {
+            "fold": 1,
+            "train_end": 45,
+            "val_start": 45,
+            "val_end": 48,
+            "train_size": 45
+          }
+        ]
+      },
+      "models": {
+        "Simple Exponential Smoothing": {
+          "wape": 38.08,
+          "mae": 610080.55,
+          "rmse": 745996.26,
+          "smape": 39.62,
+          "stability": null,
+          "n_folds": 1,
+          "n_points": 3,
+          "fold_stats": {
+            "n_folds": 1,
+            "mean": 38.08,
+            "median": 38.08,
+            "std": 0.0,
+            "min": 38.08,
+            "max": 38.08
+          }
+        },
+        "Naive": {
+          "wape": 55.61,
+          "mae": 890924.59,
+          "rmse": 1096131.62,
+          "smape": 50.81,
+          "stability": null,
+          "n_folds": 1,
+          "n_points": 3,
+          "fold_stats": {
+            "n_folds": 1,
+            "mean": 55.61,
+            "median": 55.61,
+            "std": 0.0,
+            "min": 55.61,
+            "max": 55.61
+          }
+        },
+        "Moving Average": {
+          "wape": 37.69,
+          "mae": 603931.7,
+          "rmse": 739871.24,
+          "smape": 39.18,
+          "stability": null,
+          "n_folds": 1,
+          "n_points": 3,
+          "fold_stats": {
+            "n_folds": 1,
+            "mean": 37.69,
+            "median": 37.69,
+            "std": 0.0,
+            "min": 37.69,
+            "max": 37.69
+          }
+        },
+        "Holt Linear": {
+          "wape": 35.1,
+          "mae": 562318.53,
+          "rmse": 695200.34,
+          "smape": 36.33,
+          "stability": null,
+          "n_folds": 1,
+          "n_points": 3,
+          "fold_stats": {
+            "n_folds": 1,
+            "mean": 35.1,
+            "median": 35.1,
+            "std": 0.0,
+            "min": 35.1,
+            "max": 35.1
+          }
+        },
+        "Seasonal Naive": {
+          "wape": 11.52,
+          "mae": 184607.32,
+          "rmse": 226529.0,
+          "smape": 10.61,
+          "stability": null,
+          "n_folds": 1,
+          "n_points": 3,
+          "fold_stats": {
+            "n_folds": 1,
+            "mean": 11.52,
+            "median": 11.52,
+            "std": 0.0,
+            "min": 11.52,
+            "max": 11.52
+          }
+        },
+        "Holt-Winters": {
+          "wape": 42.21,
+          "mae": 676342.12,
+          "rmse": 925627.75,
+          "smape": 43.09,
+          "stability": null,
+          "n_folds": 1,
+          "n_points": 3,
+          "fold_stats": {
+            "n_folds": 1,
+            "mean": 42.21,
+            "median": 42.21,
+            "std": 0.0,
+            "min": 42.21,
+            "max": 42.21
+          }
+        },
+        "SARIMA": {
+          "wape": 37.6,
+          "mae": 602342.31,
+          "rmse": 682955.6,
+          "smape": 38.74,
+          "stability": null,
+          "n_folds": 1,
+          "n_points": 3,
+          "fold_stats": {
+            "n_folds": 1,
+            "mean": 37.6,
+            "median": 37.6,
+            "std": 0.0,
+            "min": 37.6,
+            "max": 37.6
+          }
+        },
+        "XGBoost": {
+          "wape": 50.43,
+          "mae": 807925.77,
+          "rmse": 994348.57,
+          "smape": 60.36,
+          "stability": null,
+          "n_folds": 1,
+          "n_points": 3,
+          "fold_stats": {
+            "n_folds": 1,
+            "mean": 50.43,
+            "median": 50.43,
+            "std": 0.0,
+            "min": 50.43,
+            "max": 50.43
+          }
+        }
+      },
+      "best_model": "Seasonal Naive",
+      "best_wape": 11.52,
+      "ranking": [
+        [
+          "Seasonal Naive",
+          11.52
+        ],
+        [
+          "Holt Linear",
+          35.1
+        ],
+        [
+          "SARIMA",
+          37.6
+        ],
+        [
+          "Moving Average",
+          37.69
+        ],
+        [
+          "Simple Exponential Smoothing",
+          38.08
+        ],
+        [
+          "Holt-Winters",
+          42.21
+        ],
+        [
+          "XGBoost",
+          50.43
+        ],
+        [
+          "Naive",
+          55.61
+        ]
+      ]
+    },
+    "walk_forward_h1": {
+      "plan": {
+        "horizon": 1,
+        "requested_horizon": 1,
+        "min_train_size": 24,
+        "step": 2,
+        "n_folds": 12,
+        "n_validation_points": 12,
+        "rule": "min_train = max(absolute floor 8, two full seasonal cycles (24 periods), 50% of 48 periods) = 24; origins 24..47 stepped by 2 to target ~12 folds; horizon 1 evaluated at every origin",
+        "degraded": false,
+        "degradation_reason": null,
+        "folds": [
+          {
+            "fold": 1,
+            "train_end": 24,
+            "val_start": 24,
+            "val_end": 25,
+            "train_size": 24
+          },
+          {
+            "fold": 2,
+            "train_end": 26,
+            "val_start": 26,
+            "val_end": 27,
+            "train_size": 26
+          },
+          {
+            "fold": 3,
+            "train_end": 28,
+            "val_start": 28,
+            "val_end": 29,
+            "train_size": 28
+          },
+          {
+            "fold": 4,
+            "train_end": 30,
+            "val_start": 30,
+            "val_end": 31,
+            "train_size": 30
+          },
+          {
+            "fold": 5,
+            "train_end": 32,
+            "val_start": 32,
+            "val_end": 33,
+            "train_size": 32
+          },
+          {
+            "fold": 6,
+            "train_end": 34,
+            "val_start": 34,
+            "val_end": 35,
+            "train_size": 34
+          },
+          {
+            "fold": 7,
+            "train_end": 36,
+            "val_start": 36,
+            "val_end": 37,
+            "train_size": 36
+          },
+          {
+            "fold": 8,
+            "train_end": 38,
+            "val_start": 38,
+            "val_end": 39,
+            "train_size": 38
+          },
+          {
+            "fold": 9,
+            "train_end": 40,
+            "val_start": 40,
+            "val_end": 41,
+            "train_size": 40
+          },
+          {
+            "fold": 10,
+            "train_end": 42,
+            "val_start": 42,
+            "val_end": 43,
+            "train_size": 42
+          },
+          {
+            "fold": 11,
+            "train_end": 44,
+            "val_start": 44,
+            "val_end": 45,
+            "train_size": 44
+          },
+          {
+            "fold": 12,
+            "train_end": 46,
+            "val_start": 46,
+            "val_end": 47,
+            "train_size": 46
+          }
+        ]
+      },
+      "models": {
+        "Simple Exponential Smoothing": {
+          "wape": 55.3,
+          "mae": 801982.32,
+          "rmse": 1008441.26,
+          "smape": 55.8,
+          "stability": 0.33,
+          "n_folds": 12,
+          "n_points": 12,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 60.855,
+            "median": 58.77,
+            "std": 40.7704,
+            "min": 1.3,
+            "max": 136.28
+          }
+        },
+        "Naive": {
+          "wape": 60.97,
+          "mae": 884156.62,
+          "rmse": 1149047.49,
+          "smape": 61.58,
+          "stability": 0.0,
+          "n_folds": 12,
+          "n_points": 12,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 74.5867,
+            "median": 64.98,
+            "std": 80.8495,
+            "min": 1.75,
+            "max": 313.62
+          }
+        },
+        "Moving Average": {
+          "wape": 63.3,
+          "mae": 917884.05,
+          "rmse": 1077803.21,
+          "smape": 63.9,
+          "stability": 0.1807,
+          "n_folds": 12,
+          "n_points": 12,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 79.0608,
+            "median": 54.22,
+            "std": 64.7749,
+            "min": 13.88,
+            "max": 234.74
+          }
+        },
+        "Holt Linear": {
+          "wape": 61.5,
+          "mae": 891801.77,
+          "rmse": 1087417.96,
+          "smape": 62.16,
+          "stability": 0.2919,
+          "n_folds": 12,
+          "n_points": 12,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 71.3517,
+            "median": 64.45,
+            "std": 50.5274,
+            "min": 7.14,
+            "max": 172.69
+          }
+        },
+        "Seasonal Naive": {
+          "wape": 65.03,
+          "mae": 943035.79,
+          "rmse": 1284405.26,
+          "smape": 66.01,
+          "stability": 0.0,
+          "n_folds": 12,
+          "n_points": 12,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 86.7617,
+            "median": 54.555,
+            "std": 121.3656,
+            "min": 4.09,
+            "max": 451.87
+          }
+        },
+        "Holt-Winters": {
+          "wape": 58.23,
+          "mae": 844410.43,
+          "rmse": 1101764.59,
+          "smape": 57.82,
+          "stability": 0.0,
+          "n_folds": 12,
+          "n_points": 12,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 70.5192,
+            "median": 47.235,
+            "std": 72.4766,
+            "min": 11.99,
+            "max": 272.58
+          }
+        },
+        "SARIMA": {
+          "wape": 74.29,
+          "mae": 1077366.22,
+          "rmse": 1288471.89,
+          "smape": 75.34,
+          "stability": 0.0194,
+          "n_folds": 12,
+          "n_points": 12,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 99.1342,
+            "median": 63.98,
+            "std": 97.2068,
+            "min": 28.26,
+            "max": 364.51
+          }
+        },
+        "XGBoost": {
+          "wape": 61.33,
+          "mae": 889374.73,
+          "rmse": 1116376.81,
+          "smape": 61.84,
+          "stability": 0.0,
+          "n_folds": 12,
+          "n_points": 12,
+          "fold_stats": {
+            "n_folds": 12,
+            "mean": 76.9358,
+            "median": 52.75,
+            "std": 82.8031,
+            "min": 15.39,
+            "max": 292.64
+          }
+        }
+      },
+      "best_model": "Simple Exponential Smoothing",
+      "best_wape": 55.3,
+      "ranking": [
+        [
+          "Simple Exponential Smoothing",
+          55.3
+        ],
+        [
+          "Holt-Winters",
+          58.23
+        ],
+        [
+          "Naive",
+          60.97
+        ],
+        [
+          "XGBoost",
+          61.33
+        ],
+        [
+          "Holt Linear",
+          61.5
+        ],
+        [
+          "Moving Average",
+          63.3
+        ],
+        [
+          "Seasonal Naive",
+          65.03
+        ],
+        [
+          "SARIMA",
+          74.29
+        ]
+      ]
+    },
+    "walk_forward_h3": {
+      "plan": {
+        "horizon": 3,
+        "requested_horizon": 3,
+        "min_train_size": 24,
+        "step": 2,
+        "n_folds": 11,
+        "n_validation_points": 33,
+        "rule": "min_train = max(absolute floor 8, two full seasonal cycles (24 periods), 50% of 48 periods) = 24; origins 24..45 stepped by 2 to target ~12 folds; horizon 3 evaluated at every origin",
+        "degraded": false,
+        "degradation_reason": null,
+        "folds": [
+          {
+            "fold": 1,
+            "train_end": 24,
+            "val_start": 24,
+            "val_end": 27,
+            "train_size": 24
+          },
+          {
+            "fold": 2,
+            "train_end": 26,
+            "val_start": 26,
+            "val_end": 29,
+            "train_size": 26
+          },
+          {
+            "fold": 3,
+            "train_end": 28,
+            "val_start": 28,
+            "val_end": 31,
+            "train_size": 28
+          },
+          {
+            "fold": 4,
+            "train_end": 30,
+            "val_start": 30,
+            "val_end": 33,
+            "train_size": 30
+          },
+          {
+            "fold": 5,
+            "train_end": 32,
+            "val_start": 32,
+            "val_end": 35,
+            "train_size": 32
+          },
+          {
+            "fold": 6,
+            "train_end": 34,
+            "val_start": 34,
+            "val_end": 37,
+            "train_size": 34
+          },
+          {
+            "fold": 7,
+            "train_end": 36,
+            "val_start": 36,
+            "val_end": 39,
+            "train_size": 36
+          },
+          {
+            "fold": 8,
+            "train_end": 38,
+            "val_start": 38,
+            "val_end": 41,
+            "train_size": 38
+          },
+          {
+            "fold": 9,
+            "train_end": 40,
+            "val_start": 40,
+            "val_end": 43,
+            "train_size": 40
+          },
+          {
+            "fold": 10,
+            "train_end": 42,
+            "val_start": 42,
+            "val_end": 45,
+            "train_size": 42
+          },
+          {
+            "fold": 11,
+            "train_end": 44,
+            "val_start": 44,
+            "val_end": 47,
+            "train_size": 44
+          }
+        ]
+      },
+      "models": {
+        "Simple Exponential Smoothing": {
+          "wape": 47.48,
+          "mae": 657349.67,
+          "rmse": 870564.4,
+          "smape": 46.9,
+          "stability": 0.6024,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 46.0673,
+            "median": 50.87,
+            "std": 18.3151,
+            "min": 14.87,
+            "max": 76.34
+          }
+        },
+        "Naive": {
+          "wape": 51.8,
+          "mae": 717130.22,
+          "rmse": 1006546.04,
+          "smape": 49.55,
+          "stability": 0.5345,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 48.4918,
+            "median": 48.4,
+            "std": 22.5706,
+            "min": 12.44,
+            "max": 79.56
+          }
+        },
+        "Moving Average": {
+          "wape": 54.59,
+          "mae": 755752.23,
+          "rmse": 975058.75,
+          "smape": 52.56,
+          "stability": 0.3735,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 56.8864,
+            "median": 53.15,
+            "std": 35.637,
+            "min": 10.03,
+            "max": 149.81
+          }
+        },
+        "Holt Linear": {
+          "wape": 53.27,
+          "mae": 737565.47,
+          "rmse": 949591.1,
+          "smape": 52.19,
+          "stability": 0.5847,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 53.8464,
+            "median": 53.35,
+            "std": 22.3632,
+            "min": 26.98,
+            "max": 108.63
+          }
+        },
+        "Seasonal Naive": {
+          "wape": 63.89,
+          "mae": 884514.76,
+          "rmse": 1182645.55,
+          "smape": 63.98,
+          "stability": 0.4202,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 67.0609,
+            "median": 56.57,
+            "std": 38.8814,
+            "min": 27.87,
+            "max": 161.28
+          }
+        },
+        "Holt-Winters": {
+          "wape": 57.56,
+          "mae": 796897.37,
+          "rmse": 1033123.69,
+          "smape": 54.83,
+          "stability": 0.4511,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 58.6464,
+            "median": 43.22,
+            "std": 32.1883,
+            "min": 15.77,
+            "max": 122.26
+          }
+        },
+        "SARIMA": {
+          "wape": 67.66,
+          "mae": 936695.1,
+          "rmse": 1131856.04,
+          "smape": 66.71,
+          "stability": 0.4692,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 71.3118,
+            "median": 63.9,
+            "std": 37.8553,
+            "min": 28.12,
+            "max": 164.39
+          }
+        },
+        "XGBoost": {
+          "wape": 62.44,
+          "mae": 864443.82,
+          "rmse": 1071983.16,
+          "smape": 58.8,
+          "stability": 0.1324,
+          "n_folds": 11,
+          "n_points": 33,
+          "fold_stats": {
+            "n_folds": 11,
+            "mean": 67.5755,
+            "median": 63.72,
+            "std": 58.6276,
+            "min": 20.35,
+            "max": 231.36
+          }
+        }
+      },
+      "best_model": "Simple Exponential Smoothing",
+      "best_wape": 47.48,
+      "ranking": [
+        [
+          "Simple Exponential Smoothing",
+          47.48
+        ],
+        [
+          "Naive",
+          51.8
+        ],
+        [
+          "Holt Linear",
+          53.27
+        ],
+        [
+          "Moving Average",
+          54.59
+        ],
+        [
+          "Holt-Winters",
+          57.56
+        ],
+        [
+          "XGBoost",
+          62.44
+        ],
+        [
+          "Seasonal Naive",
+          63.89
+        ],
+        [
+          "SARIMA",
+          67.66
+        ]
+      ]
+    }
+  },
+  "C_preprocessing": {
+    "n_capped_whole_series": 0,
+    "cap_bounds_whole_series": [
+      0.0,
+      3858185.875
+    ],
+    "honest_per_fold": {
+      "Simple Exponential Smoothing": {
+        "wape": 47.48,
+        "mae": 657349.67,
+        "rmse": 870564.4,
+        "smape": 46.9,
+        "stability": 0.6024,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 46.0673,
+          "median": 50.87,
+          "std": 18.3151,
+          "min": 14.87,
+          "max": 76.34
+        }
+      },
+      "Naive": {
+        "wape": 51.8,
+        "mae": 717130.22,
+        "rmse": 1006546.04,
+        "smape": 49.55,
+        "stability": 0.5345,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 48.4918,
+          "median": 48.4,
+          "std": 22.5706,
+          "min": 12.44,
+          "max": 79.56
+        }
+      },
+      "Moving Average": {
+        "wape": 54.59,
+        "mae": 755752.23,
+        "rmse": 975058.75,
+        "smape": 52.56,
+        "stability": 0.3735,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 56.8864,
+          "median": 53.15,
+          "std": 35.637,
+          "min": 10.03,
+          "max": 149.81
+        }
+      },
+      "Holt Linear": {
+        "wape": 53.27,
+        "mae": 737565.47,
+        "rmse": 949591.1,
+        "smape": 52.19,
+        "stability": 0.5847,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 53.8464,
+          "median": 53.35,
+          "std": 22.3632,
+          "min": 26.98,
+          "max": 108.63
+        }
+      },
+      "Seasonal Naive": {
+        "wape": 63.89,
+        "mae": 884514.76,
+        "rmse": 1182645.55,
+        "smape": 63.98,
+        "stability": 0.4202,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 67.0609,
+          "median": 56.57,
+          "std": 38.8814,
+          "min": 27.87,
+          "max": 161.28
+        }
+      },
+      "Holt-Winters": {
+        "wape": 57.56,
+        "mae": 796897.37,
+        "rmse": 1033123.69,
+        "smape": 54.83,
+        "stability": 0.4511,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 58.6464,
+          "median": 43.22,
+          "std": 32.1883,
+          "min": 15.77,
+          "max": 122.26
+        }
+      },
+      "SARIMA": {
+        "wape": 67.66,
+        "mae": 936695.1,
+        "rmse": 1131856.04,
+        "smape": 66.71,
+        "stability": 0.4692,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 71.3118,
+          "median": 63.9,
+          "std": 37.8553,
+          "min": 28.12,
+          "max": 164.39
+        }
+      },
+      "XGBoost": {
+        "wape": 62.44,
+        "mae": 864443.82,
+        "rmse": 1071983.16,
+        "smape": 58.8,
+        "stability": 0.1324,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 67.5755,
+          "median": 63.72,
+          "std": 58.6276,
+          "min": 20.35,
+          "max": 231.36
+        }
+      }
+    },
+    "leaky_whole_series": {
+      "Simple Exponential Smoothing": {
+        "wape": 47.48,
+        "mae": 657349.67,
+        "rmse": 870564.4,
+        "smape": 46.9,
+        "stability": 0.6024,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 46.0673,
+          "median": 50.87,
+          "std": 18.3151,
+          "min": 14.87,
+          "max": 76.34
+        }
+      },
+      "Naive": {
+        "wape": 51.8,
+        "mae": 717130.22,
+        "rmse": 1006546.04,
+        "smape": 49.55,
+        "stability": 0.5345,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 48.4918,
+          "median": 48.4,
+          "std": 22.5706,
+          "min": 12.44,
+          "max": 79.56
+        }
+      },
+      "Moving Average": {
+        "wape": 54.59,
+        "mae": 755752.23,
+        "rmse": 975058.75,
+        "smape": 52.56,
+        "stability": 0.3735,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 56.8864,
+          "median": 53.15,
+          "std": 35.637,
+          "min": 10.03,
+          "max": 149.81
+        }
+      },
+      "Holt Linear": {
+        "wape": 53.27,
+        "mae": 737565.47,
+        "rmse": 949591.1,
+        "smape": 52.19,
+        "stability": 0.5847,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 53.8464,
+          "median": 53.35,
+          "std": 22.3632,
+          "min": 26.98,
+          "max": 108.63
+        }
+      },
+      "Seasonal Naive": {
+        "wape": 63.89,
+        "mae": 884514.76,
+        "rmse": 1182645.55,
+        "smape": 63.98,
+        "stability": 0.4202,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 67.0609,
+          "median": 56.57,
+          "std": 38.8814,
+          "min": 27.87,
+          "max": 161.28
+        }
+      },
+      "Holt-Winters": {
+        "wape": 57.56,
+        "mae": 796897.37,
+        "rmse": 1033123.69,
+        "smape": 54.83,
+        "stability": 0.4511,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 58.6464,
+          "median": 43.22,
+          "std": 32.1883,
+          "min": 15.77,
+          "max": 122.26
+        }
+      },
+      "SARIMA": {
+        "wape": 67.66,
+        "mae": 936695.1,
+        "rmse": 1131856.04,
+        "smape": 66.71,
+        "stability": 0.4692,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 71.3118,
+          "median": 63.9,
+          "std": 37.8553,
+          "min": 28.12,
+          "max": 164.39
+        }
+      },
+      "XGBoost": {
+        "wape": 62.44,
+        "mae": 864443.82,
+        "rmse": 1071983.16,
+        "smape": 58.8,
+        "stability": 0.1324,
+        "n_folds": 11,
+        "n_points": 33,
+        "fold_stats": {
+          "n_folds": 11,
+          "mean": 67.5755,
+          "median": 63.72,
+          "std": 58.6276,
+          "min": 20.35,
+          "max": 231.36
+        }
+      }
+    },
+    "delta_pp": {
+      "Simple Exponential Smoothing": 0.0,
+      "Naive": 0.0,
+      "Moving Average": 0.0,
+      "Holt Linear": 0.0,
+      "Seasonal Naive": 0.0,
+      "Holt-Winters": 0.0,
+      "SARIMA": 0.0,
+      "XGBoost": 0.0
+    }
+  },
+  "D_features": {
+    "frequency": "monthly",
+    "n_periods": 48,
+    "validation": {
+      "horizon": 3,
+      "requested_horizon": 3,
+      "min_train_size": 24,
+      "step": 2,
+      "n_folds": 11,
+      "n_validation_points": 33,
+      "rule": "min_train = max(absolute floor 8, two full seasonal cycles (24 periods), 50% of 48 periods) = 24; origins 24..45 stepped by 2 to target ~12 folds; horizon 3 evaluated at every origin",
+      "degraded": false,
+      "degradation_reason": null,
+      "folds": [
+        {
+          "fold": 1,
+          "train_end": 24,
+          "val_start": 24,
+          "val_end": 27,
+          "train_size": 24
+        },
+        {
+          "fold": 2,
+          "train_end": 26,
+          "val_start": 26,
+          "val_end": 29,
+          "train_size": 26
+        },
+        {
+          "fold": 3,
+          "train_end": 28,
+          "val_start": 28,
+          "val_end": 31,
+          "train_size": 28
+        },
+        {
+          "fold": 4,
+          "train_end": 30,
+          "val_start": 30,
+          "val_end": 33,
+          "train_size": 30
+        },
+        {
+          "fold": 5,
+          "train_end": 32,
+          "val_start": 32,
+          "val_end": 35,
+          "train_size": 32
+        },
+        {
+          "fold": 6,
+          "train_end": 34,
+          "val_start": 34,
+          "val_end": 37,
+          "train_size": 34
+        },
+        {
+          "fold": 7,
+          "train_end": 36,
+          "val_start": 36,
+          "val_end": 39,
+          "train_size": 36
+        },
+        {
+          "fold": 8,
+          "train_end": 38,
+          "val_start": 38,
+          "val_end": 41,
+          "train_size": 38
+        },
+        {
+          "fold": 9,
+          "train_end": 40,
+          "val_start": 40,
+          "val_end": 43,
+          "train_size": 40
+        },
+        {
+          "fold": 10,
+          "train_end": 42,
+          "val_start": 42,
+          "val_end": 45,
+          "train_size": 42
+        },
+        {
+          "fold": 11,
+          "train_end": 44,
+          "val_start": 44,
+          "val_end": 47,
+          "train_size": 44
+        }
+      ]
+    },
+    "baseline_model": "Simple Exponential Smoothing",
+    "baseline_wape": 47.48,
+    "results": [
+      {
+        "experiment": "A: univariate baseline",
+        "model": "Simple Exponential Smoothing",
+        "features": "none (univariate)",
+        "wape": 47.48,
+        "mae": 657349.67,
+        "rmse": 870564.4,
+        "smape": 46.9,
+        "mape": 50.32,
+        "fold_std": 18.3151,
+        "fold_mean": 46.0673,
+        "fold_min": 14.87,
+        "fold_max": 76.34,
+        "stability": 0.6024,
+        "training_error": 48.21,
+        "validation_error": 47.48,
+        "overfit_ratio": 0.98,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": null,
+        "runtime_seconds": 0.01,
+        "status": "BASELINE",
+        "note": null
+      },
+      {
+        "experiment": "F: ML + selected features",
+        "model": "RandomForest (lags+rolling)",
+        "features": "lags+rolling",
+        "wape": 47.64,
+        "mae": 659512.72,
+        "rmse": 849410.43,
+        "smape": 48.56,
+        "mape": 50.5,
+        "fold_std": 12.6222,
+        "fold_mean": 46.1,
+        "fold_min": 30.46,
+        "fold_max": 64.65,
+        "stability": 0.7262,
+        "training_error": 24.84,
+        "validation_error": 47.64,
+        "overfit_ratio": 1.92,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 11,
+        "runtime_seconds": 3.71,
+        "status": "REJECTED",
+        "note": "0.16pp worse than baseline"
+      },
+      {
+        "experiment": "D: + trend features",
+        "model": "Ridge (trend)",
+        "features": "trend",
+        "wape": 47.78,
+        "mae": 661538.31,
+        "rmse": 899727.36,
+        "smape": 49.86,
+        "mape": 46.0,
+        "fold_std": 10.8027,
+        "fold_mean": 46.1964,
+        "fold_min": 31.03,
+        "fold_max": 61.84,
+        "stability": 0.7662,
+        "training_error": 41.1,
+        "validation_error": 47.78,
+        "overfit_ratio": 1.16,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 4,
+        "runtime_seconds": 0.26,
+        "status": "REJECTED",
+        "note": "0.30pp worse than baseline"
+      },
+      {
+        "experiment": "E: + calendar features",
+        "model": "Ridge (calendar)",
+        "features": "calendar",
+        "wape": 50.04,
+        "mae": 692789.41,
+        "rmse": 857390.37,
+        "smape": 48.75,
+        "mape": 61.07,
+        "fold_std": 28.3827,
+        "fold_mean": 51.56,
+        "fold_min": 14.56,
+        "fold_max": 122.39,
+        "stability": 0.4495,
+        "training_error": 45.82,
+        "validation_error": 50.04,
+        "overfit_ratio": 1.09,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 3,
+        "runtime_seconds": 0.16,
+        "status": "REJECTED",
+        "note": "2.56pp worse than baseline"
+      },
+      {
+        "experiment": "F: ML + selected features",
+        "model": "XGBoost (lags+rolling)",
+        "features": "lags+rolling",
+        "wape": 50.55,
+        "mae": 699856.14,
+        "rmse": 893066.42,
+        "smape": 51.47,
+        "mape": 54.3,
+        "fold_std": 14.7387,
+        "fold_mean": 48.5591,
+        "fold_min": 28.5,
+        "fold_max": 73.55,
+        "stability": 0.6965,
+        "training_error": 13.1,
+        "validation_error": 50.55,
+        "overfit_ratio": 3.86,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 11,
+        "runtime_seconds": 0.54,
+        "status": "REJECTED",
+        "note": "3.07pp worse than baseline; validation error is 3.86x training error \u2014 overfitting"
+      },
+      {
+        "experiment": "C: + rolling features",
+        "model": "XGBoost (rolling)",
+        "features": "rolling",
+        "wape": 50.67,
+        "mae": 701451.26,
+        "rmse": 914206.26,
+        "smape": 53.05,
+        "mape": 49.96,
+        "fold_std": 12.8059,
+        "fold_mean": 48.1036,
+        "fold_min": 33.55,
+        "fold_max": 69.88,
+        "stability": 0.7338,
+        "training_error": 24.19,
+        "validation_error": 50.67,
+        "overfit_ratio": 2.09,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 6,
+        "runtime_seconds": 0.48,
+        "status": "REJECTED",
+        "note": "3.19pp worse than baseline; validation error is 2.09x training error \u2014 overfitting"
+      },
+      {
+        "experiment": "E: + calendar features",
+        "model": "XGBoost (calendar)",
+        "features": "calendar",
+        "wape": 51.79,
+        "mae": 716965.74,
+        "rmse": 942296.09,
+        "smape": 50.65,
+        "mape": 58.04,
+        "fold_std": 23.8459,
+        "fold_mean": 52.6355,
+        "fold_min": 12.25,
+        "fold_max": 103.75,
+        "stability": 0.547,
+        "training_error": 39.36,
+        "validation_error": 51.79,
+        "overfit_ratio": 1.32,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 3,
+        "runtime_seconds": 0.52,
+        "status": "REJECTED",
+        "note": "4.31pp worse than baseline"
+      },
+      {
+        "experiment": "A: univariate baseline",
+        "model": "Naive",
+        "features": "none (univariate)",
+        "wape": 51.8,
+        "mae": 717130.22,
+        "rmse": 1006546.04,
+        "smape": 49.55,
+        "mape": 58.08,
+        "fold_std": 22.5706,
+        "fold_mean": 48.4918,
+        "fold_min": 12.44,
+        "fold_max": 79.56,
+        "stability": 0.5345,
+        "training_error": 59.54,
+        "validation_error": 51.8,
+        "overfit_ratio": 0.87,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": null,
+        "runtime_seconds": 0.01,
+        "status": "REJECTED",
+        "note": "4.32pp worse than baseline"
+      },
+      {
+        "experiment": "F: ML + selected features",
+        "model": "GradientBoosting (lags+rolling)",
+        "features": "lags+rolling",
+        "wape": 51.86,
+        "mae": 718032.6,
+        "rmse": 929565.14,
+        "smape": 52.99,
+        "mape": 54.69,
+        "fold_std": 11.5155,
+        "fold_mean": 50.48,
+        "fold_min": 33.18,
+        "fold_max": 70.06,
+        "stability": 0.7719,
+        "training_error": 9.12,
+        "validation_error": 51.86,
+        "overfit_ratio": 5.69,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 11,
+        "runtime_seconds": 0.96,
+        "status": "REJECTED",
+        "note": "4.38pp worse than baseline; validation error is 5.69x training error \u2014 overfitting"
+      },
+      {
+        "experiment": "D: + trend features",
+        "model": "XGBoost (trend)",
+        "features": "trend",
+        "wape": 51.98,
+        "mae": 719660.91,
+        "rmse": 956988.68,
+        "smape": 55.59,
+        "mape": 55.66,
+        "fold_std": 18.919,
+        "fold_mean": 50.7355,
+        "fold_min": 15.8,
+        "fold_max": 83.36,
+        "stability": 0.6271,
+        "training_error": 26.01,
+        "validation_error": 51.98,
+        "overfit_ratio": 2.0,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 4,
+        "runtime_seconds": 0.57,
+        "status": "REJECTED",
+        "note": "4.50pp worse than baseline; validation error is 2.0x training error \u2014 overfitting"
+      },
+      {
+        "experiment": "C: + rolling features",
+        "model": "Ridge (rolling)",
+        "features": "rolling",
+        "wape": 52.4,
+        "mae": 725448.44,
+        "rmse": 1032648.12,
+        "smape": 58.47,
+        "mape": 49.09,
+        "fold_std": 19.6678,
+        "fold_mean": 48.4,
+        "fold_min": 21.6,
+        "fold_max": 96.7,
+        "stability": 0.5936,
+        "training_error": 46.31,
+        "validation_error": 52.4,
+        "overfit_ratio": 1.13,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 6,
+        "runtime_seconds": 0.19,
+        "status": "REJECTED",
+        "note": "4.92pp worse than baseline"
+      },
+      {
+        "experiment": "F: ML + all families",
+        "model": "XGBoost (all)",
+        "features": "lags+rolling+trend+calendar",
+        "wape": 53.16,
+        "mae": 735960.16,
+        "rmse": 922778.04,
+        "smape": 54.94,
+        "mape": 59.02,
+        "fold_std": 20.4842,
+        "fold_mean": 53.7209,
+        "fold_min": 31.53,
+        "fold_max": 98.0,
+        "stability": 0.6187,
+        "training_error": 11.16,
+        "validation_error": 53.16,
+        "overfit_ratio": 4.76,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 18,
+        "runtime_seconds": 0.68,
+        "status": "REJECTED",
+        "note": "5.68pp worse than baseline; validation error is 4.76x training error \u2014 overfitting"
+      },
+      {
+        "experiment": "A: univariate baseline",
+        "model": "Holt Linear",
+        "features": "none (univariate)",
+        "wape": 53.27,
+        "mae": 737565.47,
+        "rmse": 949591.1,
+        "smape": 52.19,
+        "mape": 57.77,
+        "fold_std": 22.3632,
+        "fold_mean": 53.8464,
+        "fold_min": 26.98,
+        "fold_max": 108.63,
+        "stability": 0.5847,
+        "training_error": 53.0,
+        "validation_error": 53.27,
+        "overfit_ratio": 1.01,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": null,
+        "runtime_seconds": 0.01,
+        "status": "REJECTED",
+        "note": "5.79pp worse than baseline"
+      },
+      {
+        "experiment": "A: univariate baseline",
+        "model": "Moving Average",
+        "features": "none (univariate)",
+        "wape": 54.59,
+        "mae": 755752.23,
+        "rmse": 975058.75,
+        "smape": 52.56,
+        "mape": 60.72,
+        "fold_std": 35.637,
+        "fold_mean": 56.8864,
+        "fold_min": 10.03,
+        "fold_max": 149.81,
+        "stability": 0.3735,
+        "training_error": 61.03,
+        "validation_error": 54.59,
+        "overfit_ratio": 0.89,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": null,
+        "runtime_seconds": 0.01,
+        "status": "REJECTED",
+        "note": "7.11pp worse than baseline"
+      },
+      {
+        "experiment": "B: + lag features",
+        "model": "XGBoost (lags)",
+        "features": "lags",
+        "wape": 56.01,
+        "mae": 775413.47,
+        "rmse": 980980.39,
+        "smape": 55.39,
+        "mape": 63.33,
+        "fold_std": 19.4062,
+        "fold_mean": 55.4455,
+        "fold_min": 26.59,
+        "fold_max": 91.02,
+        "stability": 0.65,
+        "training_error": 16.69,
+        "validation_error": 56.01,
+        "overfit_ratio": 3.36,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 5,
+        "runtime_seconds": 0.43,
+        "status": "REJECTED",
+        "note": "8.53pp worse than baseline; validation error is 3.36x training error \u2014 overfitting"
+      },
+      {
+        "experiment": "A: univariate baseline",
+        "model": "Holt-Winters",
+        "features": "none (univariate)",
+        "wape": 57.56,
+        "mae": 796897.37,
+        "rmse": 1033123.69,
+        "smape": 54.83,
+        "mape": 71.5,
+        "fold_std": 32.1883,
+        "fold_mean": 58.6464,
+        "fold_min": 15.77,
+        "fold_max": 122.26,
+        "stability": 0.4511,
+        "training_error": 52.55,
+        "validation_error": 57.56,
+        "overfit_ratio": 1.1,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": null,
+        "runtime_seconds": 0.72,
+        "status": "REJECTED",
+        "note": "10.08pp worse than baseline"
+      },
+      {
+        "experiment": "B: + lag features",
+        "model": "Ridge (lags)",
+        "features": "lags",
+        "wape": 60.77,
+        "mae": 841284.32,
+        "rmse": 1011511.91,
+        "smape": 66.47,
+        "mape": 67.9,
+        "fold_std": 17.7566,
+        "fold_mean": 61.9264,
+        "fold_min": 32.03,
+        "fold_max": 92.74,
+        "stability": 0.7133,
+        "training_error": 43.91,
+        "validation_error": 60.77,
+        "overfit_ratio": 1.38,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 5,
+        "runtime_seconds": 0.59,
+        "status": "REJECTED",
+        "note": "13.29pp worse than baseline"
+      },
+      {
+        "experiment": "A: univariate baseline",
+        "model": "Seasonal Naive",
+        "features": "none (univariate)",
+        "wape": 63.89,
+        "mae": 884514.76,
+        "rmse": 1182645.55,
+        "smape": 63.98,
+        "mape": 83.26,
+        "fold_std": 38.8814,
+        "fold_mean": 67.0609,
+        "fold_min": 27.87,
+        "fold_max": 161.28,
+        "stability": 0.4202,
+        "training_error": 55.22,
+        "validation_error": 63.89,
+        "overfit_ratio": 1.16,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": null,
+        "runtime_seconds": 0.0,
+        "status": "REJECTED",
+        "note": "16.41pp worse than baseline"
+      },
+      {
+        "experiment": "F: ML + selected features",
+        "model": "Ridge (lags+rolling)",
+        "features": "lags+rolling",
+        "wape": 67.42,
+        "mae": 933390.52,
+        "rmse": 1183193.54,
+        "smape": 84.63,
+        "mape": 78.03,
+        "fold_std": 29.8306,
+        "fold_mean": 69.4264,
+        "fold_min": 33.57,
+        "fold_max": 128.73,
+        "stability": 0.5703,
+        "training_error": 41.85,
+        "validation_error": 67.42,
+        "overfit_ratio": 1.61,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 11,
+        "runtime_seconds": 0.27,
+        "status": "REJECTED",
+        "note": "19.94pp worse than baseline"
+      },
+      {
+        "experiment": "F: ML + selected features",
+        "model": "ElasticNet (lags+rolling)",
+        "features": "lags+rolling",
+        "wape": 67.42,
+        "mae": 933390.52,
+        "rmse": 1183193.54,
+        "smape": 84.63,
+        "mape": 78.03,
+        "fold_std": 29.8306,
+        "fold_mean": 69.4264,
+        "fold_min": 33.57,
+        "fold_max": 128.73,
+        "stability": 0.5703,
+        "training_error": 41.85,
+        "validation_error": 67.42,
+        "overfit_ratio": 1.61,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 11,
+        "runtime_seconds": 0.28,
+        "status": "REJECTED",
+        "note": "19.94pp worse than baseline"
+      },
+      {
+        "experiment": "A: univariate baseline",
+        "model": "SARIMA",
+        "features": "none (univariate)",
+        "wape": 67.66,
+        "mae": 936695.1,
+        "rmse": 1131856.04,
+        "smape": 66.71,
+        "mape": 87.06,
+        "fold_std": 37.8553,
+        "fold_mean": 71.3118,
+        "fold_min": 28.12,
+        "fold_max": 164.39,
+        "stability": 0.4692,
+        "training_error": 62.67,
+        "validation_error": 67.66,
+        "overfit_ratio": 1.08,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": null,
+        "runtime_seconds": 1.77,
+        "status": "REJECTED",
+        "note": "20.18pp worse than baseline"
+      },
+      {
+        "experiment": "F: ML + all families",
+        "model": "Ridge (all)",
+        "features": "lags+rolling+trend+calendar",
+        "wape": 84.93,
+        "mae": 1175836.19,
+        "rmse": 1437709.99,
+        "smape": 115.42,
+        "mape": 104.69,
+        "fold_std": 37.5006,
+        "fold_mean": 89.91,
+        "fold_min": 35.25,
+        "fold_max": 153.91,
+        "stability": 0.5829,
+        "training_error": 32.45,
+        "validation_error": 84.93,
+        "overfit_ratio": 2.62,
+        "n_folds": 11,
+        "n_points": 33,
+        "n_features": 18,
+        "runtime_seconds": 0.42,
+        "status": "REJECTED",
+        "note": "37.45pp worse than baseline; validation error is 2.62x training error \u2014 overfitting"
+      }
+    ],
+    "ensemble_note": null,
+    "best_model": "Simple Exponential Smoothing",
+    "total_runtime_seconds": 16.81,
+    "wall_seconds": 16.81
+  },
+  "D_features_text": "Frequency: monthly | periods: 48 | folds: 11 | validation points: 33 | horizon: 3 | first training window: 24\nBaseline: Simple Exponential Smoothing at 47.48% WAPE\n\nModel                         Features         WAPE%        MAE       RMSE  SMAPE% FoldStd  Train%    Val%   O/F Feat    Sec  Status\n------------------------------------------------------------------------------------------------------------------------------------\nSimple Exponential Smoothing  none (univariate)   47.48     657350     870564   46.90   18.32   48.21   47.48  0.98    -    0.0  BASELINE\nRandomForest (lags+rolling)   lags+rolling     47.64     659513     849410   48.56   12.62   24.84   47.64  1.92   11    3.7  REJECTED\nRidge (trend)                 trend            47.78     661538     899727   49.86   10.80   41.10   47.78  1.16    4    0.3  REJECTED\nRidge (calendar)              calendar         50.04     692789     857390   48.75   28.38   45.82   50.04  1.09    3    0.2  REJECTED\nXGBoost (lags+rolling)        lags+rolling     50.55     699856     893066   51.47   14.74   13.10   50.55  3.86   11    0.5  REJECTED\nXGBoost (rolling)             rolling          50.67     701451     914206   53.05   12.81   24.19   50.67  2.09    6    0.5  REJECTED\nXGBoost (calendar)            calendar         51.79     716966     942296   50.65   23.85   39.36   51.79  1.32    3    0.5  REJECTED\nNaive                         none (univariate)   51.80     717130    1006546   49.55   22.57   59.54   51.80  0.87    -    0.0  REJECTED\nGradientBoosting (lags+rolling)lags+rolling     51.86     718033     929565   52.99   11.52    9.12   51.86  5.69   11    1.0  REJECTED\nXGBoost (trend)               trend            51.98     719661     956989   55.59   18.92   26.01   51.98  2.00    4    0.6  REJECTED\nRidge (rolling)               rolling          52.40     725448    1032648   58.47   19.67   46.31   52.40  1.13    6    0.2  REJECTED\nXGBoost (all)                 lags+rolling+trend+calendar   53.16     735960     922778   54.94   20.48   11.16   53.16  4.76   18    0.7  REJECTED\nHolt Linear                   none (univariate)   53.27     737565     949591   52.19   22.36   53.00   53.27  1.01    -    0.0  REJECTED\nMoving Average                none (univariate)   54.59     755752     975059   52.56   35.64   61.03   54.59  0.89    -    0.0  REJECTED\nXGBoost (lags)                lags             56.01     775413     980980   55.39   19.41   16.69   56.01  3.36    5    0.4  REJECTED\nHolt-Winters                  none (univariate)   57.56     796897    1033124   54.83   32.19   52.55   57.56  1.10    -    0.7  REJECTED\nRidge (lags)                  lags             60.77     841284    1011512   66.47   17.76   43.91   60.77  1.38    5    0.6  REJECTED\nSeasonal Naive                none (univariate)   63.89     884515    1182646   63.98   38.88   55.22   63.89  1.16    -    0.0  REJECTED\nRidge (lags+rolling)          lags+rolling     67.42     933391    1183194   84.63   29.83   41.85   67.42  1.61   11    0.3  REJECTED\nElasticNet (lags+rolling)     lags+rolling     67.42     933391    1183194   84.63   29.83   41.85   67.42  1.61   11    0.3  REJECTED\nSARIMA                        none (univariate)   67.66     936695    1131856   66.71   37.86   62.67   67.66  1.08    -    1.8  REJECTED\nRidge (all)                   lags+rolling+trend+calendar   84.93    1175836    1437710  115.42   37.50   32.45   84.93  2.62   18    0.4  REJECTED\n\nNotes:\n  RandomForest (lags+rolling): 0.16pp worse than baseline\n  Ridge (trend): 0.30pp worse than baseline\n  Ridge (calendar): 2.56pp worse than baseline\n  XGBoost (lags+rolling): 3.07pp worse than baseline; validation error is 3.86x training error \u2014 overfitting\n  XGBoost (rolling): 3.19pp worse than baseline; validation error is 2.09x training error \u2014 overfitting\n  XGBoost (calendar): 4.31pp worse than baseline\n  Naive: 4.32pp worse than baseline\n  GradientBoosting (lags+rolling): 4.38pp worse than baseline; validation error is 5.69x training error \u2014 overfitting\n  XGBoost (trend): 4.50pp worse than baseline; validation error is 2.0x training error \u2014 overfitting\n  Ridge (rolling): 4.92pp worse than baseline\n  XGBoost (all): 5.68pp worse than baseline; validation error is 4.76x training error \u2014 overfitting\n  Holt Linear: 5.79pp worse than baseline\n  Moving Average: 7.11pp worse than baseline\n  XGBoost (lags): 8.53pp worse than baseline; validation error is 3.36x training error \u2014 overfitting\n  Holt-Winters: 10.08pp worse than baseline\n  Ridge (lags): 13.29pp worse than baseline\n  Seasonal Naive: 16.41pp worse than baseline\n  Ridge (lags+rolling): 19.94pp worse than baseline\n  ElasticNet (lags+rolling): 19.94pp worse than baseline\n  SARIMA: 20.18pp worse than baseline\n  Ridge (all): 37.45pp worse than baseline; validation error is 2.62x training error \u2014 overfitting"
+}

@@ -1019,3 +1019,74 @@ select.inp { cursor: pointer; }
   .fc-hero-grid { grid-template-columns: 1fr; }
   .fc-month-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Phase 4: prediction intervals ─────────────────────────────────────
+   Sits below the existing hero grid, reusing its card/label/value type
+   scale so the section reads as part of the same summary rather than a
+   bolted-on panel. No existing rule is modified. */
+.fc-hero-intervals { margin-top: 14px; border-top: 1px solid #EEF1F5; padding-top: 14px; }
+.fc-interval-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.fc-interval-card { background: #FAFBFC; border: 1px solid #EEF1F5; border-radius: 8px; padding: 12px 14px; }
+.fc-interval-value { font-size: 17px; letter-spacing: -0.01em; }
+.fc-interval-note { margin-top: 10px; font-size: 12px; line-height: 1.5; color: #6B7280; }
+.fc-interval-unavailable {
+  margin-top: 14px; padding: 12px 14px; border-radius: 8px;
+  background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; font-size: 13px; line-height: 1.5;
+}
+
+/* ── Phase 5: forecast scope banner ────────────────────────────────────
+   States what the summary below actually describes. Always rendered from
+   the response payload, never from the selector, so a segment result can
+   never be read as a company result. */
+.fc-scope-banner {
+  margin-top: 12px; padding: 9px 13px; border-radius: 8px;
+  background: #EFF6FF; border: 1px solid #BFDBFE;
+  font-size: 13px; color: #1E3A8A;
+}
+.fc-scope-label { font-weight: 600; margin-right: 6px; }
+.fc-scope-value { font-weight: 700; }
+.fc-scope-meta  { margin-left: 8px; color: #3B82F6; font-size: 12px; }
+.fc-scope-banner.fc-scope-problem {
+  background: #FEF2F2; border-color: #FECACA; color: #991B1B;
+}
+.fc-scope-banner.fc-scope-problem .fc-scope-meta { color: #B91C1C; }
+
+/* ── Phase 6: reliability factors, model explanation, insights ─────────
+   Sits inside the existing hero card, reusing its type scale. No
+   existing rule is modified. */
+.fc-explain { margin-top: 16px; border-top: 1px solid #EEF1F5; padding-top: 14px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.fc-explain-block { min-width: 0; }
+.fc-explain-title { font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 9px; }
+.fc-explain-body p { margin: 0 0 7px; font-size: 12.5px; line-height: 1.55; color: #374151; }
+.fc-explain-note { margin-top: 9px; }
+.fc-explain-interp { font-size: 11.5px; line-height: 1.5; color: #6B7280; font-style: italic; }
+
+.fc-factor-list, .fc-insight-list { list-style: none; margin: 0; padding: 0; }
+.fc-factor { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px;
+  padding: 7px 0 7px 10px; border-left: 3px solid #E5E7EB; margin-bottom: 6px; }
+.fc-factor-positive { border-left-color: #10B981; }
+.fc-factor-neutral  { border-left-color: #9CA3AF; }
+.fc-factor-negative { border-left-color: #EF4444; }
+.fc-factor-label { font-size: 12.5px; font-weight: 600; color: #111827; }
+.fc-factor-value { font-size: 11.5px; color: #6B7280; text-align: right; }
+.fc-factor-why   { grid-column: 1 / -1; font-size: 11.5px; line-height: 1.5; color: #4B5563; }
+
+.fc-warn-list { margin: 8px 0 0; padding-left: 18px; }
+.fc-warn-list li { font-size: 11.5px; line-height: 1.5; color: #92400E; margin-bottom: 4px; }
+
+.fc-strength { font-size: 12px; }
+.fc-strength-strong strong { color: #059669; }
+.fc-strength-moderate strong { color: #D97706; }
+.fc-strength-weak strong { color: #DC2626; }
+
+.fc-alt { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11.5px; }
+.fc-alt th { text-align: left; color: #9CA3AF; font-weight: 600; padding: 4px 6px;
+  border-bottom: 1px solid #EEF1F5; }
+.fc-alt td { padding: 4px 6px; border-bottom: 1px solid #F6F8FA; color: #374151; }
+.fc-alt-selected td { font-weight: 700; color: #111827; background: #F5F3FF; }
+
+.fc-insight { padding: 6px 0 6px 10px; border-left: 3px solid #C7D2FE; margin-bottom: 6px; }
+.fc-insight-headline { display: block; font-size: 12.5px; font-weight: 600; color: #111827; }
+.fc-insight-detail { display: block; font-size: 11.5px; line-height: 1.5; color: #4B5563; }
+.fc-insight-recommendation { border-left-color: #7C3AED; background: #FAF5FF; }
